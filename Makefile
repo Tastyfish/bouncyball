@@ -1,4 +1,5 @@
 include engine/engine.mk
+include entities/entities.mk
 
 OUTPUT = balls.nes
 OBJECTS += main.o
