@@ -7,10 +7,6 @@ unsigned int crand(unsigned int lo, unsigned int hi) {
 	// where MAX is the highest possible value
 	// we can't really do this without overflowing on the multiplication
 
-	// so, let's take the inverse of the fraction at the end, which will actually be > 1
-	unsigned int fraction = 0x7FFF / (hi - lo);
-
-	// and then divide the random value by it to get the correct result (although with rounding down error)
-
-	return CLAMP(lo + rand() / fraction, lo, hi);
+	// it should be evenly distributed across all bits (other than that MSB is 0 because rand() returns signed)
+	return lo + rand() % (hi - lo + 1);
 }
