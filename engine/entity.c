@@ -4,7 +4,7 @@
 #include "game.h"
 #include "entity.h"
 
-#define NUM_ENTITIES 32
+#define NUM_ENTITIES 64
 
 Entity entity_table[NUM_ENTITIES];
 

@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 typedef unsigned char spriteID_t;
 typedef unsigned char color_t;
 typedef unsigned char palID_t;

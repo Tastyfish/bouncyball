@@ -14,7 +14,7 @@ _VIDEO_EXPORT = 1
 
 .export _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
 
-NUM_SPRITES = 32
+NUM_SPRITES = 64
 
 .bss
 	ppuMaskCache: .byte 0
