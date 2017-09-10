@@ -3,14 +3,26 @@ _VIDEO_EXPORT = 1
 .include "mem.inc"
 .include "video.inc"
 
+.importzp _tickcount
+.import _bzero
+
 .export _v_ClearOAM, _v_FullCopyOAM, _v_CopySprite, _v_CopyOAM
 .export _v_CopyPPU
 .export _v_SetBGColor, _v_SetPalette
 .export _v_WaitVBlank
 .export _v_DisableAll, _v_EnableSprites, _v_EnableBackgrounds
 
+.export _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
+
+NUM_SPRITES = 32
+
 .bss
 	ppuMaskCache: .byte 0
+
+	sprite_atable:
+	.repeat NUM_SPRITES
+		.byte 0
+	.endrepeat
 
 .code
 
@@ -205,9 +217,9 @@ col_2  = 0
 ; Wait for a v blank
 ; void v_WaitVBlank()
 .proc _v_WaitVBlank
-	lda tickcount
+	lda _tickcount
 loop:
-	cmp tickcount
+	cmp _tickcount
 	beq loop
 	rts
 .endproc
@@ -262,5 +274,50 @@ enable:
 end:
 	sta ppuMaskCache
 	sta PPU_MASK
+	rts
+.endproc
+
+; Init the sprite alloc table
+.proc _v_InitAllocSprites
+	lda #<sprite_atable
+	ldx #>sprite_atable
+	jsr pushax
+	lda #<NUM_SPRITES
+	ldx #0
+	jmp _bzero
+.endproc
+
+; Allocate an unused sprite id
+; spriteID_t v_AllocSprite()
+.proc _v_AllocSprite
+	; first, find a cleared one
+
+	ldy #0
+loop:
+	lda sprite_atable,y
+	beq found
+
+	iny
+	cpy #NUM_SPRITES
+	bne loop
+
+	; didn't find one
+	lda #$FF
+	rts
+
+found:
+	lda #1
+	sta sprite_atable,y
+
+	tya
+	rts
+.endproc
+
+; Free allocated sprite id
+; void __fastcall__ v_FreeSprite(spriteID_t sprite)
+.proc _v_FreeSprite
+	tay
+	lda #0
+	sta sprite_atable,y
 	rts
 .endproc

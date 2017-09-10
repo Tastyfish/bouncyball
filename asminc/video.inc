@@ -11,7 +11,6 @@ PPU_DATA	:= $2007
 
 OAM_DMA		:= $4014
 
-tickcount   := $6b
 VBLANK_FLAG	:= $70
 
 .struct Sprite
@@ -41,4 +40,5 @@ PPUM_EDGE_BACKGROUNDS	= %00000010
 	.import _v_ClearOAM, _v_FullCopyOAM, _v_CopySprite, _v_CopyOAM
 	.import _v_CopyPPU
 	.import _v_SetBGColor, _v_SetPalette
+	.import _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
 .endif

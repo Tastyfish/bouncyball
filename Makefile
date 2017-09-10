@@ -4,6 +4,7 @@ OUTPUT = balls.nes
 OBJECTS += main.o
 CHARS = res/ball.o
 
+MAKEFLAGS += --no-builtin-rules
 CC := cc65
 AS := ca65
 LD := ld65
@@ -30,7 +31,6 @@ $(OUTPUT): $(OBJECTS) $(CHARS)
 
 %.o: %.si
 	$(AS) $^ -o $@ $(GFLAGS) $(AFLAGS)
-	
+
 %.si: %.c
 	$(CC) $^ -o $@ $(GFLAGS) $(CFLAGS)
-	

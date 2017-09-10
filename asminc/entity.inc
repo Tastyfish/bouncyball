@@ -12,6 +12,6 @@
 .endstruct
 
 .ifndef _ENTITY_EXPORT
-	.import e_Create, e_Destroy, e_Draw, e_Update
-	.import e_DrawAll, e_UpdateAll, e_Reset
+	.import _e_Create, _e_Destroy, _e_Draw, _e_Update
+	.import _e_DrawTick, _e_UpdateTick, _e_Reset
 .endif
