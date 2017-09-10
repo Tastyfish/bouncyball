@@ -2,8 +2,7 @@ include engine/engine.mk
 include entities/entities.mk
 
 OUTPUT = balls.nes
-OBJECTS += main.o
-CHARS = res/ball.o
+OBJECTS += main.o res/res.o
 
 MAKEFLAGS += --no-builtin-rules
 CC := cc65
@@ -24,7 +23,7 @@ clean:
 	find . -name "*.o" -type f -delete
 	find . -name "*.is" -type f -delete
 
-$(OUTPUT): $(OBJECTS) $(CHARS)
+$(OUTPUT): $(OBJECTS)
 	$(LD) $^ -o $@ $(GFLAGS) $(LFLAGS)
 
 %.o: %.s
