@@ -11,6 +11,7 @@ _VIDEO_EXPORT = 1
 .export _v_SetBGColor, _v_SetPalette
 .export _v_WaitVBlank
 .export _v_DisableAll, _v_EnableSprites, _v_EnableBackgrounds
+.export _v_ScrollBackground, _v_BigScrollBackground
 
 .export _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
 
@@ -31,14 +32,14 @@ NUM_SPRITES = 64
 .proc _v_ClearOAM
 	; fill OAM swap with FF's and copy (disable sprite)
 	lda #$00
-	sta addr1
+	sta ptr1
 	lda #$02
-	sta addr1+1
+	sta ptr1+1
 	lda #$FF
 
 	ldy #$00
 loop:
-	sta (addr1),y
+	sta (ptr1),y
 	iny
 	bne loop
 
@@ -66,13 +67,13 @@ loop:
 	asl
 	sta OAM_ADDR
 
-	sta addr1
+	sta ptr1
 	lda #$02
-	sta addr1+1
+	sta ptr1+1
 
 	ldy #$00
 loop:
-	lda (addr1),y
+	lda (ptr1),y
 	sta OAM_DATA
 	iny
 	cpy #.sizeof(Sprite)
@@ -85,14 +86,14 @@ loop:
 ; __fastcall__ void v_CopyOAM(byte start, byte length)
 .proc _v_CopyOAM
 start_addr	= 0
-	sta sreg ; length here
+	sta tmp1 ; length here
 
 	; copy $0200+start_addr here as copy SRC
 	ldy #start_addr
 	lda (sp),y
-	sta addr1
+	sta ptr1
 	ldy #02
-	sty addr1+1
+	sty ptr1+1
 
 	; set PPU dest
 	sta OAM_ADDR
@@ -100,11 +101,11 @@ start_addr	= 0
 	; copy data
 	ldy #$00
 loop:
-	lda (addr1),y
+	lda (ptr1),y
 	sta OAM_DATA
 	iny
 
-	cpy sreg
+	cpy tmp1
 	bne loop
 
 	ldy #1
@@ -116,51 +117,51 @@ loop:
 .proc _v_CopyPPU
 length	= 1
 start	= 3
-	; start -> addr1
+	; start -> ptr1
 	ldy #start
 	lda (sp),y
-	sta addr1
+	sta ptr1
 	dey
 	lda (sp),y
-	sta addr1+1
+	sta ptr1+1
 
 	; set PPU dest
-	lda PPU_STATUS
-	lda addr1+1
+	bit PPU_STATUS
+	lda ptr1+1
 	sta PPU_ADDR
-	lda addr1
+	lda ptr1
 	sta PPU_ADDR
 
 	; set RAM src
 	clc
-	lda addr1+1
+	lda ptr1+1
 	adc #$03
-	sta addr1+1
+	sta ptr1+1
 	; also set up length as end (length += start + $0200)
 	clc
 	ldy #length
 	lda (sp),y
-	adc addr1
+	adc ptr1
 	sta (sp),y
 	dey
 	lda (sp),y
-	adc addr1+1
+	adc ptr1+1
 	adc #$02
 	sta (sp),y
 	; copy data
 	ldy #$00
 loop:
 	; copy data
-	lda (addr1),y
+	lda (ptr1),y
 	sta PPU_DATA
-	inc16 addr1
+	inc16 ptr1
 
 	; check if addr==end
-	lda addr1
+	lda ptr1
 	ldy #length
 	cmp (sp),y
 	bne loop
-	lda addr1+1
+	lda ptr1+1
 	dey
 	cmp (sp),y
 	bne loop
@@ -174,7 +175,7 @@ loop:
 .proc _v_SetBGColor
 	pha
 
-	lda PPU_STATUS
+	bit PPU_STATUS
 	lda #$3F
 	sta PPU_ADDR
 	lda #$00
@@ -194,7 +195,7 @@ col_1  = 1
 col_2  = 0
 	pha ; col_3
 
-	lda PPU_STATUS
+	bit PPU_STATUS
 	lda #$3F
 	sta PPU_ADDR
 	ldy #pal_id
@@ -274,6 +275,47 @@ enable:
 end:
 	sta ppuMaskCache
 	sta PPU_MASK
+	rts
+.endproc
+
+; Set the background scroll to a specific value
+; void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
+.proc _v_ScrollBackground
+	bit PPU_STATUS
+	tax
+	jsr popa
+	sta PPU_SCROLL
+	stx PPU_SCROLL
+	rts
+.endproc
+
+; Set the background scroll, allowing for negative values to scoll things to the right sensibly
+; void __fastcall__ v_BigScrollBackground(int x, int y)
+.proc _v_BigScrollBackground
+	sta tmp2
+	stx tmp2+1
+	jsr popax
+	sta tmp1
+	stx tmp1+1
+
+	; Set nametable bank such that negative coords "make sense"
+	lda #$80
+	ldx tmp1+1
+	bpl conty
+	ora #$01
+conty:
+	ldx tmp2+1
+	bpl contout
+	ora #$02
+contout:
+	sta PPU_CTRL
+
+	; now, set nametable normally
+	bit PPU_STATUS
+	lda tmp1
+	sta PPU_SCROLL
+	lda tmp2
+	sta PPU_SCROLL
 	rts
 .endproc
 
