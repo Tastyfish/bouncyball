@@ -1,1 +1,1 @@
-OBJECTS += engine/game.o engine/entity.o engine/video.o engine/rle.o engine/crand.o
+OBJECTS += engine/game.o engine/entity.o engine/video.o engine/rle.o engine/crand.o engine/input.o
