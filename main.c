@@ -27,7 +27,7 @@ void main() {
 
 	v_DecompressNT(0x2000, &NAM_BG);
 
-	for(i = 0; i < 64; i++) {
+	for(i = 0; i < 32; i++) {
 		e_Create(&ent_Ball);
 	}
 
