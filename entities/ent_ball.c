@@ -2,7 +2,7 @@
 #include "entity.h"
 #include "video.h"
 
-#include "ent_ball.h"
+#include "entities.h"
 #include "gent.h"
 
 // sprite in a (gent_Sprite)
