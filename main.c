@@ -1,12 +1,12 @@
 #include <stdbool.h>
 #include <stdlib.h>
+
 #include "game.h"
 #include "video.h"
 #include "entity.h"
-#include "ent_ball.h"
+#include "entities.h"
 
 extern void g_Init();
-extern void __fastcall__ v_DecompressNT(int ppuAddr, void* ptr);
 extern char NAM_BG;
 
 void main() {
@@ -27,6 +27,7 @@ void main() {
 
 	v_DecompressNT(0x2000, &NAM_BG);
 
+	e_Create(&ent_Shaker);
 	for(i = 0; i < 32; i++) {
 		e_Create(&ent_Ball);
 	}
@@ -36,7 +37,7 @@ void main() {
 
 	while(true) {
 		v_FullCopyOAM();
-		//e_DrawTick();
+		e_DrawTick();
 
 		if(!e_UpdateTick())
 			v_WaitVBlank();

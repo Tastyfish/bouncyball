@@ -37,6 +37,10 @@ extern void v_WaitVBlank();
 extern void v_DisableAll();
 extern void __fastcall__ v_EnableSprites(bool enable);
 extern void __fastcall__ v_EnableBackgrounds(bool enable);
+extern void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
+extern void __fastcall__ v_BigScrollBackground(int x, int y);
 
 extern spriteID_t v_AllocSprite();
 extern void __fastcall__ v_FreeSprite(spriteID_t sprite);
+
+extern void __fastcall__ v_DecompressNT(int ppuAddr, void* ptr);
