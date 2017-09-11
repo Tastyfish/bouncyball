@@ -5,9 +5,12 @@
 #include "ent_ball.h"
 #include "gent.h"
 
-#define PF_MOVE_LEFT (1)
-#define PF_MOVE_UP (2)
-#define PF_MOVE_MASK (PF_MOVE_LEFT|PF_MOVE_UP)
+// sprite in a (gent_Sprite)
+// accel in b
+#define P_ACCEL_X_MASK	(0x0F)
+#define P_ACCEL_Y_MASK	(0xF0)
+#define ACCEL_MIN		(-8)
+#define ACCEL_MAX		(7)
 
 void UpdateBall(Entity* entity);
 
@@ -18,10 +21,10 @@ void ent_Ball(Entity* entity) {
 		return;
 
 	entity->a = sprid;
-	entity->b = crand(0, 3);
+	entity->b = crand(0, 255); // random direction
 
 	s = SpriteIDToAddress(sprid);
-	s->x = crand(1, 248);
+	s->x = crand(8, 240);
 	s->y = crand(8, 224);
 	s->tileID = 0; // ball
 	s->attrib = crand(0, 3); // random color
@@ -33,34 +36,35 @@ void ent_Ball(Entity* entity) {
 void UpdateBall(Entity* entity) {
 	Sprite* s = SpriteIDToAddress(entity->a);
 
-	// movement
-	if(entity->b & PF_MOVE_LEFT) {
-		s->x--;
+	// get accel values
+	signed char accelX = (entity->b & P_ACCEL_X_MASK) - 8;
+	signed char accelY = (entity->b >> 4) - 8;
 
-		if(s->x <= 1)
-			entity->b &= ~PF_MOVE_LEFT;
-	} else {
-		s->x++;
+	// 1/4 gravity
+	if(tickcount % 5 == 0)
+		accelY++;
 
-		if(s->x >= 248)
-			entity->b |= PF_MOVE_LEFT;
+	// walls
+	if(
+		(accelX < 0 && s->x <= 8)
+		|| (accelX > 0 && s->x >= 240)) {
+
+		// flip X accel
+		accelX = -accelX;
 	}
 
-	if(entity->b & PF_MOVE_UP) {
-		s->y--;
+	if(
+		(accelY < 0 && s->y <= 8)
+		|| (accelY > 0 && s->y >= 220)) {
 
-		if(s->y <= 8)
-			entity->b &= ~PF_MOVE_UP;
-	} else {
-		// acceleration in the upper nibble of B
-		s->y += (entity->b >> 2);
-
-		if(entity->b < 0xFC)
-			entity->b += 4;
-
-		if(s->y >= 224) {
-			entity->b |= PF_MOVE_UP;
-			entity->b &= PF_MOVE_MASK;
-		}
+		// flip Y accel
+		accelY = -accelY;
 	}
+
+	// write accel
+	entity->b = (CLAMP(accelX, -8, 7) + 8) | ((CLAMP(accelY, -8, 7) + 8) << 4);
+
+	// dV
+	s->x += accelX;
+	s->y += accelY;
 }
