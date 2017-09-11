@@ -23,8 +23,6 @@ typedef struct Entity_s {
 extern void e_Reset();
 extern Entity* e_Create(EntityCallback ctor);
 extern void e_Destroy(Entity* entity);
-extern void e_Update(Entity* entity);
-extern void e_Draw(Entity* entity);
 
 extern bool e_UpdateTick();
 extern bool e_DrawTick();

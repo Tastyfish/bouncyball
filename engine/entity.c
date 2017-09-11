@@ -41,37 +41,29 @@ void e_Destroy(Entity* entity) {
 	}
 }
 
-// Just call an entity's OnUpdate()
-void e_Update(Entity* entity) {
-	if(entity->onUpdate)
-		entity->onUpdate(entity);
-}
-
-// Just call an entity's OnDraw()
-void e_Draw(Entity* entity) {
-	if(entity->onDraw)
-		entity->onDraw(entity);
-}
-
 // Update as much as we can this round
 // True if was interrupted by VBlank, false if just ran out of work
 bool e_UpdateTick() {
-	static int currentEntity = 0;
+	static char currentI = 0;
+	static Entity* currentEntity = entity_table;
 
 	int currentTick = tickcount;
-	int startingEntity = currentEntity;
+	char startingI = currentI;
 
 	// go until vblank -- that's drawing time!
 	while(currentTick == tickcount) {
-		e_Update(&entity_table[currentEntity]);
+		if(currentEntity->onUpdate)
+			currentEntity->onUpdate(currentEntity);
 
 		// loop around
-		if(++currentEntity == NUM_ENTITIES) {
-			currentEntity = 0;
+		++currentEntity;
+		if(++currentI == NUM_ENTITIES) {
+			currentI = 0;
+			currentEntity = entity_table;
 		}
 
 		// stop short of updating the same entities twice in the same frame
-		if(currentEntity == startingEntity)
+		if(currentI == startingI)
 			return false;
 	}
 
@@ -82,9 +74,11 @@ bool e_UpdateTick() {
 // without clashing with other PPU ops so don't bother
 // Always returns false
 bool e_DrawTick() {
-	int currentEntity;
-	for(currentEntity = 0; currentEntity < NUM_ENTITIES; currentEntity++) {
-		e_Draw(&entity_table[currentEntity]);
+	char i;
+	Entity* currentEntity;
+	for(i = 0, currentEntity = entity_table; i < NUM_ENTITIES; ++i, ++currentEntity) {
+		if(currentEntity->onDraw)
+			currentEntity->onDraw(currentEntity);
 	}
 
 	return false;
