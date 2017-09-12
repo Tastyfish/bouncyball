@@ -13,7 +13,6 @@ void main() {
 	int i;
 
 	g_Init();
-	v_WaitVBlank();
 
 	v_SetPalette(PAL_SPR0, 0x16, 0x06, 0x36);
 	v_SetPalette(PAL_SPR1, 0x12, 0x02, 0x32);
@@ -25,19 +24,19 @@ void main() {
 	v_SetPalette(PAL_BG2, 0x17, 0x27, 0x37);
 	v_SetPalette(PAL_BG3, 0x01, 0x27, 0x37);
 
-	v_DecompressNT(0x2000, &NAM_BG);
-
 	e_Create(&ent_Shaker);
 	for(i = 0; i < 32; i++) {
 		e_Create(&ent_Ball);
 	}
 
-	v_EnableSprites(true);
-	v_EnableBackgrounds(true);
+	v_WaitVBlank();
+	vb_DecompressNT(0x2000, &NAM_BG);
+	vb_EnableSprites(true);
+	vb_EnableBackgrounds(true);
 
 	while(true) {
-		v_FullCopyOAM();
-		e_DrawTick();
+		vb_FlushScroll();
+		vb_FullCopyOAM();
 
 		if(!e_UpdateTick())
 			v_WaitVBlank();

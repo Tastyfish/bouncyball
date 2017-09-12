@@ -3,11 +3,11 @@
 
 .import popax
 
-.export _v_DecompressNT
+.export _vb_DecompressNT
 
 ; Adapted from RLE decompressor by Shiru (NESASM version)
 ; void __fastcall__ v_DecompressNT(int ppuAddr, void* ptr)
-.proc _v_DecompressNT
+.proc _vb_DecompressNT
 	sta ptr1
 	stx ptr1+1
 

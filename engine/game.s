@@ -32,10 +32,7 @@ vwait2:
 	lda #$80
 	sta PPU_CTRL
 
-	jsr _e_Reset
-	jsr _v_InitAllocSprites
-
-	jsr _v_ClearOAM
+	jsr _vb_ClearOAM
 	lda #$0F ; make bg black
 	jsr _v_SetBGColor
 

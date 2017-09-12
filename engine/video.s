@@ -5,20 +5,24 @@ _VIDEO_EXPORT = 1
 
 .importzp _tickcount
 .import _bzero
+.import ppubuf_put
 
-.export _v_ClearOAM, _v_FullCopyOAM, _v_CopySprite, _v_CopyOAM
-.export _v_CopyPPU
+.export _vb_ClearOAM, _vb_FullCopyOAM, _vb_CopySprite, _vb_CopyOAM
+.export _vb_CopyPPU
 .export _v_SetBGColor, _v_SetPalette
 .export _v_WaitVBlank
-.export _v_DisableAll, _v_EnableSprites, _v_EnableBackgrounds
-.export _v_ScrollBackground, _v_BigScrollBackground
+.export _vb_DisableAll, _vb_EnableSprites, _vb_EnableBackgrounds
+.export _v_ScrollBackground, _v_BigScrollBackground, _vb_FlushScroll
 
 .export _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
 
 NUM_SPRITES = 64
 
 .bss
-	ppuMaskCache: .byte 0
+	ppuMaskCache:	.byte 0
+	scrollCacheX:	.byte 0
+	scrollCacheY:	.byte 0
+	scrollCacheMSB:	.byte 0
 
 	sprite_atable:
 	.repeat NUM_SPRITES
@@ -28,12 +32,12 @@ NUM_SPRITES = 64
 .code
 
 ; Clear the entire OAM cache and data
-; void v_ClearOAM()
-.proc _v_ClearOAM
+; void vb_ClearOAM()
+.proc _vb_ClearOAM
 	; fill OAM swap with FF's and copy (disable sprite)
 	lda #$00
 	sta ptr1
-	lda #$02
+	lda #$05
 	sta ptr1+1
 	lda #$FF
 
@@ -44,15 +48,15 @@ loop:
 	bne loop
 
 	; tail call
-	jmp _v_FullCopyOAM
+	jmp _vb_FullCopyOAM
 .endproc
 
 ; Fully copy OAM cache to PPU
 ; void v_FullCopyOAM()
-.proc _v_FullCopyOAM
+.proc _vb_FullCopyOAM
 	lda #$00
 	sta OAM_ADDR
-	lda #$02
+	lda #$05
 	sta OAM_DMA
 
 	rts
@@ -60,7 +64,7 @@ loop:
 
 ; Copy a sprite by ID from cache to PPU OAM
 ; __fastcall__ void v_CopySprite(byte id)
-.proc _v_CopySprite
+.proc _vb_CopySprite
 	; Was originally a wrapper tail-calling _v_CopyOAM but the overhead for that was crazy
 
 	asl
@@ -68,7 +72,7 @@ loop:
 	sta OAM_ADDR
 
 	sta ptr1
-	lda #$02
+	lda #$05
 	sta ptr1+1
 
 	ldy #$00
@@ -84,7 +88,7 @@ loop:
 
 ; Copy part of OAM cache to PPU
 ; __fastcall__ void v_CopyOAM(byte start, byte length)
-.proc _v_CopyOAM
+.proc _vb_CopyOAM
 start_addr	= 0
 	sta tmp1 ; length here
 
@@ -92,7 +96,7 @@ start_addr	= 0
 	ldy #start_addr
 	lda (sp),y
 	sta ptr1
-	ldy #02
+	ldy #05
 	sty ptr1+1
 
 	; set PPU dest
@@ -114,7 +118,7 @@ loop:
 
 ; Copy part of PPU cache to PPU
 ; void v_CopyPPU(void* start, int length)
-.proc _v_CopyPPU
+.proc _vb_CopyPPU
 length	= 1
 start	= 3
 	; start -> ptr1
@@ -173,18 +177,9 @@ loop:
 ; Set the global BG color
 ; __fastcall__ void v_SetBGColor(byte color)
 .proc _v_SetBGColor
-	pha
-
-	bit PPU_STATUS
-	lda #$3F
-	sta PPU_ADDR
-	lda #$00
-	sta PPU_ADDR
-
-	pla
-	sta PPU_DATA
-
-	rts
+	ldy #$3F
+	ldx #$00
+	jmp ppubuf_put
 .endproc
 
 ; Set the palette color triplet at palette ID #
@@ -195,21 +190,32 @@ col_1  = 1
 col_2  = 0
 	pha ; col_3
 
-	bit PPU_STATUS
+	; ptr1 will hold PPU pos
 	lda #$3F
-	sta PPU_ADDR
+	sta ptr1+1
 	ldy #pal_id
 	lda (sp),y
-	sta PPU_ADDR
+	sta ptr1
 
+	; write each value out
 	dey
 	lda (sp),y
-	sta PPU_DATA
-	dey
+	ldx ptr1
+	ldy ptr1+1
+	jsr ppubuf_put
+	inc ptr1
+
+	ldy #col_2
 	lda (sp),y
-	sta PPU_DATA
+	ldx ptr1
+	ldy ptr1+1
+	jsr ppubuf_put
+	inc ptr1
+
 	pla
-	sta PPU_DATA
+	ldx ptr1
+	ldy ptr1+1
+	jsr ppubuf_put
 
 	ldy #3
 	jmp addysp
@@ -227,7 +233,7 @@ loop:
 
 ; Clear the entire PPU mask
 ; void v_DisableAll()
-.proc _v_DisableAll
+.proc _vb_DisableAll
 	lda #$00
 	sta ppuMaskCache
 	sta PPU_MASK
@@ -236,7 +242,7 @@ loop:
 
 ; Enable or disable sprites
 ; void __fastcall__ v_EnableSprites(bool enable)
-.proc _v_EnableSprites
+.proc _vb_EnableSprites
 	cmp #0
 	bne enable
 	; disable
@@ -258,7 +264,7 @@ end:
 
 ; Enable or disable background
 ; void __fastcall__ v_EnableBackgrounds(bool enable)
-.proc _v_EnableBackgrounds
+.proc _vb_EnableBackgrounds
 	cmp #0
 	bne enable
 	; disable
@@ -281,41 +287,49 @@ end:
 ; Set the background scroll to a specific value
 ; void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
 .proc _v_ScrollBackground
-	bit PPU_STATUS
-	tax
+	sta scrollCacheY
 	jsr popa
-	sta PPU_SCROLL
-	stx PPU_SCROLL
+	sta scrollCacheX
 	rts
 .endproc
 
 ; Set the background scroll, allowing for negative values to scoll things to the right sensibly
 ; void __fastcall__ v_BigScrollBackground(int x, int y)
 .proc _v_BigScrollBackground
-	sta tmp2
-	stx tmp2+1
-	jsr popax
-	sta tmp1
+	sta scrollCacheY
 	stx tmp1+1
+	jsr popax
+	sta scrollCacheX
+	stx tmp1
 
-	; Set nametable bank such that negative coords "make sense"
-	lda #$80
-	ldx tmp1+1
+	; Set MSB
+	lda #$00
+	ldx tmp1
 	bpl conty
-	ora #$01
+	lda #$01
 conty:
-	ldx tmp2+1
+	ldx tmp1+1
 	bpl contout
 	ora #$02
 contout:
-	sta PPU_CTRL
+	sta scrollCacheMSB
 
-	; now, set nametable normally
+	rts
+.endproc
+
+; Flush the scroll data, this is for the core game loop
+; void vb_
+.proc _vb_FlushScroll
 	bit PPU_STATUS
-	lda tmp1
+	lda scrollCacheX
 	sta PPU_SCROLL
-	lda tmp2
+	lda scrollCacheY
 	sta PPU_SCROLL
+
+	; also update PPU_CTRL (cross fingers)
+	lda #$80
+	ora scrollCacheMSB
+	sta PPU_CTRL
 	rts
 .endproc
 
