@@ -10,8 +10,8 @@ void UpdateShaker(Entity* entity);
 void DrawShaker(Entity* entity);
 
 void ent_Shaker(Entity* entity) {
-	// A is X scroll, B is physics shake
-	entity->full = 0;
+	// A is X scroll, B is Y scroll
+	entity->param = 0;
 
 	entity->onDestroy = gent_DestroyEmpty;
 	entity->onUpdate = UpdateShaker;
@@ -22,23 +22,27 @@ void UpdateShaker(Entity* entity) {
 
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 
-	if(i & INPUT_LEFT) {
-		entity->a--;
-	} else if(i & INPUT_RIGHT) {
-		entity->a++;
+	if(i & (INPUT_LEFT|INPUT_RIGHT)) {
+		x = (tickcount % 9) - 4;
+	} else {
+		x = 0;
 	}
-	if(i & INPUT_UP) {
-		entity->b--;
-	} else if(i & INPUT_DOWN) {
-		entity->b++;
+	if(i & (INPUT_UP|INPUT_DOWN)) {
+		y = (tickcount % 9) - 4;
+	} else {
+		y = 0;
 	}
 
-	x = entity->a;
-	y = entity->b;
-	if(x & 0x80)
-		x |= 0xFF00;
-	if(y & 0x80)
-		y |= 0xFF00;
-
+	// shake EVERYTHING
+	if(x != 0 || y != 0) {
+		Entity* shakeEnt;
+		for(shakeEnt = e_Iterate(); shakeEnt; e_IterateNext(&shakeEnt)) {
+			// detect a gent_Sprite naively
+			if(shakeEnt->graphic_b == 0x05) {
+				shakeEnt->param_a += x * 4;
+				shakeEnt->param_b += y * 4;
+			}
+		}
+	}
 	v_BigScrollBackground(x, y);
 }

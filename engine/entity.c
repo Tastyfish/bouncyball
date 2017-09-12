@@ -8,20 +8,19 @@
 
 Entity entity_table[NUM_ENTITIES];
 
+#define ENTITY_TABLE_END (entity_table + NUM_ENTITIES)
+
 // Hard wipe all entities, will probably mess things up mid-game
 void e_Reset() {
-	bzero(entity_table, sizeof(Entity) * NUM_ENTITIES);
+	bzero(entity_table, sizeof(entity_table));
 }
 
 // Create an entity with given ctor
 // Returns the new entity, or null if no slots left
 Entity* e_Create(EntityCallback ctor) {
-	int i;
 	Entity* ent;
 
-	for(i = 0; i < NUM_ENTITIES; i++) {
-		ent = &entity_table[i];
-
+	for(ent = entity_table; ent < ENTITY_TABLE_END; ent++) {
 		if(ent->onDestroy == NULL) {
 			// found a free one
 			ctor(ent);
@@ -44,26 +43,25 @@ void e_Destroy(Entity* entity) {
 // Update as much as we can this round
 // True if was interrupted by VBlank, false if just ran out of work
 bool e_UpdateTick() {
-	static char currentI = 0;
 	static Entity* currentEntity = entity_table;
 
 	int currentTick = tickcount;
-	char startingI = currentI;
+	Entity* startingEntity = currentEntity;
+	EntityCallback update;
 
 	// go until vblank -- that's drawing time!
 	while(currentTick == tickcount) {
-		if(currentEntity->onUpdate)
-			currentEntity->onUpdate(currentEntity);
+		update = currentEntity->onUpdate;
+		if(update)
+			update(currentEntity);
 
 		// loop around
-		++currentEntity;
-		if(++currentI == NUM_ENTITIES) {
-			currentI = 0;
+		if(++currentEntity == ENTITY_TABLE_END) {
 			currentEntity = entity_table;
 		}
 
 		// stop short of updating the same entities twice in the same frame
-		if(currentI == startingI)
+		if(currentEntity == startingEntity)
 			return false;
 	}
 
@@ -72,13 +70,23 @@ bool e_UpdateTick() {
 
 // Check collisions
 Entity* e_Collide(int x, int y) {
-	char i;
 	Entity* currentEntity;
-	for(i = 0, currentEntity = entity_table; i < NUM_ENTITIES; ++i, ++currentEntity) {
-		if(currentEntity->onCollide)
-			if(currentEntity->onCollide(currentEntity, x, y))
+	CollideCallback collide;
+	for(currentEntity = entity_table; currentEntity < ENTITY_TABLE_END; ++currentEntity) {
+		collide = currentEntity->onCollide;
+		if(collide)
+			if(collide(currentEntity, x, y))
 				return currentEntity;
 	}
 
 	return NULL;
+}
+
+Entity* e_Iterate() {
+	return entity_table;
+}
+
+Entity* e_IterateNext(Entity** e) {
+	if(++(*e) == ENTITY_TABLE_END)
+		*e = NULL;
 }

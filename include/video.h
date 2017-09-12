@@ -14,7 +14,7 @@ typedef struct {
 } Sprite;
 
 #define SpriteIDToAddress(id) ((Sprite*)(0x0500 + (id) * sizeof(Sprite)))
-#define AddressToSpriteID(addr) ((spriteID_t)(((addr) - 0x0500) / sizeof(Sprite)))
+#define AddressToSpriteID(addr) ((spriteID_t)((((int)(addr)) - 0x0500) / sizeof(Sprite)))
 
 
 #define PAL_BG0		(0x01)

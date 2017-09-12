@@ -11,11 +11,18 @@ typedef struct Entity_s {
 	EntityCallback onDestroy;
 	EntityCallback onUpdate;
 	CollideCallback onCollide;
-	union param {
-		int full;
-		struct half {
-			unsigned char a;
-			unsigned char b;
+	union pa {
+		int graphic;
+		struct halfa {
+			char graphic_a;
+			char graphic_b;
+		};
+	};
+	union pb {
+		int param;
+		struct halfb {
+			char param_a;
+			char param_b;
 		};
 	};
 } Entity;
@@ -26,7 +33,9 @@ extern Entity* e_Create(EntityCallback ctor);
 extern void e_Destroy(Entity* entity);
 
 extern bool e_UpdateTick();
-
 extern Entity* e_Collide(int x, int y);
+
+extern Entity* e_Iterate();
+extern Entity* e_IterateNext(Entity** e);
 
 #endif

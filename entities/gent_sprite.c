@@ -2,7 +2,7 @@
 #include "gent.h"
 
 void gent_DestroySprite(Entity* entity) {
-	spriteID_t sprid = entity->a;
-	SpriteIDToAddress(sprid)->y = 0xFF;
-	v_FreeSprite(sprid);
+	Sprite* s = (Sprite*)entity->graphic;
+	s->y = 0xFF;
+	v_FreeSprite(AddressToSpriteID(s));
 }

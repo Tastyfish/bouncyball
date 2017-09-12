@@ -5,12 +5,8 @@
 #include "entities.h"
 #include "gent.h"
 
-// sprite in a (gent_Sprite)
-// accel in b
-#define P_ACCEL_X_MASK	(0x0F)
-#define P_ACCEL_Y_MASK	(0xF0)
-#define ACCEL_MIN		(-8)
-#define ACCEL_MAX		(7)
+// sprite ptr in graphic (gent_Sprite)
+// accel in param_a and param_b as 1/8 of a pixel
 
 void UpdateBall(Entity* entity);
 
@@ -19,11 +15,12 @@ void ent_Ball(Entity* entity) {
 	spriteID_t sprid = v_AllocSprite();
 	if(sprid == 0xFF)
 		return;
-
-	entity->a = sprid;
-	entity->b = crand(0, 255); // random direction
-
 	s = SpriteIDToAddress(sprid);
+
+	entity->graphic = (int)s;
+	entity->param_a = crand(-32, 32); // random direction
+	entity->param_b = crand(-32, 32); // random direction
+
 	s->x = crand(8, 240);
 	s->y = crand(8, 224);
 	s->tileID = 0; // ball
@@ -34,15 +31,14 @@ void ent_Ball(Entity* entity) {
 }
 
 void UpdateBall(Entity* entity) {
-	Sprite* s = SpriteIDToAddress(entity->a);
+	Sprite* s = (Sprite*)entity->graphic;
 
 	// get accel values
-	signed char accelX = (entity->b & P_ACCEL_X_MASK) - 8;
-	signed char accelY = (entity->b >> 4) - 8;
+	signed char accelX = entity->param_a;
+	signed char accelY = entity->param_b;
 
 	// 1/4 gravity
-	if(tickcount % 5 == 0)
-		accelY++;
+	accelY += 2;
 
 	// walls
 	if(
@@ -50,7 +46,7 @@ void UpdateBall(Entity* entity) {
 		|| (accelX > 0 && s->x >= 240)) {
 
 		// flip X accel
-		accelX = -accelX;
+		accelX = accelX / -2;
 	}
 
 	if(
@@ -58,13 +54,14 @@ void UpdateBall(Entity* entity) {
 		|| (accelY > 0 && s->y >= 220)) {
 
 		// flip Y accel
-		accelY = -accelY;
+		accelY = accelY / -2;
 	}
 
 	// write accel
-	entity->b = (CLAMP(accelX, -8, 7) + 8) | ((CLAMP(accelY, -8, 7) + 8) << 4);
+	entity->param_a = accelX;
+	entity->param_b = accelY;
 
 	// dV
-	s->x += accelX;
-	s->y += accelY;
+	s->x += (int)accelX / 8;
+	s->y += (int)accelY / 8;
 }
