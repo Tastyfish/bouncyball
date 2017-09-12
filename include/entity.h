@@ -5,11 +5,12 @@
 
 struct Entity_s;
 typedef void (*EntityCallback)(struct Entity_s* this);
+typedef bool (*CollideCallback)(struct Entity_s* this, int x, int y);
 
 typedef struct Entity_s {
 	EntityCallback onDestroy;
 	EntityCallback onUpdate;
-	EntityCallback onDraw;
+	CollideCallback onCollide;
 	union param {
 		int full;
 		struct half {
@@ -25,6 +26,7 @@ extern Entity* e_Create(EntityCallback ctor);
 extern void e_Destroy(Entity* entity);
 
 extern bool e_UpdateTick();
-extern bool e_DrawTick();
+
+extern Entity* e_Collide(int x, int y);
 
 #endif

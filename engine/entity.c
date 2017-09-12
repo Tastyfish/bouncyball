@@ -70,16 +70,15 @@ bool e_UpdateTick() {
 	return true;
 }
 
-// Draw everything -- there's no way to detect the beginning of render phase,
-// without clashing with other PPU ops so don't bother
-// Always returns false
-bool e_DrawTick() {
+// Check collisions
+Entity* e_Collide(int x, int y) {
 	char i;
 	Entity* currentEntity;
 	for(i = 0, currentEntity = entity_table; i < NUM_ENTITIES; ++i, ++currentEntity) {
-		if(currentEntity->onDraw)
-			currentEntity->onDraw(currentEntity);
+		if(currentEntity->onCollide)
+			if(currentEntity->onCollide(currentEntity, x, y))
+				return currentEntity;
 	}
 
-	return false;
+	return NULL;
 }
