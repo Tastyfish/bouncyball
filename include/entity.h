@@ -36,6 +36,6 @@ extern bool e_UpdateTick();
 extern Entity* e_Collide(int x, int y);
 
 extern Entity* e_Iterate();
-extern Entity* e_IterateNext(Entity** e);
+extern void e_IterateNext(Entity** e);
 
 #endif

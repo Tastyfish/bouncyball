@@ -1,5 +1,7 @@
 extern int tickcount;
 #pragma zpsym("tickcount");
+extern char VBLANK_FLAG;
+#pragma zpsym("VBLANK_FLAG");
 
 #define MIN(a,b)		(((a)<(b))?(a):(b))
 #define MAX(a,b)		(((a)>(b))?(a):(b))

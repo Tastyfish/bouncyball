@@ -49,8 +49,10 @@ bool e_UpdateTick() {
 	Entity* startingEntity = currentEntity;
 	EntityCallback update;
 
+	VBLANK_FLAG = 0;
+
 	// go until vblank -- that's drawing time!
-	while(currentTick == tickcount) {
+	while(!VBLANK_FLAG) {
 		update = currentEntity->onUpdate;
 		if(update)
 			update(currentEntity);
@@ -86,7 +88,7 @@ Entity* e_Iterate() {
 	return entity_table;
 }
 
-Entity* e_IterateNext(Entity** e) {
+void e_IterateNext(Entity** e) {
 	if(++(*e) == ENTITY_TABLE_END)
 		*e = NULL;
 }

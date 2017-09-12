@@ -3,7 +3,7 @@ _VIDEO_EXPORT = 1
 .include "mem.inc"
 .include "video.inc"
 
-.importzp _tickcount
+.importzp _tickcount, ppuscrollx, ppuscrolly, ppuctrl
 .import _bzero
 .import ppubuf_put
 
@@ -12,7 +12,7 @@ _VIDEO_EXPORT = 1
 .export _v_SetBGColor, _v_SetPalette
 .export _v_WaitVBlank
 .export _vb_DisableAll, _vb_EnableSprites, _vb_EnableBackgrounds
-.export _v_ScrollBackground, _v_BigScrollBackground, _vb_FlushScroll
+.export _v_ScrollBackground, _v_BigScrollBackground
 
 .export _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
 
@@ -20,9 +20,6 @@ NUM_SPRITES = 64
 
 .bss
 	ppuMaskCache:	.byte 0
-	scrollCacheX:	.byte 0
-	scrollCacheY:	.byte 0
-	scrollCacheMSB:	.byte 0
 
 	sprite_atable:
 	.repeat NUM_SPRITES
@@ -287,49 +284,41 @@ end:
 ; Set the background scroll to a specific value
 ; void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
 .proc _v_ScrollBackground
-	sta scrollCacheY
+	sta ppuscrolly
 	jsr popa
-	sta scrollCacheX
+	sta ppuscrollx
 	rts
 .endproc
 
 ; Set the background scroll, allowing for negative values to scoll things to the right sensibly
 ; void __fastcall__ v_BigScrollBackground(int x, int y)
 .proc _v_BigScrollBackground
-	sta scrollCacheY
+	sta ppuscrolly
 	stx tmp1+1
 	jsr popax
-	sta scrollCacheX
+	sta ppuscrollx
 	stx tmp1
 
 	; Set MSB
-	lda #$00
-	ldx tmp1
-	bpl conty
-	lda #$01
+	lda tmp1
+	and #1
+	beq x0
+	ldx #$81
+	bne conty
+x0:
+	ldx #$80
 conty:
-	ldx tmp1+1
-	bpl contout
+	lda tmp1+1
+	and #1
+	beq y0
+	txa
 	ora #$02
+	bne contout
+y0:
+	txa
 contout:
-	sta scrollCacheMSB
+	sta ppuctrl
 
-	rts
-.endproc
-
-; Flush the scroll data, this is for the core game loop
-; void vb_
-.proc _vb_FlushScroll
-	bit PPU_STATUS
-	lda scrollCacheX
-	sta PPU_SCROLL
-	lda scrollCacheY
-	sta PPU_SCROLL
-
-	; also update PPU_CTRL (cross fingers)
-	lda #$80
-	ora scrollCacheMSB
-	sta PPU_CTRL
 	rts
 .endproc
 

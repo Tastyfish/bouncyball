@@ -6,7 +6,11 @@ _GAME_EXPORT = 1
 
 .export _g_Init
 
-.exportzp _tickcount := $6B
+.exportzp _tickcount	:= $6B
+.exportzp _VBLANK_FLAG	:= $70
+.exportzp ppuscrollx	:= $77
+.exportzp ppuscrolly	:= $78
+.exportzp ppuctrl		:= $79
 
 ; void g_Init()
 .proc _g_Init
@@ -29,7 +33,10 @@ vwait2:
 	sta _tickcount
 	sta _tickcount+1
 	sta VBLANK_FLAG
+	sta ppuscrollx
+	sta ppuscrolly
 	lda #$80
+	sta ppuctrl
 	sta PPU_CTRL
 
 	jsr _vb_ClearOAM

@@ -39,7 +39,6 @@ extern void __fastcall__ vb_EnableSprites(bool enable);
 extern void __fastcall__ vb_EnableBackgrounds(bool enable);
 extern void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
 extern void __fastcall__ v_BigScrollBackground(int x, int y);
-extern void vb_FlushScroll();
 
 extern spriteID_t v_AllocSprite();
 extern void __fastcall__ v_FreeSprite(spriteID_t sprite);
