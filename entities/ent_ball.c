@@ -33,28 +33,27 @@ void ent_Ball(Entity* entity) {
 void UpdateBall(Entity* entity) {
 	Sprite* s = (Sprite*)entity->graphic;
 
-	// get accel values
+	// get accel values, also gravity
 	signed char accelX = entity->param_a;
-	signed char accelY = entity->param_b;
-
-	// 1/4 gravity
-	accelY += 2;
+	signed char accelY = entity->param_b + 2;
 
 	// walls
 	if(
 		(accelX < 0 && s->x <= 8)
 		|| (accelX > 0 && s->x >= 240)) {
 
-		// flip X accel
-		accelX = accelX / -2;
+		// flip X accel and bump randomly
+		accelX = accelX * 2 / -3;
+		accelY += crand(-4, 4);
 	}
 
 	if(
 		(accelY < 0 && s->y <= 8)
 		|| (accelY > 0 && s->y >= 220)) {
 
-		// flip Y accel
-		accelY = accelY / -2;
+		// flip Y accel and bump randomly
+		accelY = accelY * 2 / -3;
+		accelX += crand(-4, 4);
 	}
 
 	// write accel
