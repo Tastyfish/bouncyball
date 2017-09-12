@@ -33,6 +33,10 @@ void UpdateShaker(Entity* entity) {
 		y = 0;
 	}
 
+	if(i & INPUT_A) {
+		e_Create(&ent_Ball);
+	}
+
 	// shake EVERYTHING
 	if(x != 0 || y != 0) {
 		Entity* shakeEnt;
