@@ -31,6 +31,8 @@ void main() {
 
 	v_WaitVBlank();
 	vb_DecompressNT(0x2000, &NAM_BG);
+	v_WaitVBlank();
+	vb_DecompressNT(0x2400, &NAM_BG);
 	vb_EnableSprites(true);
 	vb_EnableBackgrounds(true);
 
