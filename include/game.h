@@ -1,4 +1,4 @@
-extern int tickcount;
+extern unsigned int tickcount;
 #pragma zpsym("tickcount");
 extern char VBLANK_FLAG;
 #pragma zpsym("VBLANK_FLAG");
