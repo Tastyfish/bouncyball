@@ -43,7 +43,7 @@ void UpdateBall(Entity* entity) {
 		|| (accelX > 0 && s->x >= 240)) {
 
 		// flip X accel and bump randomly
-		accelX = accelX * 2 / -3;
+		accelX = accelX * 2 / -3 + 2;
 		accelY += crand(-4, 4);
 	}
 
