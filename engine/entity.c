@@ -34,10 +34,11 @@ Entity* e_Create(EntityCallback ctor) {
 
 // Destroy an entity, calls OnDestroy()
 void e_Destroy(Entity* entity) {
-	if(entity->onDestroy) {
-		entity->onDestroy(entity);
-		bzero(entity, sizeof(entity));
+	EntityCallback destroy = entity->onDestroy;
+	if(destroy) {
+		destroy(entity);
 	}
+	bzero(entity, sizeof(Entity));
 }
 
 // Update as much as we can this round
