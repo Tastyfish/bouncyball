@@ -6,8 +6,6 @@
 #include "entity.h"
 #include "entities.h"
 
-extern void g_Init();
-extern void g_Run();
 extern char NAM_BG;
 extern char NAM_JOKE;
 
