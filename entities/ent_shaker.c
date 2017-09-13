@@ -14,7 +14,7 @@ void ent_Shaker(Entity* entity) {
 	entity->onUpdate = UpdateShaker;
 }
 
-void UpdateShaker(Entity*) {
+void UpdateShaker(Entity* this) {
 	int x, y;
 
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
@@ -35,8 +35,12 @@ void UpdateShaker(Entity*) {
 	}
 
 	if(i & INPUT_START) {
-		// reset
-		__asm__("jmp %w", 0x8000);
+		// clear the balls
+		Entity* ent;
+		for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
+			if(ent != this)
+				e_Destroy(ent);
+		}
 	}
 
 	// show the joke
