@@ -14,7 +14,7 @@ _VIDEO_EXPORT = 1
 .export _vb_DisableAll, _vb_EnableSprites, _vb_EnableBackgrounds
 .export _v_ScrollBackground, _v_BigScrollBackground
 
-.export _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
+.export _v_AllocSprite, _v_FreeSprite
 
 NUM_SPRITES = 64
 
@@ -320,16 +320,6 @@ contout:
 	sta ppuctrl
 
 	rts
-.endproc
-
-; Init the sprite alloc table
-.proc _v_InitAllocSprites
-	lda #<sprite_atable
-	ldx #>sprite_atable
-	jsr pushax
-	lda #<NUM_SPRITES
-	ldx #0
-	jmp _bzero
 .endproc
 
 ; Allocate an unused sprite id

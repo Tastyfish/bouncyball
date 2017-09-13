@@ -4,7 +4,7 @@ _GAME_EXPORT = 1
 .include "entity.inc"
 .include "game.inc"
 
-.export _g_Init, _g_Run
+.export _g_Run
 
 .exportzp _tickcount	:= $6B
 .exportzp _VBLANK_FLAG	:= $70
@@ -12,6 +12,7 @@ _GAME_EXPORT = 1
 .exportzp ppuscrolly	:= $78
 .exportzp ppuctrl		:= $79
 
+.constructor _g_Init, 20
 ; void g_Init()
 .proc _g_Init
 	; turn off rendering until we setup properly

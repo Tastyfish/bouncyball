@@ -12,8 +12,6 @@ extern char NAM_JOKE;
 void main() {
 	int i;
 
-	g_Init();
-
 	v_SetPalette(PAL_SPR0, 0x16, 0x06, 0x36);
 	v_SetPalette(PAL_SPR1, 0x12, 0x02, 0x32);
 	v_SetPalette(PAL_SPR2, 0x19, 0x09, 0x39);
