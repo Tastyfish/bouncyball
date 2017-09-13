@@ -8,6 +8,7 @@
 
 extern void g_Init();
 extern char NAM_BG;
+extern char NAM_JOKE;
 
 void main() {
 	int i;
@@ -25,19 +26,18 @@ void main() {
 	v_SetPalette(PAL_BG3, 0x01, 0x27, 0x37);
 
 	e_Create(&ent_Shaker);
-	for(i = 0; i < 32; i++) {
+	for(i = 0; i < 4; i++) {
 		e_Create(&ent_Ball);
 	}
 
 	v_WaitVBlank();
 	vb_DecompressNT(0x2000, &NAM_BG);
 	v_WaitVBlank();
-	vb_DecompressNT(0x2400, &NAM_BG);
+	vb_DecompressNT(0x2400, &NAM_JOKE);
 	vb_EnableSprites(true);
 	vb_EnableBackgrounds(true);
 
 	while(true) {
-		vb_FlushScroll();
 		vb_FullCopyOAM();
 
 		if(!e_UpdateTick())

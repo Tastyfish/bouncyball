@@ -10,14 +10,11 @@ void UpdateShaker(Entity* entity);
 void DrawShaker(Entity* entity);
 
 void ent_Shaker(Entity* entity) {
-	// A is X scroll, B is Y scroll
-	entity->param = 0;
-
 	entity->onDestroy = gent_DestroyEmpty;
 	entity->onUpdate = UpdateShaker;
 }
 
-void UpdateShaker(Entity* entity) {
+void UpdateShaker(Entity*) {
 	int x, y;
 
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
@@ -35,6 +32,16 @@ void UpdateShaker(Entity* entity) {
 
 	if(i & INPUT_A) {
 		e_Create(&ent_Ball);
+	}
+
+	if(i & INPUT_START) {
+		// reset
+		__asm__("jmp %w", 0x8000);
+	}
+
+	// show the joke
+	if(tickcount >= 60 * 5) {
+		x += 256;
 	}
 
 	// shake EVERYTHING

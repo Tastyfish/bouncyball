@@ -7,3 +7,7 @@
 .export _NAM_BG
 _NAM_BG:
 .incbin "bg.rle"
+
+.export _NAM_JOKE
+_NAM_JOKE:
+.incbin "joke.rle"
