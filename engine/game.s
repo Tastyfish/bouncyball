@@ -4,7 +4,7 @@ _GAME_EXPORT = 1
 .include "entity.inc"
 .include "game.inc"
 
-.export _g_Init
+.export _g_Init, _g_Run
 
 .exportzp _tickcount	:= $6B
 .exportzp _VBLANK_FLAG	:= $70
@@ -44,4 +44,15 @@ vwait2:
 	jsr _v_SetBGColor
 
 	rts
+.endproc
+
+; Run the main game loop---never returns
+; void g_Run()
+.proc _g_Run
+	jsr _vb_FullCopyOAM
+	jsr _e_UpdateTick
+	cmp #0
+	bne _g_Run
+	jsr _v_WaitVBlank
+	jmp _g_Run
 .endproc

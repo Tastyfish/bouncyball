@@ -40,5 +40,6 @@ PPUM_EDGE_BACKGROUNDS	= %00000010
 	.import _vb_ClearOAM, _vb_FullCopyOAM, _vb_CopySprite, _vb_CopyOAM
 	.import _vb_CopyPPU
 	.import _v_SetBGColor, _v_SetPalette
+	.import _v_WaitVBlank
 	.import _v_InitAllocSprites, _v_AllocSprite, _v_FreeSprite
 .endif

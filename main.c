@@ -7,6 +7,7 @@
 #include "entities.h"
 
 extern void g_Init();
+extern void g_Run();
 extern char NAM_BG;
 extern char NAM_JOKE;
 
@@ -37,10 +38,5 @@ void main() {
 	vb_EnableSprites(true);
 	vb_EnableBackgrounds(true);
 
-	while(true) {
-		vb_FullCopyOAM();
-
-		if(!e_UpdateTick())
-			v_WaitVBlank();
-	}
+	g_Run();
 }
