@@ -16,6 +16,13 @@ void ent_Shaker(Entity* entity) {
 	entity->onUpdate = UpdateShaker;
 
 	entity->param = tickcount;
+	entity->graphic_a = 1; // 1 means fading in
+
+	v_FadeIn(5,
+		0x01, 0x10, 0x20,
+		0x01, 0x21, 0x31,
+		0x17, 0x27, 0x37,
+		0x01, 0x27, 0x37);
 }
 
 void UpdateShaker(Entity* this) {
@@ -64,4 +71,7 @@ void UpdateShaker(Entity* this) {
 		}
 	}
 	v_BigScrollBackground(x, y);
+
+	if(this->graphic_a && v_FadeStep())
+		this->graphic_a = 0;
 }
