@@ -77,6 +77,11 @@ downDir:
 	sta step
 	lda destStep+1
 	sta step+1
+	dec step
+	lda step
+	cmp #$FF
+	bne doneStep
+	dec step+1
 doneStep:
 
 	ldy #26
