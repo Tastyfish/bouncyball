@@ -48,7 +48,7 @@ void UpdateStart(Entity* this) {
 		input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 		if(i & INPUT_START) {
 			// massive state change---but after a fade
-			v_FadeOut(5,
+			v_FadeOut(2,
 				0x01, 0x10, 0x20,
 				0x01, 0x21, 0x31,
 				0x17, 0x27, 0x37,
