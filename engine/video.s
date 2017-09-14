@@ -7,6 +7,8 @@ _VIDEO_EXPORT = 1
 .import _bzero
 .import ppubuf_put
 
+.export ppuMaskCache
+
 .export _vb_ClearOAM, _vb_FullCopyOAM, _vb_CopySprite, _vb_CopyOAM
 .export _vb_CopyPPU
 .export _v_SetBGColor, _v_SetPalette

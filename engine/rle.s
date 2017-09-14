@@ -1,7 +1,8 @@
 .include "zeropage.inc"
 .include "video.inc"
 
-.import popax
+.import popax, ppuMaskCache
+.importzp ppuctrl
 
 .export _vb_DecompressNT
 
@@ -10,6 +11,11 @@
 .proc _vb_DecompressNT
 	sta ptr1
 	stx ptr1+1
+
+	; This runs so long, disable everything
+
+	lda #0
+	sta PPU_MASK
 
 	jsr popax
 	ldy PPU_STATUS
@@ -38,6 +44,8 @@ rle_loop:
 	bne rle_loop
 	beq loop
 done:
+	lda ppuMaskCache
+	sta PPU_MASK
 	rts
 
 rle_byte:

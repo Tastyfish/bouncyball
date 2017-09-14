@@ -6,12 +6,12 @@
 #include "entity.h"
 #include "entities.h"
 
-extern char NAM_BG;
-extern char NAM_JOKE;
+extern const char NAM_JOKE;
+extern const char NAM_DIRECTIONS;
+const char* const pNAM_JOKE = &NAM_JOKE;
+const char* const pNAM_DIRECTIONS = &NAM_DIRECTIONS;
 
 void main() {
-	int i;
-
 	v_SetPalette(PAL_SPR0, 0x16, 0x06, 0x36);
 	v_SetPalette(PAL_SPR1, 0x12, 0x02, 0x32);
 	v_SetPalette(PAL_SPR2, 0x19, 0x09, 0x39);
@@ -22,15 +22,13 @@ void main() {
 	v_SetPalette(PAL_BG2, 0x17, 0x27, 0x37);
 	v_SetPalette(PAL_BG3, 0x01, 0x27, 0x37);
 
-	e_Create(&ent_Shaker);
-	for(i = 0; i < 4; i++) {
-		e_Create(&ent_Ball);
-	}
+	// the start screen will make the changes into the actual game
+	e_Create(&ent_StartScreen);
 
 	v_WaitVBlank();
-	vb_DecompressNT(0x2000, &NAM_BG);
+	vb_DecompressNT(0x2000, pNAM_DIRECTIONS);
 	v_WaitVBlank();
-	vb_DecompressNT(0x2400, &NAM_JOKE);
+	vb_DecompressNT(0x2400, pNAM_JOKE);
 	vb_EnableSprites(true);
 	vb_EnableBackgrounds(true);
 

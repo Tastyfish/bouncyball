@@ -6,12 +6,16 @@
 #include "entities.h"
 #include "gent.h"
 
+// param has base time
+
 void UpdateShaker(Entity* entity);
 void DrawShaker(Entity* entity);
 
 void ent_Shaker(Entity* entity) {
 	entity->onDestroy = gent_DestroyEmpty;
 	entity->onUpdate = UpdateShaker;
+
+	entity->param = tickcount;
 }
 
 void UpdateShaker(Entity* this) {
@@ -34,7 +38,7 @@ void UpdateShaker(Entity* this) {
 		e_Create(&ent_Ball);
 	}
 
-	if(i & INPUT_START) {
+	if(i & INPUT_SELECT) {
 		// clear the balls
 		Entity* ent;
 		for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
@@ -44,7 +48,7 @@ void UpdateShaker(Entity* this) {
 	}
 
 	// show the joke
-	if(tickcount >= 60 * 5) {
+	if(tickcount - this->param >= 60 * 5) {
 		x += 256;
 	}
 

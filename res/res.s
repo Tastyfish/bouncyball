@@ -11,3 +11,7 @@ _NAM_BG:
 .export _NAM_JOKE
 _NAM_JOKE:
 .incbin "joke.rle"
+
+.export _NAM_DIRECTIONS
+_NAM_DIRECTIONS:
+.incbin "directions.rle"
