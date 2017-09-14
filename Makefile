@@ -13,7 +13,7 @@ AFLAGS = -Iasminc
 CFLAGS = -Iinclude -Oi
 LFLAGS = -mnes.map nes.lib
 
-.PHONY: all clean
+.PHONY: all clean clean-res reres
 
 all: $(OUTPUT)
 
@@ -22,6 +22,11 @@ clean:
 	find . -name "*.map" -type f -delete
 	find . -name "*.o" -type f -delete
 	find . -name "*.is" -type f -delete
+
+clean-res:
+	rm -f res/*.o
+
+reres: | clean-res all
 
 $(OUTPUT): $(OBJECTS)
 	$(LD) $^ -o $@ $(GFLAGS) $(LFLAGS)
