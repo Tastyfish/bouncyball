@@ -35,5 +35,5 @@ $(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
 %.si: %.c
 	$(CC) $^ -o $@ $(GFLAGS) $(CFLAGS)
 
-res.o: res.s res/*.chr res/*.rle
-	$(AS) $^ -o $@ $(GFLAGS) $(AFLAGS)
+res/res.o: res/res.s res/*.chr res/*.rle
+	$(AS) res/res.s -o $@ $(GFLAGS) $(AFLAGS)
