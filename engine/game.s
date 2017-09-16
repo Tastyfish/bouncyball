@@ -3,6 +3,7 @@ _GAME_EXPORT = 1
 .include "video.inc"
 .include "entity.inc"
 .include "game.inc"
+.include "mmc5.inc"
 
 .export _g_Run
 
@@ -40,9 +41,25 @@ vwait2:
 	sta ppuctrl
 	sta PPU_CTRL
 
+	; setup CHR
+	lda #01
+	sta MMC5_CHR_MODE
+	lda #00
+	sta $5123
+	lda #01
+	sta $5127
+	; setup NT
+	lda #$44
+	sta MMC5_NT_MAPPING
+
 	jsr _vb_ClearOAM
 	lda #$0F ; make bg black
 	jsr _v_SetBGColor
+
+	; disable HBLANK initially, until a scanline callback is set
+	lda #$00
+	sta MMC5_SL_COUNTER
+	sta MMC5_IRQ_CTRL
 
 	rts
 .endproc
@@ -50,8 +67,10 @@ vwait2:
 ; Run the main game loop---never returns
 ; void g_Run()
 .proc _g_Run
+	sei
 	jsr _vb_FullCopyOAM
 	jsr _e_UpdateTick
+	cli
 	cmp #0
 	bne _g_Run
 	jsr _v_WaitVBlank

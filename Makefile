@@ -8,12 +8,12 @@ MAKEFLAGS += --no-builtin-rules
 CC := cc65
 AS := ca65
 LD := ld65
-GFLAGS = -tnes
+GFLAGS = -tnes-mmc5
 AFLAGS = -Iasminc
-CFLAGS = -Iinclude -Oi
-LFLAGS = -mnes.map nes.lib
+CFLAGS = -Iinclude -Osir
+LFLAGS = -mnes.map --lib nesmmc5.lib
 
-.PHONY: all clean clean-res reres
+.PHONY: all clean
 
 all: $(OUTPUT)
 
@@ -21,15 +21,10 @@ clean:
 	find . -name "*.nes" -type f -delete
 	find . -name "*.map" -type f -delete
 	find . -name "*.o" -type f -delete
-	find . -name "*.is" -type f -delete
+	find . -name "*.si" -type f -delete
 
-clean-res:
-	rm -f res/*.o
-
-reres: | clean-res all
-
-$(OUTPUT): $(OBJECTS)
-	$(LD) $^ -o $@ $(GFLAGS) $(LFLAGS)
+$(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
+	$(LD) $(OBJECTS) -o $@ $(GFLAGS) $(LFLAGS)
 
 %.o: %.s
 	$(AS) $^ -o $@ $(GFLAGS) $(AFLAGS)
@@ -39,3 +34,6 @@ $(OUTPUT): $(OBJECTS)
 
 %.si: %.c
 	$(CC) $^ -o $@ $(GFLAGS) $(CFLAGS)
+
+res.o: res.s res/*.chr res/*.rle
+	$(AS) $^ -o $@ $(GFLAGS) $(AFLAGS)

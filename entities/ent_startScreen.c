@@ -85,9 +85,9 @@ void UpdateStart(Entity* this) {
 		}
 	}
 
-	do {
+	/*do {
 		__asm__("lda %w\nldy #%o\nsta (sp),y", 0x2002, ppustat);
 	} while((ppustat & 0x40) == 0);
 
-	__asm__("lda #%w\nsta %w", 0x90, 0x2000);
+	__asm__("lda #%w\nsta %w", 0x90, 0x2000);*/
 }

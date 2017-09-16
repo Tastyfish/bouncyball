@@ -1,6 +1,7 @@
 .segment "CHARS"
 
 .incbin "a.chr"
+.include "neschar.inc"
 
 .segment "RODATA"
 
