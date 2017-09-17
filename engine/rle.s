@@ -18,7 +18,7 @@
 	sta PPU_MASK
 
 	jsr popax
-	ldy PPU_STATUS
+	bit PPU_STATUS
 	stx PPU_ADDR
 	sta PPU_ADDR
 
