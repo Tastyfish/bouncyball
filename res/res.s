@@ -18,4 +18,4 @@ incres _NAM_BG, "bg.rle"
 incres _NAM_JOKE, "joke.rle"
 incres _NAM_DIRECTIONS, "directions.rle"
 
-incres _QLE_SPLASH, "water map.qle"
+incres _QLE_SPLASH, "water_map.qle"

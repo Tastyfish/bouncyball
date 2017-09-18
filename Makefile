@@ -39,4 +39,4 @@ res/res.o: res/res.s res/*.chr res/*.rle res/*.qle
 	$(AS) res/res.s -o $@ $(GFLAGS) $(AFLAGS)
 
 %.qle: %.rmap
-	./res/convmap.py $^ -o $@ -tqle
+	./res/convmap.py $^ -tqle
