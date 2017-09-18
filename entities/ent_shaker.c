@@ -55,7 +55,7 @@ void UpdateShaker(Entity* this) {
 	}
 
 	// show the joke
-	if(tickcount - this->param >= 60 * 5) {
+	if(tickcount - this->param >= 60 * 15) {
 		x += 256;
 	}
 
