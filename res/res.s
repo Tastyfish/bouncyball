@@ -14,14 +14,8 @@ symbol:
 
 .segment "RODATA"
 
-.export _NAM_BG
-_NAM_BG:
-.incbin "bg.rle"
+incres _NAM_BG, "bg.rle"
+incres _NAM_JOKE, "joke.rle"
+incres _NAM_DIRECTIONS, "directions.rle"
 
-.export _NAM_JOKE
-_NAM_JOKE:
-.incbin "joke.rle"
-
-.export _NAM_DIRECTIONS
-_NAM_DIRECTIONS:
-.incbin "directions.rle"
+incres _QLE_SPLASH, "water map.qle"

@@ -5,8 +5,8 @@
 #include "entity.h"
 #include "entities.h"
 
-extern const char NAM_BG;
-const char* const pNAM_BG = &NAM_BG;
+extern const char* const NAM_BG;
+extern const char* const NAM_JOKE;
 
 // param_a will contain whether input is enabled
 // param_b is fading
@@ -33,9 +33,13 @@ void Destroy(Entity* this) {
 	vm_RemoveScanlineCallback((HScanlineCB)this->graphic);
 }
 
-void onSplitscreen(unsigned char) {
-	// Cheaply just change bank that BG uses
-	__asm__("lda #%w\nsta %w", 0x90, 0x2000);
+extern char mmc5_nt_mapping;
+
+void onSplitscreen(unsigned char) {		
+	// CHR bank
+	*(char*)(0x2000) = 0x90;
+	// Change NT
+	mmc5_nt_mapping = 0x01;
 }
 
 void UpdateStart(Entity* this) {
@@ -65,7 +69,9 @@ void UpdateStart(Entity* this) {
 					}
 
 					v_WaitVBlank();
-					vb_DecompressNT(0x2000, pNAM_BG);
+					vb_DecompressNT(0x2000, NAM_BG);
+					v_WaitVBlank();
+					vb_DecompressNT(0x2400, NAM_JOKE);
 
 					e_Create(&ent_Shaker);
 					for(i = 0; i < 4; i++) {
