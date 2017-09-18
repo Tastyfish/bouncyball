@@ -5,6 +5,7 @@
 .import popax, popa, ppuMaskCache
 
 .export _vb_DecompressNT
+.export _v_DecompressToRAM
 .export _vb_DecompressQLEChunk
 
 ; Adapted from RLE decompressor by Shiru (NESASM version)
@@ -49,6 +50,48 @@ done:
 	rts
 .endproc
 
+; void __fastcall__ v_DecompressToRAM(void* dest, void* src)
+.proc _v_DecompressToRAM
+	sta ptr1
+	stx ptr1+1
+
+	jsr popax
+	sta ptr2
+	stx ptr2+1
+
+	ldy #0
+	jsr rle_byte
+	sta sreg
+loop:
+	jsr rle_byte
+	cmp sreg
+	beq rle_start
+	sta (ptr2),y
+	inc ptr2
+	bne wcont
+	inc ptr2+1
+wcont:
+	sta sreg+1
+	bne loop
+	rle_start:
+	jsr rle_byte
+	cmp #0
+	beq done
+	tax
+	lda sreg+1
+rle_loop:
+	sta (ptr2),y
+	inc ptr2
+	bne wcont2
+	inc ptr2+1
+wcont2:
+	dex
+	bne rle_loop
+	beq loop
+done:
+	rts
+.endproc
+
 .proc rle_byte
 	lda (ptr1),y
 	inc ptr1
@@ -77,21 +120,21 @@ done:
 	sta PPU_MASK
 
 	jsr popax
-	sta ptr2
-	stx ptr2+1
 	bit PPU_STATUS
 	; adjust into starting position for the given quarter
 	bit tmp3
 	bpl testQX
-	.repeat 4
+	.repeat 2
 		inx
 	.endrep
 testQX:
+	stx ptr2+1
 	stx PPU_ADDR
 	bit tmp3
 	bvc contQX
 	adc #$10
 contQX:
+	sta ptr2
 	sta PPU_ADDR
 
 	; x and y postition
@@ -168,22 +211,25 @@ wbyte_xsetc:
 	and #$FC
 	adc #>(32*30)
 	sta ptr2+1
-	lda #0
-	ldy tmp3
-	beq skip_yloop
-wbyte_yloop:
-	adc #60
-	dey
-	bne wbyte_yloop
-skip_yloop:
+	bit tmp3
+	bpl wbyte_y_checkx
+	; Y offset
 	clc
-	adc ptr2
+	adc #$20
+	sta ptr2+1
+wbyte_y_checkx:
+	bit tmp3
+	bvc wbyte_yloop_done
+	; X offset
+	lda ptr2
+	adc #$04
 	sta ptr2
 	bcc wbyte_yloop_done
 	inc ptr2+1
 wbyte_yloop_done:
-	ldy ptr2+1
-	sty PPU_ADDR
+	lda ptr2+1
+	sta PPU_ADDR
+	lda ptr2
 	sta PPU_ADDR
 	lda #$FF
 	sta tmp3 ; represent that we're in attribs now
