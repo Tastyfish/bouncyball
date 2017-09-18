@@ -13,8 +13,11 @@ typedef struct {
 
 extern ScanlineCB_Entry* mmc_sl_ptr;
 #pragma zpsym("mmc_sl_ptr");
+extern unsigned char mmc_mirroring;
+#pragma zpsym("mmc_sl_ptr");
 extern unsigned char mmc5_sl_counter;
 extern unsigned char mmc5_irq_ctrl;
+extern unsigned char mmc5_nt_mapping;
 
 int scanlineCount = 0;
 ScanlineCB_Entry scanline_callbacks[NUM_CALLBACKS];
@@ -79,6 +82,19 @@ void handle_hblank() {
 	ScanlineCB_Entry* entry = mmc_sl_ptr++;
 	entry->callback(entry->line);
 
-	if(mmc_sl_ptr == scanline_callbacks + NUM_CALLBACKS)
+	if(++mmc_sl_i == scanlineCount)
 		mmc_sl_ptr = scanline_callbacks;
+
+	mmc5_sl_counter = mmc_sl_ptr->line - entry->line;
+	mmc5_irq_ctrl = 0x80;
+}
+
+// Set the nametable mirroring for next frame
+void vm_SetNametableMirroring(char code) {
+	mmc_mirroring = code;
+}
+
+// Set the nametable mirroring NOW
+void vbm_SetNametableMirroring(char code) {
+	mmc5_nt_mapping = mmc_mirroring = code;
 }

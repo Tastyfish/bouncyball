@@ -14,17 +14,23 @@
 	.export		_vm_AddScanlineCallback
 	.export		_vm_RemoveScanlineCallback
 	.importzp	_mmc_sl_ptr
+	.importzp   _mmc_mirroring
 	.import		_mmc5_sl_counter
 	.import		_mmc5_irq_ctrl
+	.import     _mmc5_nt_mapping
 	.export		_scanlineCount
 	.export		_scanline_callbacks
 	.export		handle_hblank
 	.export		_sorterFn
 	.export		_resort
+	.export     _vm_SetNametableMirroring
+	.export     _vbm_SetNametableMirroring
 
 .segment	"DATA"
 
 _scanlineCount:
+	.word	$0000
+_mmc_sl_i:
 	.word	$0000
 
 .segment	"BSS"
@@ -206,7 +212,7 @@ L003C:	jmp     incsp4
 .segment	"CODE"
 	lda     _scanlineCount
 	ora     _scanlineCount+1
-	beq     L0042
+	beq     done
 	ldy     #$02
 	lda     (_mmc_sl_ptr),y
 	sta     ptr1+1
@@ -219,21 +225,33 @@ L003C:	jmp     incsp4
 	lda     ptr1
 	ldx     ptr1+1
 	jsr     callax
-	inc     _mmc_sl_ptr+1
-	bne     L0001
+	lda     _mmc_sl_ptr
+	inc     _mmc_sl_i
+	clc
+	adc     #3
+	sta     _mmc_sl_ptr
+	bcc     L0001
 	inc     _mmc_sl_ptr+1
 L0001:
-	lda     #<(_scanline_callbacks+24)
-	ldx     #>(_scanline_callbacks+24)
-	cpx     _mmc_sl_ptr+1
-	bne     L0042
-	cmp     _mmc_sl_ptr
+	lda     _scanlineCount
+	cmp     _mmc_sl_i
 	bne     L0042
 	lda     #<(_scanline_callbacks)
 	sta     _mmc_sl_ptr
 	lda     #>(_scanline_callbacks)
 	sta     _mmc_sl_ptr+1
-L0042:	rts
+	lda		#0
+	sta		_mmc_sl_i
+L0042:
+	ldy		#0
+	lda		(_mmc_sl_ptr),y
+	sec
+	sbc		_mmc5_sl_counter
+	sta		_mmc5_sl_counter
+	lda		#$80
+	sta		_mmc5_irq_ctrl
+done:
+	rts
 
 .endproc
 
@@ -306,3 +324,21 @@ L0042:	rts
 
 .endproc
 
+; ------------------------------------------------------
+; void __fastcall__ vm_SetNametableMirroring(char code)
+; ------------------------------------------------------
+
+.proc _vm_SetNametableMirroring
+	sta _mmc_mirroring
+	rts
+.endproc
+
+; ------------------------------------------------------
+; void __fastcall__ vbm_SetNametableMirroring(char code)
+; ------------------------------------------------------
+
+.proc _vbm_SetNametableMirroring
+	sta _mmc_mirroring
+	sta _mmc5_nt_mapping
+	rts
+.endproc
