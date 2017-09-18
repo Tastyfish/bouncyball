@@ -41,6 +41,11 @@ void e_Destroy(Entity* entity) {
 	bzero(entity, sizeof(Entity));
 }
 
+// A seperate fn so the compiler knows that things will be called
+void TickIRQs() {
+	__asm__("cli\nnop\nsei");
+}
+
 // Update as much as we can this round
 // True if was interrupted by VBlank, false if just ran out of work
 bool e_UpdateTick() {
@@ -66,6 +71,9 @@ bool e_UpdateTick() {
 		// stop short of updating the same entities twice in the same frame
 		if(currentEntity == startingEntity)
 			return false;
+
+		// let IRQ's tick
+		TickIRQs();
 	}
 
 	return true;
