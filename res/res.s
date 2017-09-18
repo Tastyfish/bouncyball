@@ -1,3 +1,12 @@
+.macro incres symbol, file
+	.local data
+	.export symbol
+data:
+	.incbin file
+symbol:
+	.addr data
+.endmacro
+
 .segment "CHARS"
 
 .incbin "a.chr"

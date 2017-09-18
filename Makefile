@@ -35,5 +35,8 @@ $(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
 %.si: %.c
 	$(CC) $^ -o $@ $(GFLAGS) $(CFLAGS)
 
-res/res.o: res/res.s res/*.chr res/*.rle
+res/res.o: res/res.s res/*.chr res/*.rle res/*.qle
 	$(AS) res/res.s -o $@ $(GFLAGS) $(AFLAGS)
+
+%.qle: %.rmap
+	./res/convmap.py $^ -o $@ -tqle
