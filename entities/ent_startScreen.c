@@ -35,11 +35,12 @@ void Destroy(Entity* this) {
 
 extern char mmc5_nt_mapping;
 
-void onSplitscreen(unsigned char) {		
+void onSplitscreen(unsigned char) {
+	// Directly talking to hardware to allow things to reset to normal on next frames
 	// CHR bank
 	*(char*)(0x2000) = 0x90;
 	// Change NT
-	mmc5_nt_mapping = 0x01;
+	mmc5_nt_mapping = 0xA6;
 }
 
 void UpdateStart(Entity* this) {
