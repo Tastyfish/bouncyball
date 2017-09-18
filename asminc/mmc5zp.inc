@@ -1,4 +1,2 @@
-ppuscrollx	:= $77
-ppuscrolly	:= $78
-ppuctrl		:= $79
-sl_current	:= $80 ; thru $81
+.importzp _mmc_scrollx, _mmc_scrolly, _mmc_ctrl
+.importzp _mmc_sl_ptr, _mmc_mirroring, _mmc_sl_i

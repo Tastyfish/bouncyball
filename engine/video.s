@@ -2,8 +2,9 @@ _VIDEO_EXPORT = 1
 .include "helpers.inc"
 .include "mem.inc"
 .include "video.inc"
+.include "mmc5zp.inc"
 
-.importzp _tickcount, ppuscrollx, ppuscrolly, ppuctrl
+.importzp _tickcount
 .import _bzero
 .import ppubuf_put
 
@@ -286,19 +287,19 @@ end:
 ; Set the background scroll to a specific value
 ; void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
 .proc _v_ScrollBackground
-	sta ppuscrolly
+	sta _mmc_scrolly
 	jsr popa
-	sta ppuscrollx
+	sta _mmc_scrollx
 	rts
 .endproc
 
 ; Set the background scroll, allowing for negative values to scoll things to the right sensibly
 ; void __fastcall__ v_BigScrollBackground(int x, int y)
 .proc _v_BigScrollBackground
-	sta ppuscrolly
+	sta _mmc_scrolly
 	stx tmp1+1
 	jsr popax
-	sta ppuscrollx
+	sta _mmc_scrollx
 	stx tmp1
 
 	; Set MSB
@@ -319,7 +320,7 @@ conty:
 y0:
 	txa
 contout:
-	sta ppuctrl
+	sta _mmc_ctrl
 
 	rts
 .endproc
