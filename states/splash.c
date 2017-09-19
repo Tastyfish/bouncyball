@@ -30,13 +30,13 @@ void setup_splash() {
 
 	// make mirroring horizontal
 	vm_SetNametableMirroring(0xA4);
-	v_DecompressToRAM(0x5C00, NAM_DIRECTIONS);
+	v_DecompressToRAM((char*)0x5C00, NAM_DIRECTIONS);
 	v_WaitVBlank();
 	vb_DecompressQLEChunk(0x2000, 0, qle0);
 	v_WaitVBlank();
 	vb_DecompressQLEChunk(0x2000, 1, qle1);
-	//v_WaitVBlank();
-	//vb_DecompressQLEChunk(0x2000, 2, qle2);
-	//v_WaitVBlank();
-	//vb_DecompressQLEChunk(0x2000, 3, qle3);
+	v_WaitVBlank();
+	vb_DecompressQLEChunk(0x2000, 2, qle2);
+	v_WaitVBlank();
+	vb_DecompressQLEChunk(0x2000, 3, qle3);
 }
