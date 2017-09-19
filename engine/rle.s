@@ -197,13 +197,20 @@ wbyte_xsetc:
 	sta tmp1
 
 	inc tmp2
-	lda #$10
-	cmp tmp2
+	lda tmp2
+	bit tmp3
+	bmi testy_short_section
+	cmp #$10
+	bne wbyte_done
+	beq wbyte_yset
+testy_short_section:
+	cmp #$0E
 	bne wbyte_done
 
 	; transfer start address & quarter into attrib address
 	; (base & 0xFC00) + 32*30 + q*60
 
+wbyte_yset:
 	clc
 	lda #<(32*30)
 	sta ptr2
@@ -215,8 +222,9 @@ wbyte_xsetc:
 	bpl wbyte_y_checkx
 	; Y offset
 	clc
+	lda ptr2
 	adc #$20
-	sta ptr2+1
+	sta ptr2
 wbyte_y_checkx:
 	bit tmp3
 	bvc wbyte_yloop_done

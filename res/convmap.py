@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import argparse, os
+import argparse, os, math
 
 parser = argparse.ArgumentParser(description='Convert raw map file to compressed format.')
 parser.add_argument('input', metavar='FILE', type=argparse.FileType('rb'),
@@ -45,13 +45,23 @@ def main():
 
 def processQLE():
 	SectionWidth = 16
-	SectionHeight = 16
-	if InputWidth % SectionWidth != 0 or InputHeight % SectionHeight != 0:
-		raise Exception("Input dimensions must be multiple of 16x16")
+	SectionEvenHeight = 16
+	SectionOddHeight = 14
+	SectionTotalHeight = SectionEvenHeight + SectionOddHeight
+	#if InputWidth % SectionWidth != 0 or (InputHeight % SectionTotalHeight != 0 and InputHeight % SectionTotalHeight != SectionEvenHeight):
+	#	raise Exception("Input dimensions must be multiple of 16x30, optionally + 16 more on the height");
 
 	print("= Header =")
-	sectionsX = int(InputWidth / SectionWidth)
-	sectionsY = int(InputHeight / SectionHeight)
+	sectionsX = math.ceil(InputWidth / SectionWidth)
+	def getSectionsY():
+		heightRemaining = InputHeight
+		sectionsY = 0
+		while heightRemaining > 0:
+			sh = [SectionEvenHeight, SectionOddHeight][sectionsY % 2]
+			sectionsY += 1
+			heightRemaining -= sh
+		return sectionsY
+	sectionsY = getSectionsY()
 	print(sectionsX, "x", sectionsY, "sections")
 
 	# Output starts with header
@@ -70,22 +80,70 @@ def processQLE():
 
 		outputFile.seek(sectionStart)
 
+	def getSectionYOffs(sy):
+		soffs = math.floor(sy / 2) * 2 * SectionTotalHeight
+		if sy % 2 == 1:
+			soffs += SectionEvenHeight
+		return soffs
+
 	def readSection(sx, sy):
+		sectionHeight = [SectionEvenHeight, SectionOddHeight][sy % 2]
+
 		# Push out tile data
-		inputFile.seek(sx * SectionWidth + sy * SectionHeight * InputWidth)
-		for y in range(SectionHeight):
-			row = inputFile.read(SectionWidth)
-			for x in range(SectionWidth):
-				yield row[x]
-			inputFile.seek(InputWidth - SectionWidth, 1)
+		baseX = sx * SectionWidth
+		baseY = getSectionYOffs(sy)
+		prevVal = 0
+		print("section", baseX, baseY)
+		inputFile.seek(baseX + baseY * InputWidth)
+		for y in range(sectionHeight):
+			print("y", y, inputFile.tell())
+
+			if baseY + y < InputHeight:
+				row = []
+				if baseX + SectionWidth <= InputWidth:
+					row = inputFile.read(SectionWidth)
+				else:
+					row = inputFile.read(InputWidth - baseX)
+					row += [prevVal] * (SectionWidth - len(row))
+				for x in range(SectionWidth):
+					prevVal = row[x]
+					yield prevVal
+				inputFile.seek(InputWidth - SectionWidth, 1)
+			else:
+				for x in range(SectionWidth):
+					yield prevVal
 
 		# Now, switch over to the attrib data
-		inputFile.seek(InputWidth * InputHeight + (sx * SectionWidth >> 2) + (sy * SectionHeight * InputWidth >> 4))
-		for y in range(SectionHeight >> 2):
-			row = inputFile.read(SectionWidth >> 2)
-			for x in range(SectionWidth >> 2):
-				yield row[x]
-			inputFile.seek((InputWidth - SectionWidth) >> 2, 1)
+		inputFile.seek(InputWidth * InputHeight + (baseX >> 2) + (baseY * InputWidth >> 4))
+		for y in range(math.ceil(sectionHeight / 4)):
+			print("ay", y, inputFile.tell())
+
+			if baseY + y * 4 < InputHeight:
+				row = []
+				if baseX + SectionWidth <= InputWidth:
+					row = inputFile.read(SectionWidth >> 2)
+				else:
+					row = inputFile.read((InputWidth - baseX) >> 2)
+					row += [prevVal] * ((SectionWidth >> 2) - len(row))
+				for x in range(SectionWidth >> 2):
+					yield row[x]
+				inputFile.seek((InputWidth - SectionWidth) >> 2, 1)
+			else:
+				for x in range(SectionWidth >> 2):
+					yield prevVal
+
+	def writeRLEChunk(b, count):
+		if count < 4:
+			outputFile.write(bytes([b]*count))
+		elif count <= 256:
+			outputFile.write(bytes([b, rleByte, count - 1]))
+		else:
+			writeRLEChunk(b, 256)
+			count -= 256
+			while count > 255:
+				outputFile.write(bytes([rleByte, 255]))
+				count -= 255
+			outputFile.write(bytes([rleByte, count]))
 
 	print("= Sections =")
 	for sy in range(sectionsY):
@@ -99,20 +157,6 @@ def processQLE():
 					rleByte += 1
 			assert(rleByte < 256)
 			outputFile.write(bytes([rleByte]))
-
-			def writeRLEChunk(b, count):
-				if count < 4:
-					outputFile.write(bytes([b]*count))
-				elif count <= 256:
-					outputFile.write(bytes([b, rleByte, count - 1]))
-				else:
-					writeRLEChunk(b, 256)
-					count -= 256
-					while count > 255:
-						outputFile.write(bytes([rleByte, 255]))
-						count -= 255
-					outputFile.write(bytes([rleByte, count]))
-
 
 			# now compress
 			oldB = rleByte
@@ -130,5 +174,5 @@ def processQLE():
 			# end of RLE
 			outputFile.write(bytes([rleByte, 0]))
 
-			print("Section", sx, ",", sy, "complete")
+			print("Section", sx, ",", sy, ["(tall) complete", "(short) complete"][sy % 2])
 main()
