@@ -1,1 +1,1 @@
-#define CHR_BALL	(1)
+#define CHR_BALL	(0x80)

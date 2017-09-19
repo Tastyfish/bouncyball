@@ -23,7 +23,7 @@ void ent_Ball(Entity* entity) {
 
 	s->x = crand(8, 240);
 	s->y = crand(8, 224);
-	s->tileID = 0; // ball
+	s->tileID = 0x80; // ball
 	s->attrib = crand(0, 3); // random color
 
 	entity->onDestroy = gent_DestroySprite;
