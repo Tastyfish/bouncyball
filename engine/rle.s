@@ -2,7 +2,7 @@
 .include "mmc5zp.inc"
 .include "video.inc"
 
-.import popax, popa, ppuMaskCache
+.import popax, popa, ppuMaskCache, ppubuf_put
 
 .export _vb_DecompressNT
 .export _v_DecompressToRAM
@@ -115,12 +115,7 @@ done:
 	.endrep
 	sta tmp3 ; quarter
 
-	; This runs so long, disable everything
-	lda #0
-	sta PPU_MASK
-
 	jsr popax
-	bit PPU_STATUS
 	; adjust into starting position for the given quarter
 	bit tmp3
 	bpl testQX
@@ -129,13 +124,11 @@ done:
 	.endrep
 testQX:
 	stx ptr2+1
-	stx PPU_ADDR
 	bit tmp3
 	bvc contQX
 	adc #$10
 contQX:
 	sta ptr2
-	sta PPU_ADDR
 
 	; x and y postition
 	lda #0
@@ -165,12 +158,24 @@ rle_loop:
 	bne rle_loop
 	beq loop
 done:
-	lda ppuMaskCache
-	sta PPU_MASK
 	rts
 
 wbyte:
-	sta PPU_DATA
+	tay
+	pha
+	txa
+	pha
+	tya
+	ldx ptr2
+	ldy ptr2+1
+	jsr ppubuf_put
+	pla
+	tax
+	pla
+	inc ptr2
+	bne wbyte_c
+	inc ptr2+1
+wbyte_c:
 	pha
 
 	; check if in attrib part
@@ -185,14 +190,11 @@ wbyte:
 
 	clc
 	lda ptr2
-	adc #32
+	adc #16
 	sta ptr2
 	bcc wbyte_xsetc
 	inc ptr2+1
 wbyte_xsetc:
-	ldy ptr2+1
-	sty PPU_ADDR
-	sta PPU_ADDR
 	lda #0
 	sta tmp1
 
@@ -235,10 +237,6 @@ wbyte_y_checkx:
 	bcc wbyte_yloop_done
 	inc ptr2+1
 wbyte_yloop_done:
-	lda ptr2+1
-	sta PPU_ADDR
-	lda ptr2
-	sta PPU_ADDR
 	lda #$FF
 	sta tmp3 ; represent that we're in attribs now
 
@@ -255,14 +253,11 @@ wbyte_attrib:
 
 	clc
 	lda ptr2
-	adc #$08
+	adc #$04
 	sta ptr2
 	bcc wbyte_attrib_setc
 	inc ptr2+1
 wbyte_attrib_setc:
-	ldy ptr2+1
-	sty PPU_ADDR
-	sta PPU_ADDR
 	lda #0
 	sta tmp1
 	beq wbyte_done
