@@ -6,6 +6,7 @@ _GAME_EXPORT = 1
 .include "mmc5.inc"
 .include "mmc5zp.inc"
 
+.import _vbm_SetNametableMirroring
 .export _g_Run
 
 .exportzp _tickcount	:= $6B
@@ -45,9 +46,9 @@ vwait2:
 	sta $5123
 	lda #01
 	sta $5127
-	; setup NT
-	lda #$44
-	sta _mmc5_nt_mapping
+	; setup NT as diagnal mirroring
+	lda #%00010100
+	jsr _vbm_SetNametableMirroring
 
 	jsr _vb_ClearOAM
 	lda #$0F ; make bg black
