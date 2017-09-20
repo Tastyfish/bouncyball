@@ -69,20 +69,13 @@ void updateVSections() {
 	//int x, y;
 }
 
-void tickup() {
-	__asm__("cli\nnop\nsei");
-}
-
 void assignSection(char nt, char q, int sectionID) {
 	int* pLoaded = &sectionLoaded[nt][q];
 
 	if(*pLoaded != sectionID) {
-		//v_WaitVBlank();
-		//vb_DisableAll();
 		vb_DecompressQLEChunk(nt ? 0x2400 : 0x2000, q,
 			((char*)header) + header->sectionOffsets[sectionID]);
-		//vb_EnableBackgrounds(true);
-		//vb_EnableSprites(true);
+
 		*pLoaded = sectionID;
 	}
 }
