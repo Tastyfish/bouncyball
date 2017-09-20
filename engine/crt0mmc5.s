@@ -124,7 +124,12 @@ nmi:    pha
         bne     @s
         inc     tickcount+1
 
-@s:     jsr     ppubuf_flush
+@s:
+        ; MMC mirroring needs to be right or it'll not flush correctly
+        lda     _mmc_mirroring
+        sta     _mmc5_nt_mapping
+
+        jsr     ppubuf_flush
 
         ; reset the video counter
         lda     #$20
@@ -139,9 +144,6 @@ nmi:    pha
 		sta     PPU_VRAM_ADDR1
 		lda     _mmc_scrolly
 		sta     PPU_VRAM_ADDR1
-        ; and other mmc things
-        lda     _mmc_mirroring
-        sta     _mmc5_nt_mapping
         ; so many hblank variables, but worth it to handle glitch frames
         lda     #<_scanline_callbacks
         sta     _mmc_sl_ptr
