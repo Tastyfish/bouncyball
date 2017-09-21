@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "video.h"
 #include "input.h"
+#include "sound.h"
 
 #include "entities.h"
 #include "gent.h"
@@ -17,6 +18,7 @@ void ent_Shaker(Entity* entity) {
 
 	entity->param = tickcount;
 	entity->graphic_a = 1; // 1 means fading in
+	entity->graphic_b = 0; // if played joke sfx yet
 
 	v_FadeIn(5,
 		0x01, 0x10, 0x20,
@@ -57,6 +59,10 @@ void UpdateShaker(Entity* this) {
 	// show the joke
 	if(tickcount - this->param >= 60 * 15) {
 		x += 256;
+		if(!this->graphic_b) {
+			s_PlaySFX(2, SFX_CH2);
+			this->graphic_b = 1;
+		}
 	}
 
 	// shake EVERYTHING

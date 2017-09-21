@@ -1,6 +1,7 @@
 #include "game.h"
 #include "entity.h"
 #include "video.h"
+#include "sound.h"
 
 #include "entities.h"
 #include "gent.h"
@@ -45,6 +46,8 @@ void UpdateBall(Entity* entity) {
 		// flip X accel and bump randomly
 		accelX = accelX * 2 / -3 + 2;
 		accelY += crand(-4, 4);
+
+		s_PlaySFX(1, SFX_CH0);
 	}
 
 	if(
@@ -54,6 +57,8 @@ void UpdateBall(Entity* entity) {
 		// flip Y accel and bump randomly
 		accelY = accelY * 2 / -3;
 		accelX += crand(-4, 4);
+
+		s_PlaySFX(0, SFX_CH1);
 	}
 
 	// write accel

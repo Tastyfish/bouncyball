@@ -3,6 +3,7 @@ include entities/entities.mk
 
 OUTPUT = balls.nes
 OBJECTS += main.o states/splash.o res/res.o
+SOUNDS += res/theme.s res/sfx.s
 
 MAKEFLAGS += --no-builtin-rules
 CC := cc65
@@ -35,8 +36,14 @@ $(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
 %.si: %.c
 	$(CC) $^ -o $@ $(GFLAGS) $(CFLAGS)
 
-res/res.o: res/res.s res/*.chr res/*.rle res/*.qle
+res/res.o: res/res.s res/*.chr res/*.rle res/*.qle $(SOUNDS)
 	$(AS) res/res.s -o $@ $(GFLAGS) $(AFLAGS)
 
 %.qle: %.map
 	./res/convmap.py $^ -tqle
+
+%.s: %.txt
+	../famitone/tools/text2data $^ -ca65
+
+%.s: %.nsf
+	../famitone/tools/nsf2data $^ -ca65

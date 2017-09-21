@@ -3,3 +3,5 @@
 *.nes
 *.si
 *.nl
+/res/*.s
+!/res/res.s

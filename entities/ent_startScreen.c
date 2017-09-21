@@ -5,6 +5,7 @@
 #include "input.h"
 #include "entity.h"
 #include "entities.h"
+#include "sound.h"
 
 extern const char* const NAM_BG;
 extern const char* const NAM_JOKE;
@@ -86,6 +87,8 @@ void UpdateStart(Entity* this) {
 					for(i = 0; i < 4; i++) {
 						e_Create(&ent_Ball);
 					}
+
+					s_PlayMusic(1);
 					return;
 				default:
 					this->param_b = 0;
