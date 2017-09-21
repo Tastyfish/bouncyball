@@ -5,3 +5,4 @@
 *.nl
 /res/*.s
 !/res/res.s
+*.qle

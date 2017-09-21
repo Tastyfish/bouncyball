@@ -20,9 +20,11 @@ all: $(OUTPUT)
 
 clean:
 	find . -name "*.nes" -type f -delete
-	find . -name "*.map" -type f -delete
+	rm -f "*.map"
 	find . -name "*.o" -type f -delete
 	find . -name "*.si" -type f -delete
+	find . -name "*.qle" -type f -delete
+	rm -f $(SOUNDS)
 
 $(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
 	$(LD) $(OBJECTS) -o $@ $(GFLAGS) $(LFLAGS)
@@ -46,4 +48,4 @@ res/res.o: res/res.s res/*.chr res/*.rle res/*.qle $(SOUNDS)
 	../famitone/tools/text2data $^ -ca65
 
 %.s: %.nsf
-	../famitone/tools/nsf2data $^ -ca65
+	../famitone/tools/nsf2data $^ -ca65 -ntsc
