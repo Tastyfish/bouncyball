@@ -93,10 +93,10 @@ def processQLE():
 		baseX = sx * SectionWidth
 		baseY = getSectionYOffs(sy)
 		prevVal = 0
-		print("section", baseX, baseY)
+		# print("section", baseX, baseY)
 		inputFile.seek(baseX + baseY * InputWidth)
 		for y in range(sectionHeight):
-			print("y", y, inputFile.tell())
+			# print("y", y, inputFile.tell())
 
 			if baseY + y < InputHeight:
 				row = []
@@ -116,7 +116,7 @@ def processQLE():
 		# Now, switch over to the attrib data
 		inputFile.seek(InputWidth * InputHeight + (baseX >> 2) + (baseY * InputWidth >> 4))
 		for y in range(math.ceil(sectionHeight / 4)):
-			print("ay", y, inputFile.tell())
+			# print("ay", y, inputFile.tell())
 
 			if baseY + y * 4 < InputHeight:
 				row = []
@@ -174,5 +174,5 @@ def processQLE():
 			# end of RLE
 			outputFile.write(bytes([rleByte, 0]))
 
-			print("Section", sx, ",", sy, ["(tall) complete", "(short) complete"][sy % 2])
+			# print("Section", sx, ",", sy, ["(tall) complete", "(short) complete"][sy % 2])
 main()
