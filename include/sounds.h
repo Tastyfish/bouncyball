@@ -1,6 +1,6 @@
-#define MUSIC_OPENING	(0)
-#define MUSIC_INGAME	(1)
+#define MUSIC_OPENING	((songid_t)0)
+#define MUSIC_INGAME	((songid_t)1)
 
-#define SFX_BOUNCEL		(0)
-#define SFX_BOUNCEH		(1)
-#define SFX_JOKE		(2)
+#define SFX_BOUNCEL		((songid_t)0)
+#define SFX_BOUNCEH		((songid_t)1)
+#define SFX_JOKE		((songid_t)2)
