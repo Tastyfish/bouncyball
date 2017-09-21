@@ -93,7 +93,6 @@ void map_MoveTo(int rx, int ry) {
 			refX = rx;
 			refY = ry;
 			map_SetOrientation(MO_HORIZONTAL);
-			return;
 		}
 		// check if changed section
 		else if(rx / 240 != refY / 240) {

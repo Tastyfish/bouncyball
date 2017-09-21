@@ -1,12 +1,13 @@
 _VIDEO_EXPORT = 1
 .include "helpers.inc"
 .include "mem.inc"
+.include "zeropage.inc"
 .include "video.inc"
 .include "mmc5zp.inc"
 
 .importzp _tickcount
 .import _bzero
-.import ppubuf_put
+.import tosdiva0, ppubuf_put
 
 .export ppuMaskCache
 
@@ -297,28 +298,33 @@ end:
 ; void __fastcall__ v_BigScrollBackground(int x, int y)
 .proc _v_BigScrollBackground
 	sta _mmc_scrolly
-	stx tmp1+1
+	sta tmp1
+	stx tmp2
 	jsr popax
 	sta _mmc_scrollx
-	stx tmp1
 
 	; Set MSB
-	lda tmp1
+	txa
 	and #1
 	beq x0
-	ldx #$81
+	lda #$81
 	bne conty
 x0:
-	ldx #$80
+	lda #$80
 conty:
-	lda tmp1+1
+	sta tmp3
+	lda tmp1
+	ldx tmp2
+	jsr pushax
+	lda #240
+	jsr tosdiva0
 	and #1
 	beq y0
-	txa
+	lda tmp3
 	ora #$02
 	bne contout
 y0:
-	txa
+	lda tmp3
 contout:
 	sta _mmc_ctrl
 
