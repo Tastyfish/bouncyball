@@ -4,12 +4,8 @@
 #include "map.h"
 #include "input.h"
 #include "entity.h"
-#include "entities.h"
-#include "sound.h"
-#include "sounds.h"
 
-extern const char* const NAM_BG;
-extern const char* const NAM_JOKE;
+extern void setup_ingame();
 
 // param_a contains camera x coord
 // param_b is state
@@ -72,7 +68,6 @@ void UpdateStart(Entity* this) {
 	} else {
 		if(v_FadeStep()) {
 			Entity* ent;
-			int i;
 			switch(this->param_b) {
 				case 2:
 					// the big switch to the real game
@@ -80,17 +75,7 @@ void UpdateStart(Entity* this) {
 						e_Destroy(ent);
 					}
 
-					v_WaitVBlank();
-					vb_DecompressNT(0x2000, NAM_BG);
-					v_WaitVBlank();
-					vb_DecompressNT(0x2400, NAM_JOKE);
-
-					e_Create(&ent_Shaker);
-					for(i = 0; i < 4; i++) {
-						e_Create(&ent_Ball);
-					}
-
-					s_PlayMusic(MUSIC_INGAME);
+					setup_ingame();
 					return;
 				default:
 					this->param_b = 0;

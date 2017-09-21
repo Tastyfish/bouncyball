@@ -2,7 +2,7 @@ include engine/engine.mk
 include entities/entities.mk
 
 OUTPUT = balls.nes
-OBJECTS += main.o states/splash.o res/res.o
+OBJECTS += main.o states/splash.o states/ingame.o res/res.o
 SOUNDS += res/theme.s res/sfx.s
 
 MAKEFLAGS += --no-builtin-rules
