@@ -15,6 +15,7 @@ extern const char* const NAM_JOKE;
 // --0 means input enabled
 // --1 means waiting for fade in
 // --2 means waiting for fade out
+// graphic is scanline callback
 
 void UpdateStart(Entity*);
 void Destroy(Entity*);

@@ -7,7 +7,9 @@
 #include "entities.h"
 #include "gent.h"
 
-// param has base time
+// param has base time for joke timer
+// graphic_a indicates fading in
+// graphic_b indicates if played joke sfx
 
 void UpdateShaker(Entity* entity);
 void DrawShaker(Entity* entity);
