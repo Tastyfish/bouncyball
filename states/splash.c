@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "entities.h"
 #include "sound.h"
+#include "sounds.h"
 
 extern const char* const QLE_SPLASH;
 extern const char* const NAM_DIRECTIONS;
@@ -33,5 +34,5 @@ void setup_splash() {
 	map_Load(QLE_SPLASH, 128, 0);
 	map_SetOrientation(MO_HORIZONTAL);
 
-	s_PlayMusic(0);
+	s_PlayMusic(MUSIC_OPENING);
 }

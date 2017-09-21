@@ -3,6 +3,7 @@
 #include "video.h"
 #include "input.h"
 #include "sound.h"
+#include "sounds.h"
 
 #include "entities.h"
 #include "gent.h"
@@ -62,7 +63,7 @@ void UpdateShaker(Entity* this) {
 	if(tickcount - this->param >= 60 * 15) {
 		x += 256;
 		if(!this->graphic_b) {
-			s_PlaySFX(2, SFX_CH2);
+			s_PlaySFX(SFX_JOKE, SFX_CH2);
 			this->graphic_b = 1;
 		}
 	}
