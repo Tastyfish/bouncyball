@@ -23,8 +23,8 @@
 .import		__CODE_LOAD__,__CODE_RUN__, __CODE_SIZE__
 .import		__RODATA_LOAD__,__RODATA_RUN__, __RODATA_SIZE__
 
-.import handle_hblank
-.import _scanline_callbacks
+.import handle_hblank, _scanline_callbacks
+.import FamiToneUpdate
 
 ; a redo of CRT0 for our mapper/NMI/IRQ needs
 
@@ -154,6 +154,8 @@ nmi:    pha
         ldy     #0
         lda     (_mmc_sl_ptr),y
         sta     _mmc5_sl_counter
+
+        jsr     FamiToneUpdate
 
         pla
         tax
