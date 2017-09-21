@@ -6,7 +6,7 @@
 
 .export _vb_DecompressNT
 .export _v_DecompressToRAM
-.export _vb_DecompressQLEChunk
+.export _v_DecompressQLEChunk
 
 ; Adapted from RLE decompressor by Shiru (NESASM version)
 ; void __fastcall__ vb_DecompressNT(int ppuAddr, void* src)
@@ -105,8 +105,8 @@ done:
 ; Quarters are in LTR reading order
 ; src is a chunk, not a pointer to the header
 ; Reiteratively adapted from above
-; void __fastcall__ vb_DecompressQLEChunk(int ppuAddr. char quarter, void* src)
-.proc _vb_DecompressQLEChunk
+; void __fastcall__ v_DecompressQLEChunk(int ppuAddr. char quarter, void* src)
+.proc _v_DecompressQLEChunk
 	sta ptr1 ; src
 	stx ptr1+1
 	jsr popa

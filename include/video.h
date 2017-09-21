@@ -44,7 +44,7 @@ extern spriteID_t v_AllocSprite();
 extern void __fastcall__ v_FreeSprite(spriteID_t sprite);
 
 extern void __fastcall__ vb_DecompressNT(int ppuAddr, const char* ptr);
-extern void __fastcall__ vb_DecompressQLEChunk(int ppuAddr, char quarter, const char* ptr);
+extern void __fastcall__ v_DecompressQLEChunk(int ppuAddr, char quarter, const char* ptr);
 extern void __fastcall__ v_DecompressToRAM(void* dest, void* src);
 
 extern void v_FadeIn(int delay, ...);

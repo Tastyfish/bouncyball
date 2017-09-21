@@ -73,7 +73,7 @@ void assignSection(char nt, char q, int sectionID) {
 	int* pLoaded = &sectionLoaded[nt][q];
 
 	if(*pLoaded != sectionID) {
-		vb_DecompressQLEChunk(nt ? 0x2400 : 0x2000, q,
+		v_DecompressQLEChunk(nt ? 0x2400 : 0x2000, q,
 			((char*)header) + header->sectionOffsets[sectionID]);
 
 		*pLoaded = sectionID;
