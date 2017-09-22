@@ -364,10 +364,16 @@ found:
 .endproc
 
 ; Free allocated sprite id
-; void __fastcall__ v_FreeSprite(spriteID_t sprite)
+; void __fastcall__ v_FreeSprite(sprite_t sprite)
 .proc _v_FreeSprite
+	cpx #$05
+	bne invalid
+	; Convert to ID
+	lsr
+	lsr
 	tay
 	lda #0
 	sta sprite_atable,y
+invalid:
 	rts
 .endproc

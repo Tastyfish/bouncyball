@@ -62,7 +62,7 @@ void UpdateShaker(Entity* this) {
 		// clear the balls
 		Entity* ent;
 		for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
-			if(ent != this)
+			if(ent->paramu[2] == 0xBA11)
 				e_Destroy(ent);
 		}
 	}
