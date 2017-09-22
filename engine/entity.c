@@ -51,7 +51,6 @@ void TickIRQs() {
 bool e_UpdateTick() {
 	static Entity* currentEntity = entity_table;
 
-	int currentTick = tickcount;
 	Entity* startingEntity = currentEntity;
 	EntityCallback update;
 
