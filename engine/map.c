@@ -57,8 +57,8 @@ void updateHSections() {
 	int ymax = MIN(sy | 1, header->height - 1);
 	int x, y;
 
-	for(y = MAX(sy & ~1, 0); y <= ymax; y++) {
-		for(x = MAX(sx - 1, 0); x <= xmax; x++) {
+	for(y = MAX(sy & ~1, 0); y <= ymax; ++y) {
+		for(x = MAX(sx - 1, 0); x <= xmax; ++x) {
 			assignSection((x & 2) == 2, (x & 1) | ((y & 1) << 1), x + y * header->width);
 		}
 	}
@@ -95,7 +95,7 @@ void map_MoveTo(int rx, int ry) {
 			map_SetOrientation(MO_HORIZONTAL);
 		}
 		// check if changed section
-		else if(rx / 240 != refY / 240) {
+		else if(rx / 256 != refX / 256) {
 			refX = rx;
 			refY = ry;
 			updateHSections();
