@@ -332,7 +332,7 @@ contout:
 .endproc
 
 ; Allocate an unused sprite id
-; spriteID_t v_AllocSprite()
+; sprite_t v_AllocSprite()
 .proc _v_AllocSprite
 	; first, find a cleared one
 
@@ -346,14 +346,20 @@ loop:
 	bne loop
 
 	; didn't find one
-	lda #$FF
+	lda #0
+	tax
 	rts
 
 found:
 	lda #1
 	sta sprite_atable,y
-
 	tya
+
+	; Convert to address
+	asl
+	asl
+	ldx #$05
+
 	rts
 .endproc
 

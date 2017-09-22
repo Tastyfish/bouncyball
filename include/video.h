@@ -14,7 +14,7 @@ typedef struct {
 	tile_t tile;
 	unsigned char attrib;
 	unsigned char x;
-} Sprite;
+} sprite_t;
 
 #define SpriteIDToAddress(id) ((Sprite*)(0x0500 + (id) * sizeof(Sprite)))
 #define AddressToSpriteID(addr) ((spriteID_t)((((int)(addr)) - 0x0500) / sizeof(Sprite)))
@@ -44,8 +44,8 @@ extern void __fastcall__ vb_EnableBackgrounds(bool enable);
 extern void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
 extern void __fastcall__ v_BigScrollBackground(int x, int y);
 
-extern spriteID_t v_AllocSprite(void);
-extern void __fastcall__ v_FreeSprite(spriteID_t sprite);
+extern sprite_t* v_AllocSprite(void);
+extern void __fastcall__ v_FreeSprite(sprite_t* sprite);
 
 extern void __fastcall__ vb_DecompressNT(int ppuAddr, const char* ptr);
 extern void __fastcall__ v_DecompressQLEChunk(int ppuAddr, char quarter, const char* ptr);
