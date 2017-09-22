@@ -5,3 +5,4 @@
 ENTITY(ent_Ball);
 ENTITY(ent_Shaker);
 ENTITY(ent_StartScreen);
+ENTITY(ent_Smoke);

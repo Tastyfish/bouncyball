@@ -2,6 +2,8 @@
 #include "entity.h"
 #include "video.h"
 #include "sound.h"
+
+#include "sprites.h"
 #include "sounds.h"
 
 #include "entities.h"
@@ -25,7 +27,7 @@ void ent_Ball(Entity* entity) {
 
 	s->x = crand(8, 240);
 	s->y = crand(8, 224);
-	s->tileID = 0x80; // ball
+	s->tile = SPR_BALL; // ball
 	s->attrib = crand(0, 3); // random color
 
 	entity->onDestroy = gent_DestroySprite;

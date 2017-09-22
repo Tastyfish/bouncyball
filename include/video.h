@@ -2,12 +2,13 @@
 
 typedef unsigned char spriteID_t;
 typedef unsigned char color_t;
+typedef unsigned char tile_t;
 
 #define COL_BLACK ((color_t)0x0F)
 
 typedef struct {
 	unsigned char y;
-	unsigned char tileID;
+	tile_t tile;
 	unsigned char attrib;
 	unsigned char x;
 } Sprite;
