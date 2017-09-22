@@ -65,104 +65,100 @@ start:
     sta $5103
 
     cld
-	ldx     #0
-	stx     VBLANK_FLAG
+    ldx #0
+    stx VBLANK_FLAG
 
-  	stx     ringread
-	stx     ringwrite
-	stx     ringcount
+    stx ringread
+    stx ringwrite
+    stx ringcount
 
     txs
 
-    lda     #$20
-@l: sta     ringbuff,x
-	sta     ringbuff+$0100,x
-	sta     ringbuff+$0200,x
-        inx
-	bne     @l
+    lda #$20
+@l: sta ringbuff,x
+	sta ringbuff+$0100,x
+	sta ringbuff+$0200,x
+    inx
+	bne @l
 
 ; Clear the BSS data
-
     jsr	zerobss
 
 ; initialize data
 	jsr	copydata
 
 ; setup the stack
-
-    lda     #<(__SRAM_START__ + __SRAM_SIZE__)
+    lda #<(__SRAM_START__ + __SRAM_SIZE__)
     sta	sp
     lda	#>(__SRAM_START__ + __SRAM_SIZE__)
    	sta	sp+1            ; Set argument stack ptr
 
 ; Call module constructors
-
 	jsr	initlib
 
 ; Push arguments and call main()
-
-    jsr    	callmain
+    jsr callmain
 
 ; Call module destructors. This is also the _exit entry.
-
-_exit:  jsr	donelib		; Run module destructors
+_exit:
+    jsr donelib		; Run module destructors
 
 ; Reset the NES
-
    	jmp start
 
-nmi:    pha
-        tya
-        pha
-        txa
-        pha
+nmi:
+    pha
+    tya
+    pha
+    txa
+    pha
 
-        lda     #1
-        sta     VBLANK_FLAG
+	lda #1
+	sta VBLANK_FLAG
 
-        inc     tickcount
-        bne     @s
-        inc     tickcount+1
+	inc tickcount
+	bne @s
+	inc tickcount+1
 
 @s:
-        ; MMC mirroring needs to be right or it'll not flush correctly
-        lda     _mmc_mirroring
-        sta     _mmc5_nt_mapping
+    ; MMC mirroring needs to be right or it'll not flush correctly
+	lda _mmc_mirroring
+	sta _mmc5_nt_mapping
 
-        jsr     ppubuf_flush
+	jsr ppubuf_flush
 
-        ; reset the video counter
-        lda     #$20
-        sta     PPU_VRAM_ADDR2
-        lda     #$00
-        sta     PPU_VRAM_ADDR2
+    ; reset the video counter
+	lda #$20
+	sta PPU_VRAM_ADDR2
+	lda #$00
+	sta PPU_VRAM_ADDR2
 
-		; Set scroll
-        lda     _mmc_ctrl
-        sta     PPU_CTRL1
-		lda     _mmc_scrollx
-		sta     PPU_VRAM_ADDR1
-		lda     _mmc_scrolly
-		sta     PPU_VRAM_ADDR1
-        ; so many hblank variables, but worth it to handle glitch frames
-        lda     #<_scanline_callbacks
-        sta     _mmc_sl_ptr
-        lda     #>_scanline_callbacks
-        sta     _mmc_sl_ptr+1
-        lda     #0
-        sta     _mmc_sl_i
-        ldy     #0
-        lda     (_mmc_sl_ptr),y
-        sta     _mmc5_sl_counter
+	; Set scroll
+	lda _mmc_ctrl
+	sta PPU_CTRL1
+	lda _mmc_scrollx
+	sta PPU_VRAM_ADDR1
+	lda _mmc_scrolly
+	sta PPU_VRAM_ADDR1
+    ; so many hblank variables, but worth it to handle glitch frames
+	lda #<_scanline_callbacks
+	sta _mmc_sl_ptr
+	lda #>_scanline_callbacks
+	sta _mmc_sl_ptr+1
+	lda #0
+	sta _mmc_sl_i
+	ldy #0
+	lda (_mmc_sl_ptr),y
+	sta _mmc5_sl_counter
 
-        jsr     FamiToneUpdate
+	jsr FamiToneUpdate
 
-        pla
-        tax
-        pla
-        tay
-        pla
-		rti
+    pla
+    tax
+    pla
+    tay
+    pla
+	rti
 
 irq:
     pha
