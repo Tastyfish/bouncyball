@@ -42,10 +42,10 @@ extern char mmc5_nt_mapping;
 
 void onSplitscreen(unsigned char) {
 	// Directly talking to hardware to allow things to reset to normal on next frames
-	// 2nd CHR bank
-	*(char*)(0x2000) = 0x90;
 	// move HUD onto screen
 	mmc5_nt_mapping = 0xAA;
+	// 2nd CHR bank
+	*(char*)(0x2000) = 0x90;
 	// Force hardware scroll to 0,0
 	__asm__("bit $2002");
 	*(char*)(0x2005) = 0;
