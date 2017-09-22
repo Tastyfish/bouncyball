@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include "video.h"
 
 #ifndef _ENTITY_H
 #define _ENTITY_H
@@ -10,25 +11,16 @@ typedef bool (*CollideCallback)(struct Entity_s* this, int x, int y);
 typedef struct Entity_s {
 	EntityCallback onDestroy;
 	EntityCallback onUpdate;
-	CollideCallback onCollide;
-	union pa {
-		int graphic;
-		struct halfa {
-			char graphic_a;
-			char graphic_b;
-		};
-	};
-	union pb {
-		int param;
-		struct halfb {
-			char param_a;
-			char param_b;
-		};
+	union param {
+		char paramc[8];
+		int parami[4];
+		int paramu[4];
+		void* paramp[4];
+		Sprite* graphic[4]; // getting a bit specific, but extremely common
 	};
 } Entity;
 
 
-extern void e_Reset();
 extern Entity* e_Create(EntityCallback ctor);
 extern void e_Destroy(Entity* entity);
 

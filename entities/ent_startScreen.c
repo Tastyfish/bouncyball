@@ -7,12 +7,14 @@
 
 extern void setup_ingame();
 
-// param_a contains camera x coord
-// param_b is state
+// paramc_x contains camera x coord
+// paramc_state is:
 // --0 means input enabled
 // --1 means waiting for fade in
 // --2 means waiting for fade out
-// graphic is scanline callback
+#define param_scanline_callback	(this->paramp[0])
+#define param_x					(this->paramc[2])
+#define param_state				(this->paramc[3])
 
 void UpdateStart(Entity*);
 void Destroy(Entity*);
@@ -21,19 +23,19 @@ void onSplitscreen(unsigned char y);
 void ent_StartScreen(Entity* this) {
 	this->onDestroy = Destroy;
 	this->onUpdate = UpdateStart;
-	this->graphic = (int)vm_AddScanlineCallback(21 * 8, onSplitscreen);
-	this->param_a = 0;
+	param_scanline_callback = (void*)vm_AddScanlineCallback(21 * 8, onSplitscreen);
+	param_x = 0;
 
 	v_FadeIn(5,
 		0x01, 0x10, 0x20,
 		0x01, 0x21, 0x31,
 		0x17, 0x27, 0x37,
 		0x01, 0x27, 0x37);
-	this->param_b = 1;
+	param_state = 1;
 }
 
 void Destroy(Entity* this) {
-	vm_RemoveScanlineCallback((HScanlineCB)this->graphic);
+	vm_RemoveScanlineCallback((HScanlineCB)param_scanline_callback);
 }
 
 extern char mmc5_nt_mapping;
@@ -51,7 +53,7 @@ void onSplitscreen(unsigned char) {
 }
 
 void UpdateStart(Entity* this) {
-	if(!this->param_b) {
+	if(!param_state) {
 		input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 		if(i & INPUT_START) {
 			// massive state change---but after a fade
@@ -60,15 +62,15 @@ void UpdateStart(Entity* this) {
 				0x01, 0x21, 0x31,
 				0x17, 0x27, 0x37,
 				0x01, 0x27, 0x37);
-			this->param_b = 2;
+			param_state = 2;
 		}
 
-		if(this->param_a < 255)
-			map_MoveTo(this->param_a++ + 128, 0);
+		if(param_x < 255)
+			map_MoveTo(param_x++ + 128, 0);
 	} else {
 		if(v_FadeStep()) {
 			Entity* ent;
-			switch(this->param_b) {
+			switch(param_state) {
 				case 2:
 					// the big switch to the real game
 					for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
@@ -78,7 +80,7 @@ void UpdateStart(Entity* this) {
 					setup_ingame();
 					return;
 				default:
-					this->param_b = 0;
+					param_state = 0;
 					break;
 			}
 		}

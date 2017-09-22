@@ -8,20 +8,25 @@
 #include "entities.h"
 #include "gent.h"
 
+
 // param has base time for joke timer
 // graphic_a indicates fading in
 // graphic_b indicates if played joke sfx
 
-void UpdateShaker(Entity* entity);
-void DrawShaker(Entity* entity);
+#define param_timer_base	(this->paramu[0])
+#define param_fadein		(this->paramc[2])
+#define param_played_joke	(this->paramc[3])
 
-void ent_Shaker(Entity* entity) {
-	entity->onDestroy = gent_DestroyEmpty;
-	entity->onUpdate = UpdateShaker;
+void UpdateShaker(Entity* this);
+void DrawShaker(Entity* this);
 
-	entity->param = tickcount;
-	entity->graphic_a = 1; // 1 means fading in
-	entity->graphic_b = 0; // if played joke sfx yet
+void ent_Shaker(Entity* this) {
+	this->onDestroy = gent_DestroyEmpty;
+	this->onUpdate = UpdateShaker;
+
+	param_timer_base = tickcount;
+	param_fadein = 1; // 1 means fading in
+	param_played_joke = 0; // if played joke sfx yet
 
 	v_FadeIn(5,
 		0x01, 0x10, 0x20,
@@ -60,11 +65,11 @@ void UpdateShaker(Entity* this) {
 	}
 
 	// show the joke
-	if(tickcount - this->param >= 60 * 15) {
+	if(tickcount - param_timer_base >= 60 * 15) {
 		x += 256;
-		if(!this->graphic_b) {
+		if(!param_played_joke) {
 			s_PlaySFX(SFX_JOKE, SFX_CH2);
-			this->graphic_b = 1;
+			param_played_joke = 1;
 		}
 	}
 
@@ -73,14 +78,14 @@ void UpdateShaker(Entity* this) {
 		Entity* shakeEnt;
 		for(shakeEnt = e_Iterate(); shakeEnt; e_IterateNext(&shakeEnt)) {
 			// detect a gent_Sprite naively
-			if(shakeEnt->graphic_b == 0x05) {
-				shakeEnt->param_a += x * 4;
-				shakeEnt->param_b += y * 4;
+			if(shakeEnt->paramc[1] == 0x05) {
+				shakeEnt->paramc[2] += x * 4;
+				shakeEnt->paramc[3] += y * 4;
 			}
 		}
 	}
 	v_BigScrollBackground(x, y);
 
-	if(this->graphic_a && v_FadeStep())
-		this->graphic_a = 0;
+	if(param_fadein && v_FadeStep())
+		param_fadein = 0;
 }

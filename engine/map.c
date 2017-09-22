@@ -55,11 +55,12 @@ void updateHSections() {
 
 	int xmax = MIN(sx + 1, header->width - 1);
 	int ymax = MIN(sy | 1, header->height - 1);
-	int x, y;
+	int x, y, yoffs;
 
 	for(y = MAX(sy & ~1, 0); y <= ymax; ++y) {
+		yoffs = y * header->width;
 		for(x = MAX(sx - 1, 0); x <= xmax; ++x) {
-			assignSection((x & 2) == 2, (x & 1) | ((y & 1) << 1), x + y * header->width);
+			assignSection((x & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs);
 		}
 	}
 }

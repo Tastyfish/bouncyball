@@ -3,43 +3,45 @@
 #include "video.h"
 #include "sound.h"
 
-#include "sprites.h"
+#include "tiles.h"
 #include "sounds.h"
 
 #include "entities.h"
 #include "gent.h"
 
-// sprite ptr in graphic (gent_Sprite)
-// accel in param_a and param_b as 1/8 of a pixel
+#define param_sprite	(this->graphic[0])
+// accel as 1/8 of a pixel
+#define param_accelx	(this->paramc[2])
+#define param_accely	(this->paramc[3])
 
-void UpdateBall(Entity* entity);
+void UpdateBall(Entity* this);
 
-void ent_Ball(Entity* entity) {
+void ent_Ball(Entity* this) {
 	Sprite* s;
 	spriteID_t sprid = v_AllocSprite();
 	if(sprid == 0xFF)
 		return;
 	s = SpriteIDToAddress(sprid);
 
-	entity->graphic = (int)s;
-	entity->param_a = crand(-32, 32); // random direction
-	entity->param_b = crand(-32, 32); // random direction
+	param_sprite = s;
+	param_accelx = crand(-32, 32); // random direction
+	param_accely = crand(-32, 32); // random direction
 
 	s->x = crand(8, 240);
 	s->y = crand(8, 224);
 	s->tile = SPR_BALL; // ball
 	s->attrib = crand(0, 3); // random color
 
-	entity->onDestroy = gent_DestroySprite;
-	entity->onUpdate = UpdateBall;
+	this->onDestroy = gent_DestroySprite;
+	this->onUpdate = UpdateBall;
 }
 
-void UpdateBall(Entity* entity) {
-	Sprite* s = (Sprite*)entity->graphic;
+void UpdateBall(Entity* this) {
+	Sprite* s = param_sprite;
 
 	// get accel values, also gravity
-	signed char accelX = entity->param_a;
-	signed char accelY = entity->param_b + 2;
+	signed char accelX = param_accelx;
+	signed char accelY = param_accely + 2;
 
 	// walls
 	if(
@@ -65,8 +67,8 @@ void UpdateBall(Entity* entity) {
 	}
 
 	// write accel
-	entity->param_a = accelX;
-	entity->param_b = accelY;
+	param_accelx = accelX;
+	param_accely = accelY;
 
 	// dV
 	s->x += (int)accelX / 8;

@@ -10,18 +10,13 @@ Entity entity_table[NUM_ENTITIES];
 
 #define ENTITY_TABLE_END (entity_table + NUM_ENTITIES)
 
-// Hard wipe all entities, will probably mess things up mid-game
-void e_Reset() {
-	bzero(entity_table, sizeof(entity_table));
-}
-
 // Create an entity with given ctor
 // Returns the new entity, or null if no slots left
 Entity* e_Create(EntityCallback ctor) {
-	Entity* ent;
+	Entity* ent = entity_table;
 
-	for(ent = entity_table; ent < ENTITY_TABLE_END; ent++) {
-		if(ent->onDestroy == NULL) {
+	for(; ent < ENTITY_TABLE_END; ++ent) {
+		if(!ent->onDestroy) {
 			// found a free one
 			ctor(ent);
 			return ent;
@@ -80,10 +75,10 @@ bool e_UpdateTick() {
 
 // Check collisions
 Entity* e_Collide(int x, int y) {
-	Entity* currentEntity;
+	Entity* currentEntity = entity_table;
 	CollideCallback collide;
-	for(currentEntity = entity_table; currentEntity < ENTITY_TABLE_END; ++currentEntity) {
-		collide = currentEntity->onCollide;
+	for(; currentEntity < ENTITY_TABLE_END; ++currentEntity) {
+		collide = (CollideCallback)currentEntity->paramp[2];
 		if(collide)
 			if(collide(currentEntity, x, y))
 				return currentEntity;

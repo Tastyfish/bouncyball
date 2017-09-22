@@ -1,5 +1,8 @@
 #include <stdbool.h>
 
+#ifndef _VIDEO_H
+#define _VIDEO_H
+
 typedef unsigned char spriteID_t;
 typedef unsigned char color_t;
 typedef unsigned char tile_t;
@@ -51,3 +54,5 @@ extern void __fastcall__ v_DecompressToRAM(void* dest, void* src);
 extern void v_FadeIn(int delay, ...);
 extern void v_FadeOut(int delay, ...);
 extern bool v_FadeStep();
+
+#endif
