@@ -37,13 +37,13 @@ void e_Destroy(Entity* entity) {
 }
 
 // A seperate fn so the compiler knows that things will be called
-void TickIRQs() {
+void TickIRQs(void) {
 	__asm__("cli\nnop\nsei");
 }
 
 // Update as much as we can this round
 // True if was interrupted by VBlank, false if just ran out of work
-bool e_UpdateTick() {
+bool e_UpdateTick(void) {
 	static Entity* currentEntity = entity_table;
 
 	Entity* startingEntity = currentEntity;
@@ -87,7 +87,7 @@ Entity* e_Collide(int x, int y) {
 	return NULL;
 }
 
-Entity* e_Iterate() {
+Entity* e_Iterate(void) {
 	return entity_table;
 }
 

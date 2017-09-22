@@ -30,21 +30,21 @@ typedef enum {
 	PAL_SPR3	= 0x1D
 } pal_t;
 
-extern void vb_ClearOAM();
-extern void vb_FullCopyOAM();
+extern void vb_ClearOAM(void);
+extern void vb_FullCopyOAM(void);
 extern void __fastcall__ vb_CopySprite(spriteID_t id);
 extern void __fastcall__ vb_CopyOAM(unsigned char start, unsigned char length);
 extern void vb_CopyPPU(void* start, int length);
 extern void __fastcall__ v_SetBGColor(color_t color);
 extern void __fastcall__ v_SetPalette(pal_t pal_id, color_t col_1, color_t col_2, color_t col_3);
-extern void v_WaitVBlank();
-extern void vb_DisableAll();
+extern void v_WaitVBlank(void);
+extern void vb_DisableAll(void);
 extern void __fastcall__ vb_EnableSprites(bool enable);
 extern void __fastcall__ vb_EnableBackgrounds(bool enable);
 extern void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
 extern void __fastcall__ v_BigScrollBackground(int x, int y);
 
-extern spriteID_t v_AllocSprite();
+extern spriteID_t v_AllocSprite(void);
 extern void __fastcall__ v_FreeSprite(spriteID_t sprite);
 
 extern void __fastcall__ vb_DecompressNT(int ppuAddr, const char* ptr);
@@ -53,6 +53,6 @@ extern void __fastcall__ v_DecompressToRAM(void* dest, void* src);
 
 extern void v_FadeIn(int delay, ...);
 extern void v_FadeOut(int delay, ...);
-extern bool v_FadeStep();
+extern bool v_FadeStep(void);
 
 #endif

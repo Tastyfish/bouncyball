@@ -10,9 +10,7 @@ extern const char* const NAM_DIRECTIONS;
 extern const void* const S_MUSIC;
 extern const void* const S_SFX;
 
-extern void setup_splash();
-
-void setup_splash() {
+extern void setup_splash(void) {
 	s_Setup(S_MUSIC, S_SFX);
 
 	v_SetPalette(PAL_SPR0, 0x16, 0x06, 0x36);

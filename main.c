@@ -6,9 +6,9 @@
 #include "entity.h"
 #include "entities.h"
 
-extern void setup_splash();
+extern void setup_splash(void);
 
-void main() {
+void main(void) {
 	setup_splash();
 	vb_EnableSprites(true);
 	vb_EnableBackgrounds(true);

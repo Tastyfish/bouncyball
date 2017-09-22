@@ -24,10 +24,10 @@ typedef struct Entity_s {
 extern Entity* e_Create(EntityCallback ctor);
 extern void e_Destroy(Entity* entity);
 
-extern bool e_UpdateTick();
+extern bool e_UpdateTick(void);
 extern Entity* e_Collide(int x, int y);
 
-extern Entity* e_Iterate();
+extern Entity* e_Iterate(void);
 extern void e_IterateNext(Entity** e);
 
 #endif

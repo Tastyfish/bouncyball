@@ -22,13 +22,13 @@ extern unsigned char mmc5_nt_mapping;
 int scanlineCount = 0;
 ScanlineCB_Entry scanline_callbacks[NUM_CALLBACKS];
 
-extern void handle_hblank();
+extern void handle_hblank(void);
 
 int sorterFn(const void* a, const void* b)  {
 	return ((ScanlineCB_Entry*)(a))->line < ((ScanlineCB_Entry*)(b))->line;
 }
 
-void resort() {
+void resort(void) {
 	qsort(scanline_callbacks, scanlineCount, sizeof(ScanlineCB_Entry), sorterFn);
 }
 
@@ -74,7 +74,7 @@ void vm_RemoveScanlineCallback(HScanlineCB cb) {
 	--scanlineCount;
 }
 
-void handle_hblank() {
+void handle_hblank(void) {
 	if(!scanlineCount)
 		return;
 

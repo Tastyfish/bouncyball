@@ -20,8 +20,8 @@ int refX, refY;
 extern int sectionLoaded[2][4] = {};
 
 void assignSection(char nt, char q, int sectionID);
-void updateVSections();
-void updateHSections();
+void updateVSections(void);
+void updateHSections(void);
 
 /***********************************************
 ** Load up the map around the position (refX,refY)
@@ -50,7 +50,7 @@ void map_SetOrientation(MapOrientation o) {
 	}
 }
 
-void updateHSections() {
+void updateHSections(void) {
 	int sx = refX >> 7, sy = refY >> 7;
 
 	int xmax = MIN(sx + 1, header->width - 1);
@@ -65,7 +65,7 @@ void updateHSections() {
 	}
 }
 
-void updateVSections() {
+void updateVSections(void) {
 	//int sx = refX >> 7, sy = refY >> 7;
 	//int x, y;
 }

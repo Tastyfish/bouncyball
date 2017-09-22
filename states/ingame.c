@@ -7,7 +7,7 @@
 extern const char* const NAM_BG;
 extern const char* const NAM_JOKE;
 
-extern void setup_ingame() {
+extern void setup_ingame(void) {
 	char i;
 
 	v_WaitVBlank();

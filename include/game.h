@@ -9,4 +9,4 @@ extern char VBLANK_FLAG;
 
 extern unsigned int crand(unsigned int lo, unsigned int hi);
 
-extern void g_Run();
+extern void g_Run(void);
