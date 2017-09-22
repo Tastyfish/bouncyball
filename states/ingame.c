@@ -1,3 +1,4 @@
+#include "game.h"
 #include "video.h"
 #include "entity.h"
 #include "entities.h"
@@ -16,8 +17,12 @@ extern void setup_ingame(void) {
 	vb_DecompressNT(0x2400, NAM_JOKE);
 
 	e_Create(&ent_Shaker);
+	e_Create(&ent_NTSmoke, 21*8, 11*8-1);
+	e_Create(&ent_NTSmoke, 23*8, 11*8-1);
+	e_Create(&ent_NTSmoke, 25*8, 11*8-1);
+
 	for(i = 0; i < 4; i++) {
-		e_Create(&ent_Ball);
+		e_Create(&ent_Ball, crand(8, 240), crand(8, 224));
 	}
 
 	s_PlayMusic(MUSIC_INGAME);

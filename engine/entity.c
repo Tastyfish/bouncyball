@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdarg.h>
 #include "game.h"
 #include "entity.h"
 
@@ -12,13 +13,16 @@ Entity entity_table[NUM_ENTITIES];
 
 // Create an entity with given ctor
 // Returns the new entity, or null if no slots left
-Entity* e_Create(EntityCallback ctor) {
+Entity* e_Create(EntityCtor ctor, ...) {
 	Entity* ent = entity_table;
+	va_list args;
 
 	for(; ent < ENTITY_TABLE_END; ++ent) {
 		if(!ent->onDestroy) {
 			// found a free one
-			ctor(ent);
+			va_start(args, ctor);
+			ctor(ent, args);
+			va_end(args);
 			return ent;
 		}
 	}

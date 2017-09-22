@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 #include "game.h"
 #include "entity.h"
 #include "video.h"
@@ -13,22 +15,23 @@
 // accel as 1/8 of a pixel
 #define param_accelx	(this->paramc[2])
 #define param_accely	(this->paramc[3])
+// so the shaker can find the balls
+#define param_magicid	(this->paramu[2])
 
 void UpdateBall(Entity* this);
 
-void ent_Ball(Entity* this) {
-	Sprite* s;
-	spriteID_t sprid = v_AllocSprite();
-	if(sprid == 0xFF)
+void ent_Ball(Entity* this, va_list args) {
+	sprite_t* s = v_AllocSprite();
+	if(!s)
 		return;
-	s = SpriteIDToAddress(sprid);
 
 	param_sprite = s;
 	param_accelx = crand(-32, 32); // random direction
 	param_accely = crand(-32, 32); // random direction
+	param_magicid = 0xBA11;
 
-	s->x = crand(8, 240);
-	s->y = crand(8, 224);
+	s->x = va_arg(args, int);
+	s->y = va_arg(args, int);
 	s->tile = SPR_BALL; // ball
 	s->attrib = crand(0, 3); // random color
 
@@ -37,7 +40,7 @@ void ent_Ball(Entity* this) {
 }
 
 void UpdateBall(Entity* this) {
-	Sprite* s = param_sprite;
+	sprite_t* s = param_sprite;
 
 	// get accel values, also gravity
 	signed char accelX = param_accelx;

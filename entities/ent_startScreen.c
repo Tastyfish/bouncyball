@@ -20,7 +20,7 @@ void UpdateStart(Entity*);
 void Destroy(Entity*);
 void onSplitscreen(unsigned char y);
 
-void ent_StartScreen(Entity* this) {
+void ent_StartScreen(Entity* this, va_list) {
 	this->onDestroy = Destroy;
 	this->onUpdate = UpdateStart;
 	param_scanline_callback = (void*)vm_AddScanlineCallback(21 * 8, onSplitscreen);

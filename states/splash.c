@@ -26,6 +26,10 @@ extern void setup_splash(void) {
 	// the start screen will make the changes into the actual game
 	e_Create(&ent_StartScreen);
 
+	e_Create(&ent_MapSmoke, 47*8, 9*8-1);
+	e_Create(&ent_MapSmoke, 49*8, 9*8-1);
+	e_Create(&ent_MapSmoke, 51*8, 9*8-1);
+
 	v_DecompressToRAM((char*)0x5C00, NAM_DIRECTIONS);
 
 	//vb_DecompressQLEChunk(0x2000, 0, QLE_SPLASH + 0x14);

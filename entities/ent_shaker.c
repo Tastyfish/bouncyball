@@ -16,17 +16,20 @@
 #define param_timer_base	(this->paramu[0])
 #define param_fadein		(this->paramc[2])
 #define param_played_joke	(this->paramc[3])
+#define param_shakex		(this->parami[2])
+#define param_shakey		(this->parami[3])
 
 void UpdateShaker(Entity* this);
 void DrawShaker(Entity* this);
 
-void ent_Shaker(Entity* this) {
+void ent_Shaker(Entity* this, va_list) {
 	this->onDestroy = gent_DestroyEmpty;
 	this->onUpdate = UpdateShaker;
 
 	param_timer_base = tickcount;
 	param_fadein = 1; // 1 means fading in
 	param_played_joke = 0; // if played joke sfx yet
+	param_shakex = param_shakey = 0x7FFF;
 
 	v_FadeIn(5,
 		0x01, 0x10, 0x20,
@@ -52,7 +55,7 @@ void UpdateShaker(Entity* this) {
 	}
 
 	if(i & INPUT_A) {
-		e_Create(&ent_Ball);
+		e_Create(&ent_Ball, crand(8, 240), crand(8, 224));
 	}
 
 	if(i & INPUT_SELECT) {
@@ -74,17 +77,25 @@ void UpdateShaker(Entity* this) {
 	}
 
 	// shake EVERYTHING
-	if(x != 0 || y != 0) {
+	if(param_shakex != x || param_shakey != y) {
 		Entity* shakeEnt;
 		for(shakeEnt = e_Iterate(); shakeEnt; e_IterateNext(&shakeEnt)) {
-			// detect a gent_Sprite naively
-			if(shakeEnt->paramc[1] == 0x05) {
+			if(shakeEnt->paramu[2] == 0xBA11) {
+				// shake balls
 				shakeEnt->paramc[2] += x * 4;
 				shakeEnt->paramc[3] += y * 4;
+			} else if(shakeEnt->paramu[2] == 0x530C) {
+				// move smoke around
+				shakeEnt->graphic[0]->x = shakeEnt->paramc[6] - x;
+				shakeEnt->graphic[0]->y = shakeEnt->paramc[7] - y;
+				shakeEnt->graphic[1]->x = shakeEnt->paramc[6] - x;
+				shakeEnt->graphic[1]->y = shakeEnt->paramc[7] - y + 8;
 			}
 		}
+		v_BigScrollBackground(x, y);
+		param_shakex = x;
+		param_shakey = y;
 	}
-	v_BigScrollBackground(x, y);
 
 	if(param_fadein && v_FadeStep())
 		param_fadein = 0;
