@@ -13,13 +13,14 @@ typedef struct {
 
 extern ScanlineCB_Entry* mmc_sl_ptr;
 #pragma zpsym("mmc_sl_ptr");
-extern unsigned char mmc_mirroring;
-#pragma zpsym("mmc_sl_ptr");
+extern char mmc_mirroring;
+#pragma zpsym("mmc_mirroring");
 extern unsigned char mmc5_sl_counter;
 extern unsigned char mmc5_irq_ctrl;
-extern unsigned char mmc5_nt_mapping;
+extern char mmc5_nt_mapping;
 
-int scanlineCount = 0;
+extern char scanlineCount = 0;
+extern ScanlineCB_Entry scanline_callbacks[NUM_CALLBACKS];
 ScanlineCB_Entry scanline_callbacks[NUM_CALLBACKS];
 
 extern void handle_hblank(void);
@@ -49,7 +50,7 @@ HScanlineCB vm_AddScanlineCallback(line_t line, ScanlineCallback callback) {
 	} else {
 		// we might have to move the current callback ptr
 		if(line < mmc_sl_ptr->line)
-			mmc_sl_ptr++;
+			++mmc_sl_ptr;
 
 		resort();
 	}
@@ -66,7 +67,7 @@ void vm_RemoveScanlineCallback(HScanlineCB cb) {
 
 		// we might have to move the current callback ptr
 		if(entry->line < mmc_sl_ptr->line)
-			mmc_sl_ptr--;
+			--mmc_sl_ptr;
 
 		resort();
 	}
@@ -74,7 +75,7 @@ void vm_RemoveScanlineCallback(HScanlineCB cb) {
 	--scanlineCount;
 }
 
-void handle_hblank(void) {
+/*void handle_hblank(void) {
 	if(!scanlineCount)
 		return;
 
@@ -87,14 +88,4 @@ void handle_hblank(void) {
 
 	mmc5_sl_counter = mmc_sl_ptr->line - entry->line;
 	mmc5_irq_ctrl = 0x80;
-}
-
-// Set the nametable mirroring for next frame
-void vm_SetNametableMirroring(char code) {
-	mmc_mirroring = code;
-}
-
-// Set the nametable mirroring NOW
-void vbm_SetNametableMirroring(char code) {
-	mmc5_nt_mapping = mmc_mirroring = code;
-}
+}*/
