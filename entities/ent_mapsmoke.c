@@ -10,10 +10,10 @@
 #define param_upper_sprite	(this->boundGraphic[0])
 #define param_lower_sprite	(this->boundGraphic[1])
 
-void updateSmoke(Entity* this);
-void destroySmoke(Entity* this);
+void updateSmoke(entity_t* this);
+void destroySmoke(entity_t* this);
 
-void ent_MapSmoke(Entity* this, va_list args) {
+void ent_MapSmoke(entity_t* this, va_list args) {
 	int x = va_arg(args, int);
 	int y = va_arg(args, int);
 
@@ -43,7 +43,7 @@ void ent_MapSmoke(Entity* this, va_list args) {
 	param_lower_sprite = lbs;
 }
 
-void updateSmoke(Entity* this) {
+void updateSmoke(entity_t* this) {
 	bound_sprite_t* ubs = param_upper_sprite;
 	bound_sprite_t* lbs = param_lower_sprite;
 	char t = (tickcount >> 4) % 2;
@@ -55,7 +55,7 @@ void updateSmoke(Entity* this) {
 	map_UpdateSprite(lbs);
 }
 
-void destroySmoke(Entity* this) {
+void destroySmoke(entity_t* this) {
 	map_FreeBoundSprite(param_upper_sprite);
 	map_FreeBoundSprite(param_lower_sprite);
 }

@@ -18,9 +18,9 @@
 // so the shaker can find the balls
 #define param_magicid	(this->paramu[2])
 
-void UpdateBall(Entity* this);
+void UpdateBall(entity_t* this);
 
-void ent_Ball(Entity* this, va_list args) {
+void ent_Ball(entity_t* this, va_list args) {
 	sprite_t* s = v_AllocSprite();
 	if(!s)
 		return;
@@ -39,7 +39,7 @@ void ent_Ball(Entity* this, va_list args) {
 	this->onUpdate = UpdateBall;
 }
 
-void UpdateBall(Entity* this) {
+void UpdateBall(entity_t* this) {
 	sprite_t* s = param_sprite;
 
 	// get accel values, also gravity

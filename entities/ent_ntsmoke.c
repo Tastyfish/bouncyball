@@ -12,10 +12,10 @@
 #define param_basex			(this->paramc[6])
 #define param_basey			(this->paramc[7])
 
-void updateNTSmoke(Entity* this);
-void destroyNTSmoke(Entity* this);
+void updateNTSmoke(entity_t* this);
+void destroyNTSmoke(entity_t* this);
 
-void ent_NTSmoke(Entity* this, va_list args) {
+void ent_NTSmoke(entity_t* this, va_list args) {
 	char x = va_arg(args, int);
 	char y = va_arg(args, int);
 
@@ -48,7 +48,7 @@ void ent_NTSmoke(Entity* this, va_list args) {
 	param_basey = y;
 }
 
-void updateNTSmoke(Entity* this) {
+void updateNTSmoke(entity_t* this) {
 	sprite_t* ubs = param_upper_sprite;
 	sprite_t* lbs = param_lower_sprite;
 	char t = (tickcount >> 4) % 2;
@@ -57,7 +57,7 @@ void updateNTSmoke(Entity* this) {
 	lbs->tile = t ? SPR_SMOKE0 + 0x10 : SPR_SMOKE1 + 0x10;
 }
 
-void destroyNTSmoke(Entity* this) {
+void destroyNTSmoke(entity_t* this) {
 	v_FreeSprite(param_upper_sprite);
 	v_FreeSprite(param_lower_sprite);
 }

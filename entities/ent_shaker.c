@@ -19,10 +19,10 @@
 #define param_shakex		(this->parami[2])
 #define param_shakey		(this->parami[3])
 
-void UpdateShaker(Entity* this);
-void DrawShaker(Entity* this);
+void UpdateShaker(entity_t* this);
+void DrawShaker(entity_t* this);
 
-void ent_Shaker(Entity* this, va_list) {
+void ent_Shaker(entity_t* this, va_list) {
 	this->onDestroy = gent_DestroyEmpty;
 	this->onUpdate = UpdateShaker;
 
@@ -38,7 +38,7 @@ void ent_Shaker(Entity* this, va_list) {
 		0x01, 0x27, 0x37);
 }
 
-void UpdateShaker(Entity* this) {
+void UpdateShaker(entity_t* this) {
 	int x, y;
 
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
@@ -60,7 +60,7 @@ void UpdateShaker(Entity* this) {
 
 	if(i & INPUT_SELECT) {
 		// clear the balls
-		Entity* ent;
+		entity_t* ent;
 		for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
 			if(ent->paramu[2] == 0xBA11)
 				e_Destroy(ent);
@@ -78,7 +78,7 @@ void UpdateShaker(Entity* this) {
 
 	// shake EVERYTHING
 	if(param_shakex != x || param_shakey != y) {
-		Entity* shakeEnt;
+		entity_t* shakeEnt;
 		for(shakeEnt = e_Iterate(); shakeEnt; e_IterateNext(&shakeEnt)) {
 			if(shakeEnt->paramu[2] == 0xBA11) {
 				// shake balls

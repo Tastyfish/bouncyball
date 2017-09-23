@@ -7,14 +7,14 @@
 
 #define NUM_ENTITIES 64
 
-Entity entity_table[NUM_ENTITIES];
+entity_t entity_table[NUM_ENTITIES];
 
 #define ENTITY_TABLE_END (entity_table + NUM_ENTITIES)
 
 // Create an entity with given ctor
 // Returns the new entity, or null if no slots left
-Entity* e_Create(EntityCtor ctor, ...) {
-	Entity* ent = entity_table;
+entity_t* e_Create(entity_ctor_t ctor, ...) {
+	entity_t* ent = entity_table;
 	va_list args;
 
 	for(; ent < ENTITY_TABLE_END; ++ent) {
@@ -32,12 +32,12 @@ Entity* e_Create(EntityCtor ctor, ...) {
 }
 
 // Destroy an entity, calls OnDestroy()
-void e_Destroy(Entity* entity) {
-	EntityCallback destroy = entity->onDestroy;
+void e_Destroy(entity_t* entity) {
+	entity_cb_t destroy = entity->onDestroy;
 	if(destroy) {
 		destroy(entity);
 	}
-	bzero(entity, sizeof(Entity));
+	bzero(entity, sizeof(entity_t));
 }
 
 // A seperate fn so the compiler knows that things will be called
@@ -48,10 +48,10 @@ void TickIRQs(void) {
 // Update as much as we can this round
 // True if was interrupted by VBlank, false if just ran out of work
 bool e_UpdateTick(void) {
-	static Entity* currentEntity = entity_table;
+	static entity_t* currentEntity = entity_table;
 
-	Entity* startingEntity = currentEntity;
-	EntityCallback update;
+	entity_t* startingEntity = currentEntity;
+	entity_cb_t update;
 
 	VBLANK_FLAG = 0;
 
@@ -77,25 +77,11 @@ bool e_UpdateTick(void) {
 	return true;
 }
 
-// Check collisions
-Entity* e_Collide(int x, int y) {
-	Entity* currentEntity = entity_table;
-	CollideCallback collide;
-	for(; currentEntity < ENTITY_TABLE_END; ++currentEntity) {
-		collide = (CollideCallback)currentEntity->paramp[2];
-		if(collide)
-			if(collide(currentEntity, x, y))
-				return currentEntity;
-	}
-
-	return NULL;
-}
-
-Entity* e_Iterate(void) {
+entity_t* e_Iterate(void) {
 	return entity_table;
 }
 
-void e_IterateNext(Entity** e) {
+void e_IterateNext(entity_t** e) {
 	if(++(*e) == ENTITY_TABLE_END)
 		*e = NULL;
 }

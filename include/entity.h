@@ -7,13 +7,12 @@
 #define _ENTITY_H
 
 struct Entity_s;
-typedef void (*EntityCtor)(struct Entity_s* this, va_list args);
-typedef void (*EntityCallback)(struct Entity_s* this);
-typedef bool (*CollideCallback)(struct Entity_s* this, int x, int y);
+typedef void (*entity_ctor_t)(struct entity_s* this, va_list args);
+typedef void (*entity_cb_t)(struct entity_s* this);
 
-typedef struct Entity_s {
-	EntityCallback onDestroy;
-	EntityCallback onUpdate;
+typedef struct entity_s {
+	entity_cb_t onDestroy;
+	entity_cb_t onUpdate;
 	union param {
 		char paramc[8];
 		int parami[4];
@@ -22,16 +21,15 @@ typedef struct Entity_s {
 		sprite_t* graphic[4]; // getting a bit specific, but extremely common
 		bound_sprite_t* boundGraphic[4];
 	};
-} Entity;
+} entity_t;
 
 
-extern Entity* e_Create(EntityCtor ctor, ...);
-extern void e_Destroy(Entity* entity);
+extern entity_t* e_Create(entity_ctor_t ctor, ...);
+extern void e_Destroy(entity_t* entity);
 
 extern bool e_UpdateTick(void);
-extern Entity* e_Collide(int x, int y);
 
-extern Entity* e_Iterate(void);
-extern void e_IterateNext(Entity** e);
+extern entity_t* e_Iterate(void);
+extern void e_IterateNext(entity_t** e);
 
 #endif

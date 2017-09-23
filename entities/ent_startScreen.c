@@ -16,11 +16,11 @@ extern void setup_ingame();
 #define param_x					(this->paramc[2])
 #define param_state				(this->paramc[3])
 
-void UpdateStart(Entity*);
-void Destroy(Entity*);
+void UpdateStart(entity_t*);
+void Destroy(entity_t*);
 void onSplitscreen(unsigned char y);
 
-void ent_StartScreen(Entity* this, va_list) {
+void ent_StartScreen(entity_t* this, va_list) {
 	this->onDestroy = Destroy;
 	this->onUpdate = UpdateStart;
 	param_scanline_callback = (void*)vm_AddScanlineCallback(21 * 8, onSplitscreen);
@@ -34,7 +34,7 @@ void ent_StartScreen(Entity* this, va_list) {
 	param_state = 1;
 }
 
-void Destroy(Entity* this) {
+void Destroy(entity_t* this) {
 	vm_RemoveScanlineCallback((HScanlineCB)param_scanline_callback);
 }
 
@@ -52,7 +52,7 @@ void onSplitscreen(unsigned char) {
 	*(char*)(0x2005) = 0;
 }
 
-void UpdateStart(Entity* this) {
+void UpdateStart(entity_t* this) {
 	if(!param_state) {
 		input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 		if(i & INPUT_START) {
@@ -69,7 +69,7 @@ void UpdateStart(Entity* this) {
 			map_MoveTo(param_x++ + 128, 0);
 	} else {
 		if(v_FadeStep()) {
-			Entity* ent;
+			entity_t* ent;
 			switch(param_state) {
 				case 2:
 					// the big switch to the real game
