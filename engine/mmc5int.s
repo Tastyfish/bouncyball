@@ -10,9 +10,31 @@
 
 .export		handle_hblank, _vm_SetNametableMirroring, _vbm_SetNametableMirroring
 
-.segment	"CODE"
+.segment	"INIT"
 
-.proc	handle_hblank
+.interruptor preset_nmi, 30
+.proc preset_nmi
+	lda _mmc_mirroring
+	sta _mmc5_nt_mapping
+	rts
+.endproc
+
+.interruptor post_nmi, 10
+.proc post_nmi
+    ; so many hblank variables, but worth it to handle glitch frames
+	lda #<_scanline_callbacks
+	sta _mmc_sl_ptr
+	lda #>_scanline_callbacks
+	sta _mmc_sl_ptr+1
+	lda #0
+	sta _mmc_sl_i
+	ldy #0
+	lda (_mmc_sl_ptr),y
+	sta _mmc5_sl_counter
+	rts
+.endproc
+
+.proc handle_hblank
 	lda     _scanlineCount
 	beq     done
 	ldy     #$02
@@ -55,6 +77,8 @@ L0042:
 done:
 	rts
 .endproc
+
+.code
 
 ; void __fastcall__ vm_SetNametableMirroring(char code)
 .proc _vm_SetNametableMirroring

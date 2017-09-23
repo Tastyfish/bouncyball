@@ -9,7 +9,15 @@
 .import popax, popa
 
 
+.segment "INIT"
+
+.interruptor update_sound, 1
+.proc update_sound
+	jmp FamiToneUpdate
+.endproc
+
 .code
+
 ; void __fastcall__ s_Setup(void* music, void* sfx);
 .proc _s_Setup
 	sta ptr1

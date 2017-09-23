@@ -7,7 +7,7 @@ _VIDEO_EXPORT = 1
 
 .importzp _tickcount
 .import _bzero
-.import tosdiva0, ppubuf_put
+.import tosdiva0, ppubuf_put, ppubuf_flush
 
 .export ppuMaskCache
 
@@ -23,12 +23,31 @@ _VIDEO_EXPORT = 1
 NUM_SPRITES = 64
 
 .bss
-	ppuMaskCache:	.byte 0
+	ppuMaskCache:	.res 1
+	sprite_atable:	.res NUM_SPRITES
 
-	sprite_atable:
-	.repeat NUM_SPRITES
-		.byte 0
-	.endrepeat
+.segment "INIT"
+
+.interruptor flush_vblank, 20
+.proc flush_vblank
+	jsr ppubuf_flush
+	jsr _vb_FullCopyOAM
+
+	; reset the video counter
+	lda #$20
+	sta PPU_ADDR
+	lda #$00
+	sta PPU_ADDR
+
+	; Set scroll
+	lda _mmc_ctrl
+	sta PPU_CTRL
+	lda _mmc_scrollx
+	sta PPU_SCROLL
+	lda _mmc_scrolly
+	sta PPU_SCROLL
+	rts
+.endproc
 
 .code
 

@@ -9,11 +9,11 @@
 .include        "zeropage.inc"
 .include        "nes.inc"
 
-.export         _exit
-.export         __STARTUP__ : absolute = 1      ; Mark as startup
+.export     _exit
+.export     __STARTUP__ : absolute = 1      ; Mark as startup
 .import		initlib, donelib, callmain
-.import	        push0, _main, zerobss, copydata
-.import         ppubuf_flush
+.import     push0, _main, zerobss, copydata
+.import     ppubuf_flush, condes
 
 ; Linker generated symbols
 .import		__RAM_START__, __RAM_SIZE__
@@ -23,11 +23,11 @@
 .import		__CODE_LOAD__,__CODE_RUN__, __CODE_SIZE__
 .import		__RODATA_LOAD__,__RODATA_RUN__, __RODATA_SIZE__
 
-.import handle_hblank, _scanline_callbacks
-.import FamiToneUpdate
+.import __INTERRUPTOR_COUNT__, __INTERRUPTOR_TABLE__
+
+.import handle_hblank
 
 ; a redo of CRT0 for our mapper/NMI/IRQ needs
-
 
 .exportzp _VBLANK_FLAG      := $70
 .exportzp _mmc_scrollx      := $77
@@ -121,38 +121,13 @@ nmi:
 	inc tickcount+1
 
 @s:
-    ; MMC mirroring needs to be right or it'll not flush correctly
-	lda _mmc_mirroring
-	sta _mmc5_nt_mapping
+    ldy #<(__INTERRUPTOR_COUNT__*2)
+    beq @done_nmi
+    lda #<__INTERRUPTOR_TABLE__
+    ldx #>__INTERRUPTOR_TABLE__
+    jsr condes
 
-	jsr ppubuf_flush
-
-    ; reset the video counter
-	lda #$20
-	sta PPU_VRAM_ADDR2
-	lda #$00
-	sta PPU_VRAM_ADDR2
-
-	; Set scroll
-	lda _mmc_ctrl
-	sta PPU_CTRL1
-	lda _mmc_scrollx
-	sta PPU_VRAM_ADDR1
-	lda _mmc_scrolly
-	sta PPU_VRAM_ADDR1
-    ; so many hblank variables, but worth it to handle glitch frames
-	lda #<_scanline_callbacks
-	sta _mmc_sl_ptr
-	lda #>_scanline_callbacks
-	sta _mmc_sl_ptr+1
-	lda #0
-	sta _mmc_sl_i
-	ldy #0
-	lda (_mmc_sl_ptr),y
-	sta _mmc5_sl_counter
-
-	jsr FamiToneUpdate
-
+@done_nmi:
     pla
     tax
     pla

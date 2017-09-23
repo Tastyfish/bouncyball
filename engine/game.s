@@ -11,6 +11,7 @@ _GAME_EXPORT = 1
 
 .exportzp _tickcount	:= $6B
 
+.segment "INIT"
 .constructor _g_Init, 20
 ; void g_Init()
 .proc _g_Init
@@ -62,11 +63,12 @@ vwait2:
 	rts
 .endproc
 
+.code
+
 ; Run the main game loop---never returns
 ; void g_Run()
 .proc _g_Run
 	sei
-	jsr _vb_FullCopyOAM
 	jsr _e_UpdateTick
 	cli
 	cmp #0

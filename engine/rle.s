@@ -143,40 +143,32 @@ loop:
 	jsr rle_byte
 	cmp sreg
 	beq rle_start
-	jsr wbyte
 	sta sreg+1
+	jsr wbyte
 	beq loop
 rle_start:
 	jsr rle_byte
 	cmp #0
 	beq done
-	tax
+	sta tmp4
 	lda sreg+1
 rle_loop:
 	jsr wbyte
-	dex
+	dec tmp4
 	bne rle_loop
 	beq loop
 done:
 	rts
 
 wbyte:
-	tay
 	pha
-	txa
-	pha
-	tya
 	ldx ptr2
 	ldy ptr2+1
 	jsr ppubuf_put
-	pla
-	tax
-	pla
 	inc ptr2
 	bne wbyte_c
 	inc ptr2+1
 wbyte_c:
-	pha
 
 	; check if in attrib part
 	lda tmp3
