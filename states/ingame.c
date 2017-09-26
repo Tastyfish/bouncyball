@@ -1,4 +1,4 @@
-#include "game.h"
+#include "math.h"
 #include "video.h"
 #include "entity.h"
 #include "entities.h"

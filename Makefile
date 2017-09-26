@@ -1,3 +1,4 @@
+include util/util.mk
 include engine/engine.mk
 include entities/entities.mk
 

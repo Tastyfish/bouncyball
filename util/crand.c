@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "game.h"
+#include "math.h"
 
 // Pick random number from lo to hi
 unsigned int crand(unsigned int lo, unsigned int hi) {

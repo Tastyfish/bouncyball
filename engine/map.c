@@ -1,6 +1,6 @@
 #include <stdbool.h>
 #include <string.h>
-#include "game.h"
+#include "math.h"
 #include "video.h"
 #include "mmc5.h"
 #include "map.h"
