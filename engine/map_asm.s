@@ -1,5 +1,6 @@
 .import _sectionLoaded, pushax, _memset
 
+.segment "INIT"
 .constructor setupMap
 setupMap:
 	lda #<_sectionLoaded

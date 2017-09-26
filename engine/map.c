@@ -22,7 +22,7 @@ extern int sectionLoaded[2][4] = {};
 
 #define NUM_BOUND_SPRITES 64
 bound_sprite_t boundSprites[NUM_BOUND_SPRITES];
-bound_sprite_t* boundSprites_end = boundSprites + NUM_BOUND_SPRITES;
+#define BOUNDSPRITES_END (boundSprites + NUM_BOUND_SPRITES)
 
 void assignSection(char nt, char q, int sectionID);
 void updateVSections(void);
@@ -135,7 +135,7 @@ bound_sprite_t* map_BindSprite(sprite_t* s) {
 	// find an empty slot
 	bound_sprite_t* bs = boundSprites;
 
-	for(; bs < boundSprites_end; ++bs) {
+	for(; bs < BOUNDSPRITES_END; ++bs) {
 		if(bs->sprite == 0) {
 			bs->sprite = s;
 			return bs;
