@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #define MIN(a,b)		(((a)<(b))?(a):(b))
 #define MAX(a,b)		(((a)>=(b))?(a):(b))
 #define CLAMP(a,lo,hi)	(MIN(MAX((lo),(a)),(hi)))
@@ -21,3 +23,5 @@ extern void normalizei(int *x, int *y);
 extern decimal_t dotd(decimal_t x1, decimal_t y1, decimal_t x2, decimal_t y2);
 extern void reflectd(decimal_t *vx, decimal_t *vy, decimal_t nx, decimal_t ny);
 extern void normalized(decimal_t *x, decimal_t *y);
+
+extern bool reflectcard(int *vx, int *vy, int nx, int ny);
