@@ -55,6 +55,8 @@
 ; setup the CPU and System-IRQ
 start:
     sei
+    cld
+
     ; set PRG banking to 32K ASAP
     lda #$00
     sta $5100
@@ -64,13 +66,10 @@ start:
     lda #$01
     sta $5103
 
-    cld
-    ldx #0
-    stx VBLANK_FLAG
-
-    stx ringread
-    stx ringwrite
-    stx ringcount
+    lda #0
+    sta ringread
+    sta ringwrite
+    sta ringcount
 
     txs
 
