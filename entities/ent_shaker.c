@@ -1,10 +1,12 @@
 #include "game.h"
+#include "math.h"
 #include "entity.h"
 #include "video.h"
 #include "input.h"
 #include "sound.h"
-#include "sounds.h"
+#include "collision.h"
 
+#include "sounds.h"
 #include "entities.h"
 #include "gent.h"
 
@@ -30,6 +32,12 @@ void ent_Shaker(entity_t* this, va_list) {
 	param_fadein = 1; // 1 means fading in
 	param_played_joke = 0; // if played joke sfx yet
 	param_shakex = param_shakey = 0x7FFF;
+
+	// These will leak, but also the game never leaves here
+	col_AllocBox(true, -16, -16, 32, 272);
+	col_AllocBox(true, -16, -16, 288, 32);
+	col_AllocBox(true, 240, -16, 32, 272);
+	col_AllocBox(true, -16, 224, 288, 32);
 
 	v_FadeIn(5,
 		0x01, 0x10, 0x20,
