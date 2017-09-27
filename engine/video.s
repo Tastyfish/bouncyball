@@ -13,7 +13,7 @@ _VIDEO_EXPORT = 1
 
 .export _vb_ClearOAM, _vb_FullCopyOAM, _vb_CopySprite, _vb_CopyOAM
 .export _vb_CopyPPU
-.export _v_SetBGColor, _v_SetPalette
+.export _v_SetBGColor, _v_SetPalette, _v_CopyPalette, _v_CopyBackgroundPalset, _v_CopySpritePalset
 .export _v_WaitVBlank
 .export _vb_DisableAll, _vb_EnableSprites, _vb_EnableBackgrounds
 .export _v_ScrollBackground, _v_BigScrollBackground
@@ -132,8 +132,7 @@ loop:
 	cpy tmp1
 	bne loop
 
-	ldy #1
-	jmp addysp
+	jmp incsp1
 .endproc
 
 ; Copy part of PPU cache to PPU
@@ -190,12 +189,11 @@ loop:
 	cmp (sp),y
 	bne loop
 
-	ldy #4
-	jmp addysp
+	jmp incsp4
 .endproc
 
 ; Set the global BG color
-; __fastcall__ void v_SetBGColor(byte color)
+; __fastcall__ void v_SetBGColor(color_t color)
 .proc _v_SetBGColor
 	ldy #$3F
 	ldx #$00
@@ -203,7 +201,7 @@ loop:
 .endproc
 
 ; Set the palette color triplet at palette ID #
-; __fastcall__ void v_SetPalette(byte pal_id, byte col_1, byte col_2, byte col_3)
+; __fastcall__ void v_SetPalette(palid_t pal_id, byte col_1, byte col_2, byte col_3)
 .proc _v_SetPalette
 pal_id = 2
 col_1  = 1
@@ -237,8 +235,76 @@ col_2  = 0
 	ldy ptr1+1
 	jsr ppubuf_put
 
-	ldy #3
-	jmp addysp
+	jmp incsp3
+.endproc
+
+; Copy a palette to a hw palette
+; void __fastcall__ v_CopyPalette(palid_t pal_id, pal_t source)
+.proc _v_CopyPalette
+	sta ptr1 ; source
+	stx ptr1+1
+	jsr popa
+	sta tmp1; pal_id
+	lda #0
+	sta tmp2 ; source idx
+
+loop:
+	ldy tmp2
+	lda (ptr1),y
+	ldx tmp1
+	ldy #$3F
+	jsr ppubuf_put
+	inc tmp1
+	inc tmp2
+	lda tmp2
+	cmp #3
+	bne loop
+
+	rts
+.endproc
+
+; Copy in all the palette values for the BG from a source
+; void __fastcall__ v_CopyBackgroundPalset(palset_t source);
+.proc _v_CopyBackgroundPalset
+	ldy #$00
+	sty tmp1
+	jmp internalCopyPalset
+.endproc
+
+; void __fastcall__ v_CopySpritePalset(palset_t source);
+.proc _v_CopySpritePalset
+	ldy #$10
+	sty tmp1
+	jmp internalCopyPalset
+.endproc
+
+.proc internalCopyPalset
+	sta ptr1 ; source
+	stx ptr1+1
+
+	lda #0
+	sta tmp2 ; src idx
+
+loop:
+	; skip BG indexes (every 0 out of 4)
+	lda tmp2
+	tay
+	and #$03
+	beq skip_write
+
+	lda (ptr1),y
+	ldx tmp1
+	ldy #$3F
+	jsr ppubuf_put
+
+skip_write:
+	inc tmp1
+	inc tmp2
+	lda tmp2
+	cmp #$10
+	bne loop
+
+	rts
 .endproc
 
 ; Wait for a v blank

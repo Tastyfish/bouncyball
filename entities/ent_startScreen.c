@@ -6,6 +6,7 @@
 #include "entity.h"
 
 extern void setup_ingame();
+extern const palset_t* const PAL_WATERSHIP;
 
 // paramc_x contains camera x coord
 // paramc_state is:
@@ -26,11 +27,7 @@ void ent_StartScreen(entity_t* this, va_list) {
 	param_scanline_callback = (void*)vm_AddScanlineCallback(21 * 8, onSplitscreen);
 	param_x = 0;
 
-	v_FadeIn(5,
-		0x01, 0x10, 0x20,
-		0x01, 0x21, 0x31,
-		0x17, 0x27, 0x37,
-		0x01, 0x27, 0x37);
+	v_FadeIn(5, PAL_WATERSHIP);
 	param_state = 1;
 }
 
@@ -57,11 +54,7 @@ void UpdateStart(entity_t* this) {
 		input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 		if(i & INPUT_START) {
 			// massive state change---but after a fade
-			v_FadeOut(2,
-				0x01, 0x10, 0x20,
-				0x01, 0x21, 0x31,
-				0x17, 0x27, 0x37,
-				0x01, 0x27, 0x37);
+			v_FadeOut(2);
 			param_state = 2;
 		}
 

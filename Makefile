@@ -39,7 +39,7 @@ $(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
 %.si: %.c
 	$(CC) $^ -o $@ $(GFLAGS) $(CFLAGS)
 
-res/res.o: res/res.s res/*.chr res/*.rle res/*.qle $(SOUNDS)
+res/res.o: res/res.s res/*.chr res/*.rle res/*.qle res/*.pal $(SOUNDS)
 	$(AS) res/res.s -o $@ $(GFLAGS) $(AFLAGS)
 
 %.qle: %.map

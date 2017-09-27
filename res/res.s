@@ -20,6 +20,9 @@ incres _NAM_DIRECTIONS, "directions.rle"
 
 incres _QLE_SPLASH, "water_map.qle"
 
+incres _PAL_BALLS, "balls.pal"
+incres _PAL_WATERSHIP, "watership.pal"
+
 .export _S_MUSIC
 _S_MUSIC:
 	.addr theme_music_data

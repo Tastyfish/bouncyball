@@ -1,14 +1,15 @@
 .include "zeropage.inc"
 .include "video.inc"
+.include "mem.inc"
 
 .import ppubuf_put
-.import pusha, pushax, tosumulax, tosudivax, addysp, subysp
+.import tosumulax, tosudivax
 
 .export _v_FadeIn, _v_FadeOut, _v_FadeStep
 
 .bss
 delay:		.res 1
-destvals:	.res 12
+destvals:	.res 16
 step:		.res 2
 destStep:	.res 2
 dir:		.res 1
@@ -16,14 +17,30 @@ dir:		.res 1
 .code
 
 ; Fade the palette in
-; void v_FadeIn(int delay, color_t colors ...)
+; void v_FadeIn(int delay, const palset_t* to)
 .proc _v_FadeIn
+	; copy to destvals
+	sta ptr1
+	stx ptr1+1
+	lda #<destvals
+	sta ptr2
+	lda #>destvals
+	sta ptr2+1
+
+	ldy #$00
+loop:
+	lda (ptr1),y
+	sta (ptr2),y
+	iny
+	cpy #$10
+	bne loop
+
 	lda #0
 	beq FadeX
 .endproc
 
 ; Fade the palette out
-; void v_FadeOut(int delay, color_t colors ...)
+; void v_FadeOut(int delay)
 .proc _v_FadeOut
 	lda #1
 	bne FadeX
@@ -32,28 +49,11 @@ dir:		.res 1
 .proc FadeX
 	sta dir
 
-	; check correct length
-	cpy #26
-	beq doit
-	brk
-
-doit:
-	; dump the entire param set into delay,destvals
-	dey
-	dey
-	ldx #0
-copyloop:
-	lda (sp),y
-	sta delay,x
-	dey
-	dey
-	inx
-	cpx #13
-	bne copyloop
+	jsr popax
+	sta delay
 
 	; destStep = delay * 5 - 1
 	clc
-	lda delay
 	adc delay
 	adc delay
 	adc delay
@@ -83,9 +83,6 @@ downDir:
 	bne doneStep
 	dec step+1
 doneStep:
-
-	ldy #26
-	jsr addysp
 
 	; do a first step
 	jmp _v_FadeStep
@@ -131,38 +128,22 @@ actualColor:
 
 preloop:
 	; loop all palettes
-	lda #0 ; offset for destvals
-	sta ptr3
-	lda #1 ; pal id
-	sta ptr4
+	lda #0 ; offset for destval and pal position
+	sta tmp1
 loop:
-	lda ptr4
-	jsr pusha
-
-	.repeat 2, i
-		ldy ptr3
-		lda destvals,y
-		and sreg
-		bne .ident(.sprintf("notBlack%02d", i))
-		lda #$0F
-	.ident(.sprintf("notBlack%02d", i)):
-		jsr pusha
-		inc ptr3
-	.endrepeat
-	ldy ptr3
-	lda destvals,y
+	ldx tmp1
+	lda destvals,x
 	and sreg
-	bne notBlackA
-	lda #$0F
-notBlackA:
-	inc ptr3
+	cmp #$00
+	bne notBlack
+	lda #$0F ; make it black and not medium grey
+notBlack:
+	ldy #$3F
+	jsr ppubuf_put
 
-	jsr _v_SetPalette
-	.repeat 4
-		inc ptr4
-	.endrepeat
-	lda ptr3
-	cmp #12
+	inc tmp1
+	lda tmp1
+	cmp #$10
 	bne loop
 
 	lda dir
