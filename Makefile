@@ -31,22 +31,22 @@ $(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
 	$(LD) $(OBJECTS) -o $@ $(GFLAGS) $(LFLAGS)
 
 %.o: %.s
-	$(AS) $^ -o $@ $(GFLAGS) $(AFLAGS)
+	$(AS) $< -o $@ $(GFLAGS) $(AFLAGS)
 
 %.o: %.si
-	$(AS) $^ -o $@ $(GFLAGS) $(AFLAGS)
+	$(AS) $< -o $@ $(GFLAGS) $(AFLAGS)
 
 %.si: %.c
-	$(CC) $^ -o $@ $(GFLAGS) $(CFLAGS)
+	$(CC) $< -o $@ $(GFLAGS) $(CFLAGS)
 
-res/res.o: res/res.s res/*.chr res/*.rle res/*.qle res/*.pal $(SOUNDS)
-	$(AS) res/res.s -o $@ $(GFLAGS) $(AFLAGS)
+res/res.o: res/res.s $(wildcard res/*.chr) $(wildcard res/*.rle) $(patsubst %.map,%.qle,$(wildcard res/*.map)) $(wildcard res/*.pal) $(SOUNDS)
+	$(AS) $< -o $@ $(GFLAGS) $(AFLAGS)
 
 %.qle: %.map
-	./res/convmap.py $^ -tqle
+	./res/convmap.py $< -tqle
 
 %.s: %.txt
-	../famitone/tools/text2data $^ -ca65
+	../famitone/tools/text2data $< -ca65
 
 %.s: %.nsf
-	../famitone/tools/nsf2data $^ -ca65 -ntsc
+	../famitone/tools/nsf2data $< -ca65 -ntsc
