@@ -26,7 +26,6 @@ void UpdateShaker(entity_t* this);
 void DrawShaker(entity_t* this);
 
 void ent_Shaker(entity_t* this, va_list) {
-	this->onDestroy = gent_DestroyEmpty;
 	this->onUpdate = UpdateShaker;
 
 	param_timer_base = tickcount;
@@ -34,7 +33,7 @@ void ent_Shaker(entity_t* this, va_list) {
 	param_played_joke = 0; // if played joke sfx yet
 	param_shakex = param_shakey = 0x7FFF;
 
-	// These will leak, but also the game never leaves here
+	// These will leak, but also the game never leaves here without reseting
 	col_AllocBox(true, -16, -16, 32, 272);
 	col_AllocBox(true, -16, -16, 288, 32);
 	col_AllocBox(true, 240, -16, 32, 272);
@@ -67,7 +66,7 @@ void UpdateShaker(entity_t* this) {
 		// clear the balls
 		entity_t* ent;
 		for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
-			if(ent->paramu[2] == 0xBA11)
+			if(ent->type == &ent_Ball)
 				e_Destroy(ent);
 		}
 	}
@@ -84,17 +83,17 @@ void UpdateShaker(entity_t* this) {
 	// shake EVERYTHING
 	if(param_shakex != x || param_shakey != y) {
 		entity_t* shakeEnt;
+		sprite_t* sprite;
 		for(shakeEnt = e_Iterate(); shakeEnt; e_IterateNext(&shakeEnt)) {
-			if(shakeEnt->paramu[2] == 0xBA11) {
+			if(shakeEnt->type == &ent_Ball) {
 				// shake balls
-				shakeEnt->paramc[2] += x * 4;
-				shakeEnt->paramc[3] += y * 4;
-			} else if(shakeEnt->paramu[2] == 0x530C) {
+				shakeEnt->paramc[4] += x * 4;
+				shakeEnt->paramc[5] += y * 4;
+			} else if(shakeEnt->type == &ent_NTSmoke) {
 				// move smoke around
-				shakeEnt->graphic[0]->x = shakeEnt->paramc[6] - x;
-				shakeEnt->graphic[0]->y = shakeEnt->paramc[7] - y;
-				shakeEnt->graphic[1]->x = shakeEnt->paramc[6] - x;
-				shakeEnt->graphic[1]->y = shakeEnt->paramc[7] - y + 8;
+				sprite = shakeEnt->paramp[0];
+				sprite->x = shakeEnt->paramc[6] - x;
+				sprite->y = shakeEnt->paramc[7] - y;
 			}
 		}
 		v_BigScrollBackground(x, y);
