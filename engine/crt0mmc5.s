@@ -25,21 +25,11 @@
 
 .import __INTERRUPTOR_COUNT__, __INTERRUPTOR_TABLE__
 
-.import handle_hblank
+.import handle_hblank, _mmc5_irq_ctrl
 
 ; a redo of CRT0 for our mapper/NMI/IRQ needs
 
 .exportzp _VBLANK_FLAG      := $70
-.exportzp _mmc_scrollx      := $77
-.exportzp _mmc_scrolly  	:= $78
-.exportzp _mmc_ctrl         := $79
-.exportzp _mmc_sl_ptr       := $80
-.exportzp _mmc_mirroring    := $82
-.exportzp _mmc_sl_i         := $83
-.export _mmc5_chr_mode      := $5101
-.export _mmc5_nt_mapping    := $5105
-.export _mmc5_sl_counter    := $5203
-.export _mmc5_irq_ctrl      := $5204
 
 .segment "HEADER"
 

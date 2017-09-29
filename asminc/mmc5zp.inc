@@ -1,2 +1,2 @@
-.importzp _mmc_scrollx, _mmc_scrolly, _mmc_ctrl
-.importzp _mmc_sl_ptr, _mmc_mirroring, _mmc_sl_i
+.importzp _vc_sl_ptr, _vc_nt_mapping, _vc_sl_i
+.importzp _vc_chr_lbank, _vc_chr_ubank, _vc_bg_bank

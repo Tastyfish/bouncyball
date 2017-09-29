@@ -37,6 +37,7 @@ PPUM_BACKGROUNDS		= %00001000
 PPUM_EDGE_BACKGROUNDS	= %00000010
 
 .ifndef _VIDEO_EXPORT
+	.importzp _vc_scrollx, _vc_scrolly, _vc_ctrl
 	.import _vb_ClearOAM, _vb_FullCopyOAM, _vb_CopySprite, _vb_CopyOAM
 	.import _vb_CopyPPU
 	.import _v_SetBGColor, _v_SetPalette

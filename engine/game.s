@@ -34,19 +34,19 @@ vwait2:
 	sta _tickcount
 	sta _tickcount+1
 	sta VBLANK_FLAG
-	sta _mmc_scrollx
-	sta _mmc_scrolly
-	lda #$80
-	sta _mmc_ctrl
+	sta _vc_scrollx
+	sta _vc_scrolly
+	lda #$A0 ; enable nmi & tall sprites
+	sta _vc_ctrl
 	sta PPU_CTRL
 
 	; setup CHR
 	lda #01
-	sta MMC5_CHR_MODE
+	sta _mmc5_chr_mode
 	lda #00
-	sta $5123
-	lda #01
-	sta $5127
+	sta _vc_chr_lbank
+	sta _vc_chr_ubank
+	sta _vc_bg_bank
 	; setup NT as diagnal mirroring
 	lda #%00010100
 	jsr _vbm_SetNametableMirroring

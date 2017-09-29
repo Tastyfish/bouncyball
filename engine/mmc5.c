@@ -11,13 +11,10 @@ typedef struct {
 	ScanlineCallback callback;
 } ScanlineCB_Entry;
 
-extern ScanlineCB_Entry* mmc_sl_ptr;
-#pragma zpsym("mmc_sl_ptr");
-extern char mmc_mirroring;
-#pragma zpsym("mmc_mirroring");
+extern ScanlineCB_Entry* vc_sl_ptr;
+#pragma zpsym("vc_sl_ptr");
 extern unsigned char mmc5_sl_counter;
 extern unsigned char mmc5_irq_ctrl;
-extern char mmc5_nt_mapping;
 
 extern char scanlineCount = 0;
 extern ScanlineCB_Entry scanline_callbacks[NUM_CALLBACKS];
@@ -49,8 +46,8 @@ HScanlineCB vm_AddScanlineCallback(line_t line, ScanlineCallback callback) {
 		mmc5_irq_ctrl = 0x80;
 	} else {
 		// we might have to move the current callback ptr
-		if(line < mmc_sl_ptr->line)
-			++mmc_sl_ptr;
+		if(line < vc_sl_ptr->line)
+			++vc_sl_ptr;
 
 		resort();
 	}
@@ -66,8 +63,8 @@ void vm_RemoveScanlineCallback(HScanlineCB cb) {
 		entry->line = 0xFF; // move it to the end in resort
 
 		// we might have to move the current callback ptr
-		if(entry->line < mmc_sl_ptr->line)
-			--mmc_sl_ptr;
+		if(entry->line < vc_sl_ptr->line)
+			--vc_sl_ptr;
 
 		resort();
 	}

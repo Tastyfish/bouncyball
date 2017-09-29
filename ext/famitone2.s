@@ -5,7 +5,7 @@
 ;settings, uncomment or put them into your main program; the latter makes possible updates easier
 
 FT_BASE_ADR := $0600	;page in the RAM used for FT2 variables, should be $xx00
-FT_TEMP		:= $84		;3 bytes in zeropage used by the library as a scratchpad
+FT_TEMP		:= $90		;3 bytes in zeropage used by the library as a scratchpad
 FT_DPCM_OFF		= $c000	;$c000..$ffc0, 64-byte steps
 FT_SFX_STREAMS	= 4		;number of sound effects played at once, 1..4
 

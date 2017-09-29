@@ -20,6 +20,12 @@ _VIDEO_EXPORT = 1
 
 .export _v_AllocSprite, _v_FreeSprite
 
+; Video cache values
+.exportzp _vc_scrollx	:= $77
+.exportzp _vc_scrolly	:= $78
+.exportzp _vc_ctrl      := $79
+; Continued in MMC source file
+
 NUM_SPRITES = 64
 
 .bss
@@ -40,11 +46,11 @@ NUM_SPRITES = 64
 	sta PPU_ADDR
 
 	; Set scroll
-	lda _mmc_ctrl
+	lda _vc_ctrl
 	sta PPU_CTRL
-	lda _mmc_scrollx
+	lda _vc_scrollx
 	sta PPU_SCROLL
-	lda _mmc_scrolly
+	lda _vc_scrolly
 	sta PPU_SCROLL
 	rts
 .endproc
@@ -373,29 +379,29 @@ end:
 ; Set the background scroll to a specific value
 ; void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
 .proc _v_ScrollBackground
-	sta _mmc_scrolly
+	sta _vc_scrolly
 	jsr popa
-	sta _mmc_scrollx
+	sta _vc_scrollx
 	rts
 .endproc
 
 ; Set the background scroll, allowing for negative values to scoll things to the right sensibly
 ; void __fastcall__ v_BigScrollBackground(int x, int y)
 .proc _v_BigScrollBackground
-	sta _mmc_scrolly
+	sta _vc_scrolly
 	sta tmp1
 	stx tmp2
 	jsr popax
-	sta _mmc_scrollx
+	sta _vc_scrollx
 
 	; Set MSB
 	txa
 	and #1
 	beq x0
-	lda #$81
+	lda #$A1
 	bne conty
 x0:
-	lda #$80
+	lda #$A0
 conty:
 	sta tmp3
 	lda tmp1
@@ -411,7 +417,7 @@ conty:
 y0:
 	lda tmp3
 contout:
-	sta _mmc_ctrl
+	sta _vc_ctrl
 
 	rts
 .endproc
