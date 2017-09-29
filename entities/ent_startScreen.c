@@ -14,8 +14,8 @@ extern const palset_t* const PAL_WATERSHIP;
 // --1 means waiting for fade in
 // --2 means waiting for fade out
 #define param_scanline_callback	(this->paramp[0])
-#define param_x					(this->paramc[2])
-#define param_state				(this->paramc[3])
+#define param_x					(this->paramu[1])
+#define param_state				(this->paramc[4])
 
 void UpdateStart(entity_t*);
 void Destroy(entity_t*);
@@ -25,7 +25,7 @@ void ent_StartScreen(entity_t* this, va_list) {
 	this->onDestroy = Destroy;
 	this->onUpdate = UpdateStart;
 	param_scanline_callback = (void*)vm_AddScanlineCallback(21 * 8, onSplitscreen);
-	param_x = 0;
+	param_x = 128;
 
 	v_FadeIn(5, PAL_WATERSHIP);
 	param_state = 1;
@@ -59,8 +59,8 @@ void UpdateStart(entity_t* this) {
 			param_state = 2;
 		}
 
-		if(param_x < 255)
-			map_MoveTo(param_x++ + 128, 0);
+		if(param_x < 384)
+			map_MoveTo(param_x++, 0);
 	} else {
 		if(v_FadeStep()) {
 			entity_t* ent;

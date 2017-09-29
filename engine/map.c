@@ -100,7 +100,7 @@ void map_MoveTo(int rx, int ry) {
 
 	if(orientation) {
 		// horizontal
-		lx = rx - 128;
+		lx = rx - 127;
 		ly = rnty * 240;
 		v_BigScrollBackground(lx, ly);
 
