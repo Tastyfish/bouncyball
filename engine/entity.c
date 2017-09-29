@@ -18,8 +18,9 @@ entity_t* e_Create(entity_ctor_t ctor, ...) {
 	va_list args;
 
 	for(; ent < ENTITY_TABLE_END; ++ent) {
-		if(!ent->onDestroy) {
+		if(!ent->type) {
 			// found a free one
+			ent->type = ctor;
 			va_start(args, ctor);
 			ctor(ent, args);
 			va_end(args);
@@ -82,6 +83,10 @@ entity_t* e_Iterate(void) {
 }
 
 void e_IterateNext(entity_t** e) {
-	if(++(*e) == ENTITY_TABLE_END)
-		*e = NULL;
+	do {
+		if(++(*e) == ENTITY_TABLE_END) {
+			*e = NULL;
+			return;
+		}
+	} while(!(*e)->type);
 }
