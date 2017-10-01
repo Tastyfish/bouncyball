@@ -24,8 +24,9 @@ symbol:
 
 .segment "CHARS"
 
-.incbin "a.chr"
+.incbin "game.chr"
 .include "neschar.inc"
+.incbin "title.chr"
 
 .segment "RODATA"
 
@@ -33,7 +34,7 @@ incres _NAM_BG, "bg.rle"
 incres _NAM_JOKE, "joke.rle"
 incres _NAM_DIRECTIONS, "directions.rle"
 
-incres _QLE_SPLASH, "water_map.qle"
+incmap _MAP_TITLE, "title"
 
 incres _PAL_BALLS, "balls.pal"
 incres _PAL_WATERSHIP, "watership.pal"

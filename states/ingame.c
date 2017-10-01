@@ -1,15 +1,18 @@
 #include "math.h"
 #include "video.h"
+#include "mmc5.h"
 #include "entity.h"
 #include "entities.h"
 #include "sound.h"
 #include "sounds.h"
 
-extern const char* const NAM_BG;
-extern const char* const NAM_JOKE;
+extern const void* const NAM_BG;
+extern const void* const NAM_JOKE;
 
 extern void setup_ingame(void) {
 	char i;
+
+	vc_bg_bank = 0;
 
 	v_WaitVBlank();
 	vb_DecompressNT(0x2000, NAM_BG);
