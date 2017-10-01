@@ -57,8 +57,8 @@ extern void __fastcall__ v_BigScrollBackground(int x, int y);
 extern sprite_t* v_AllocSprite(void);
 extern void __fastcall__ v_FreeSprite(sprite_t* sprite);
 
-extern void __fastcall__ vb_DecompressNT(int ppuAddr, const char* ptr);
-extern void __fastcall__ v_DecompressQLEChunk(int ppuAddr, char quarter, const char* ptr);
+extern void __fastcall__ vb_DecompressNT(int ppuAddr, const void* src);
+extern void __fastcall__ v_DecompressQLEChunk(int ppuAddr, char quarter, const void* src);
 extern void __fastcall__ v_DecompressToRAM(void* dest, const void* src);
 
 extern void __fastcall__ v_FadeIn(int delay, const palset_t* to);
