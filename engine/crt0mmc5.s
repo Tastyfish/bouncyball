@@ -19,6 +19,7 @@
 .import		__RAM_START__, __RAM_SIZE__
 .import		__SRAM_START__, __SRAM_SIZE__
 .import		__ROM0_START__, __ROM0_SIZE__
+.import		__CHARS_START__, __CHARS_SIZE__
 .import		__STARTUP_LOAD__,__STARTUP_RUN__, __STARTUP_SIZE__
 .import		__CODE_LOAD__,__CODE_RUN__, __CODE_SIZE__
 .import		__RODATA_LOAD__,__RODATA_RUN__, __RODATA_SIZE__
@@ -34,8 +35,8 @@
 .segment "HEADER"
 
 .byte   $4e,$45,$53,$1a	; "NES"^Z
-.byte   2	        ; ines prg  - Specifies the number of 16k prg banks.
-.byte   1               ; ines chr  - Specifies the number of 8k chr banks.
+.byte   2	            ; ines prg  - Specifies the number of 16k prg banks.
+.byte   <(__CHARS_SIZE__ / $2000 + ((__CHARS_SIZE__ .MOD $2000) > 0)) ; ines chr  - Specifies the number of 8k chr banks.
 .byte   %01010011       ; ines mir  - Specifies VRAM mirroring of the banks.
 .byte   %00000000       ; ines map  - Specifies the NES mapper used.
 .byte   0,0,0,0,0,0,0,0	; 8 zeroes
