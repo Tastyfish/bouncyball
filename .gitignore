@@ -6,3 +6,6 @@
 /res/*.s
 !/res/res.s
 *.qle
+*.qrv
+*.qrc
+*.qre

@@ -1,4 +1,5 @@
 #include "video.h"
+#include "entity.h"
 
 #ifndef _MAP_H
 #define _MAP_H
@@ -14,7 +15,7 @@ typedef struct {
 	int y;
 } bound_sprite_t;
 
-void map_Load(const char* base, int rx, int ry);
+void map_Load(const void* base, int rx, int ry);
 void map_SetOrientation(MapOrientation orientation);
 void map_MoveTo(int rx, int ry);
 

@@ -9,11 +9,17 @@ typedef struct {
 	int width;
 	int height;
 	int sectionOffsets[1];
+} qrx_header_t;
+
+typedef struct {
+	qrx_header_t* qrv;
+	qrx_header_t* qrc;
+	qrx_header_t* qre;
 } map_header_t;
 
 map_header_t* header;
 bool orientation;
-int refX, refY, ntX, ntY;
+int refX, refY, ntXCount, ntYCount, sectionXCount, sectionYCount;
 int lx, ly; // references for sprites
 
 // what section is loaded in the given quarter
@@ -31,19 +37,21 @@ void updateHSections(void);
 /***********************************************
 ** Load up the map around the position (refX,refY)
 ***********************************************/
-void map_Load(const char* base, int rx, int ry) {
+void map_Load(const void* base, int rx, int ry) {
 	header = (map_header_t*)base;
+	sectionXCount = header->qrv->width;
+	sectionYCount = header->qrv->height;
 
 	// wrap it to be valid
-	refX = rx % (header->width << 7);
+	refX = rx % (sectionXCount << 7);
 
-	refY = (header->height >> 1) * 240;
-	if(header->height % 2)
+	refY = (sectionYCount >> 1) * 240;
+	if(sectionYCount % 2)
 		refY += 128;
 	refY = ry % refY;
 
-	ntX = refX / 256;
-	ntY = refY / 240;
+	ntXCount = refX / 256;
+	ntYCount = refY / 240;
 }
 
 void map_SetOrientation(MapOrientation o) {
@@ -61,12 +69,12 @@ void map_SetOrientation(MapOrientation o) {
 void updateHSections(void) {
 	int sx = refX >> 7, sy = refY >> 7;
 
-	int xmax = MIN(sx + 1, header->width - 1);
-	int ymax = MIN(sy | 1, header->height - 1);
+	int xmax = MIN(sx + 1, sectionXCount - 1);
+	int ymax = MIN(sy | 1, sectionYCount - 1);
 	int x, y, yoffs;
 
 	for(y = MAX(sy & ~1, 0); y <= ymax; ++y) {
-		yoffs = y * header->width;
+		yoffs = y * sectionXCount;
 		for(x = MAX(sx - 1, 0); x <= xmax; ++x) {
 			assignSection((x & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs);
 		}
@@ -82,8 +90,8 @@ void assignSection(char nt, char q, int sectionID) {
 	int* pLoaded = &sectionLoaded[nt][q];
 
 	if(*pLoaded != sectionID) {
-		v_DecompressQLEChunk(nt ? 0x2400 : 0x2000, q,
-			((char*)header) + header->sectionOffsets[sectionID]);
+		v_DecompressQRVChunk(nt ? 0x2400 : 0x2000, q,
+			((char*)header->qrv) + header->qrv->sectionOffsets[sectionID]);
 
 		*pLoaded = sectionID;
 	}
@@ -105,19 +113,19 @@ void map_MoveTo(int rx, int ry) {
 		v_BigScrollBackground(lx, ly);
 
 		// check if we jumped row! Completely redo everything in this case.
-		if(rnty != ntY) {
+		if(rnty != ntYCount) {
 			refX = rx;
 			refY = ry;
-			ntX = rntx;
-			ntY = rnty;
+			ntXCount = rntx;
+			ntYCount = rnty;
 			map_SetOrientation(MO_HORIZONTAL);
 		}
 		// check if changed section
-		else if(rntx != ntX) {
+		else if(rntx != ntXCount) {
 			refX = rx;
 			refY = ry;
-			ntX = rntx;
-			// ntY is already correct due to if
+			ntXCount = rntx;
+			// ntYCount is already correct due to if
 			updateHSections();
 		}
 		// just in same section, barely anything to do

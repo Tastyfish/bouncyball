@@ -39,11 +39,16 @@ $(OUTPUT): $(OBJECTS) $(LIBOVERRIDES)
 %.si: %.c
 	$(CC) $< -o $@ $(GFLAGS) $(CFLAGS)
 
-res/res.o: res/res.s $(wildcard res/*.chr) $(wildcard res/*.rle) $(patsubst %.map,%.qle,$(wildcard res/*.map)) $(wildcard res/*.pal) $(SOUNDS)
+res/res.o: res/res.s $(wildcard res/*.chr) $(wildcard res/*.rle) $(patsubst %.map,%.qrv,$(wildcard res/*.map)) $(wildcard res/*.pal) $(SOUNDS)
 	$(AS) $< -o $@ $(GFLAGS) $(AFLAGS)
 
 %.qle: %.map
 	./res/convmap.py $< -tqle
+
+%.qrv %.qre %.qrc: %.map
+	./res/convmap.py $< -tqrv
+	./res/convmap.py $< -tqre
+	./res/convmap.py $< -tqrc
 
 %.s: %.txt
 	../famitone/tools/text2data $< -ca65

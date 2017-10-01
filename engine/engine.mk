@@ -1,1 +1,1 @@
-OBJECTS += engine/crt0mmc5.o engine/ppubuf.o engine/mmc5.o engine/mmc5int.o engine/game.o engine/video.o engine/entity.o engine/rle.o engine/qle.o engine/fade.o engine/input.o engine/map.o engine/map_asm.o engine/sound.o engine/collision.o
+OBJECTS += engine/crt0mmc5.o engine/ppubuf.o engine/mmc5.o engine/mmc5int.o engine/game.o engine/video.o engine/entity.o engine/rle.o engine/qrv.o engine/fade.o engine/input.o engine/map.o engine/map_asm.o engine/sound.o engine/collision.o

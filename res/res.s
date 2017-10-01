@@ -7,6 +7,21 @@ symbol:
 	.addr data
 .endmacro
 
+.macro incmap symbol, filename
+	.local data, qrv, qrc, qre
+	.export symbol
+data:
+	.addr qrv, qrc, qre
+qrv:
+	.incbin .sprintf("%s.qrv", filename)
+qrc:
+	.incbin .sprintf("%s.qrc", filename)
+qre:
+	.incbin .sprintf("%s.qre", filename)
+symbol:
+	.addr data
+.endmacro
+
 .segment "CHARS"
 
 .incbin "a.chr"
