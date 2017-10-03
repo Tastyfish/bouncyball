@@ -7,10 +7,11 @@ symbol:
 	.addr data
 .endmacro
 
-.macro incmap symbol, filename
+.macro incmap symbol, filename, sx, sy
 	.local data, qrv, qrc, qre
 	.export symbol
 data:
+	.word sx, sy
 	.addr qrv, qrc, qre
 qrv:
 	.incbin .sprintf("%s.qrv", filename)
@@ -30,14 +31,15 @@ symbol:
 
 .segment "RODATA"
 
+incres _PAL_BALLS, "balls.pal"
+incres _PAL_WATERSHIP, "watership.pal"
+
 incres _NAM_BG, "bg.rle"
 incres _NAM_JOKE, "joke.rle"
 incres _NAM_DIRECTIONS, "directions.rle"
 
-incmap _MAP_TITLE, "title"
-
-incres _PAL_BALLS, "balls.pal"
-incres _PAL_WATERSHIP, "watership.pal"
+incmap _MAP_TITLE, "title", 128, 0
+incmap _MAP_PINBALL1, "pinball1", 27*8, 29*8
 
 .export _S_MUSIC
 _S_MUSIC:

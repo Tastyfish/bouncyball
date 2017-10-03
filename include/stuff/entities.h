@@ -7,3 +7,4 @@ ENTITY(ent_Shaker);
 ENTITY(ent_StartScreen);
 ENTITY(ent_MapSmoke);
 ENTITY(ent_NTSmoke);
+ENTITY(ent_GameController);

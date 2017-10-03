@@ -5,8 +5,11 @@
 #include "input.h"
 #include "entity.h"
 
-extern void setup_ingame();
+extern void setup_ingame(const void* map);
+extern void setup_testgame();
+
 extern const palset_t* const PAL_WATERSHIP;
+extern const map_header_t* const MAP_PINBALL1;
 
 // paramc_x contains camera x coord
 // paramc_state is:
@@ -54,9 +57,13 @@ void UpdateStart(entity_t* this) {
 	if(!param_state) {
 		input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 		if(i & INPUT_START) {
-			// massive state change---but after a fade
+			// massive state change (to first level)---but after a fade
 			v_FadeOut(2);
 			param_state = 2;
+		} else if(i & INPUT_SELECT) {
+			// massive state change (to test game)---but after a fade
+			v_FadeOut(2);
+			param_state = 3;
 		}
 
 		if(param_x < 384)
@@ -71,7 +78,15 @@ void UpdateStart(entity_t* this) {
 						e_Destroy(ent);
 					}
 
-					setup_ingame();
+					setup_ingame(MAP_PINBALL1);
+					return;
+				case 3:
+					// old pre-maps test
+					for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
+						e_Destroy(ent);
+					}
+
+					setup_testgame();
 					return;
 				default:
 					param_state = 0;

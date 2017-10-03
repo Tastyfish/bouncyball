@@ -6,7 +6,7 @@
 #include "sound.h"
 #include "sounds.h"
 
-extern const void* const MAP_TITLE;
+extern const map_header_t* const MAP_TITLE;
 extern const void* const NAM_DIRECTIONS;
 extern const void* const S_MUSIC;
 extern const void* const S_SFX;
@@ -27,7 +27,7 @@ extern void setup_splash(void) {
 
 	v_DecompressToRAM((void*)0x5C00, NAM_DIRECTIONS);
 
-	map_Load(MAP_TITLE, 128, 0);
+	map_Load(MAP_TITLE);
 	map_SetOrientation(MO_HORIZONTAL);
 
 	s_PlayMusic(MUSIC_OPENING);
