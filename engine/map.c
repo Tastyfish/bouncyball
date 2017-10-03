@@ -1,26 +1,23 @@
 #include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 #include "math.h"
 #include "video.h"
 #include "mmc5.h"
 #include "map.h"
 
-typedef struct {
+typedef struct qrx_header_s {
 	int width;
 	int height;
 	int sectionOffsets[1];
 } qrx_header_t;
 
-typedef struct {
-	qrx_header_t* qrv;
-	qrx_header_t* qrc;
-	qrx_header_t* qre;
-} map_header_t;
-
-map_header_t* header;
+const map_header_t* header;
 bool orientation;
-int refX, refY, ntXCount, ntYCount, sectionXCount, sectionYCount;
-int lx, ly; // references for sprites
+int refX, refY; // pixel pos we're in
+int lx, ly; // actual viewport TL reference for sprites anc scrolling
+int sx, sy; // section we're in
+int sectionXCount, sectionYCount;
 
 // what section is loaded in the given quarter
 // 1st index is NT 0 or 1, 2nd is LTR quarter
@@ -33,25 +30,33 @@ bound_sprite_t boundSprites[NUM_BOUND_SPRITES];
 void assignSection(char nt, char q, int sectionID);
 void updateVSections(void);
 void updateHSections(void);
+void scroll(void);
 
 /***********************************************
 ** Load up the map around the position (refX,refY)
 ***********************************************/
-void map_Load(const void* base, int rx, int ry) {
-	header = (map_header_t*)base;
+void map_Load(const map_header_t* map) {
+	memset(sectionLoaded, 0xFF, sizeof(sectionLoaded));
+
+	header = map;
 	sectionXCount = header->qrv->width;
 	sectionYCount = header->qrv->height;
 
 	// wrap it to be valid
-	refX = rx % (sectionXCount << 7);
+	refX = header->startx % (sectionXCount << 7);
 
 	refY = (sectionYCount >> 1) * 240;
 	if(sectionYCount % 2)
 		refY += 128;
-	refY = ry % refY;
+	refY = header->starty % refY;
 
-	ntXCount = refX / 256;
-	ntYCount = refY / 240;
+	sx = refX / 128;
+	sy = refY / 240;
+	if(refY % 240 > 128) {
+		sy = sy * 2 + 1;
+	} else {
+		sy = sy * 2;
+	}
 }
 
 void map_SetOrientation(MapOrientation o) {
@@ -64,11 +69,11 @@ void map_SetOrientation(MapOrientation o) {
 		// vertical
 		updateVSections();
 	}
+
+	scroll();
 }
 
 void updateHSections(void) {
-	int sx = refX >> 7, sy = refY >> 7;
-
 	int xmax = MIN(sx + 1, sectionXCount - 1);
 	int ymax = MIN(sy | 1, sectionYCount - 1);
 	int x, y, yoffs;
@@ -82,8 +87,16 @@ void updateHSections(void) {
 }
 
 void updateVSections(void) {
-	//int sx = refX >> 7, sy = refY >> 7;
-	//int x, y;
+	int xmax = MIN(sx | 1, sectionXCount - 1);
+	int ymax = MIN(sy + 1, sectionYCount - 1);
+	int x, y, yoffs;
+
+	for(y = MAX(sy - 1, 0); y <= ymax; ++y) {
+		yoffs = y * sectionXCount;
+		for(x = MAX(sx & ~1, 0); x <= xmax; ++x) {
+			assignSection((y & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs);
+		}
+	}
 }
 
 void assignSection(char nt, char q, int sectionID) {
@@ -97,46 +110,68 @@ void assignSection(char nt, char q, int sectionID) {
 	}
 }
 
+// Do actual raw scrolling for internal use only
+void scroll(void) {
+	if(orientation) {
+		lx = refX - 127;
+		ly = (sy & ~1) * 240;
+	} else {
+		lx = (sx & ~1) * 256;
+		ly = refY - 119;
+	}
+	v_BigScrollBackground(lx, ly);
+}
+
 void map_MoveTo(int rx, int ry) {
-	int rntx, rnty;
+	int newsx, newsy;
 
 	if(refX == rx && refY == ry)
 		return;
 
-	rntx = rx / 256;
-	rnty = ry / 240;
+	refX = rx;
+	refY = ry;
+
+	newsx = refX / 128;
+	newsy = refY / 240;
+	if(refY % 240 >= 128) {
+		newsy = newsy * 2 + 1;
+	} else {
+		newsy *= 2;
+	}
 
 	if(orientation) {
 		// horizontal
-		lx = rx - 127;
-		ly = rnty * 240;
-		v_BigScrollBackground(lx, ly);
-
 		// check if we jumped row! Completely redo everything in this case.
-		if(rnty != ntYCount) {
-			refX = rx;
-			refY = ry;
-			ntXCount = rntx;
-			ntYCount = rnty;
+		if(newsy != sy) {
+			sx = newsx;
+			sy = newsy;
 			map_SetOrientation(MO_HORIZONTAL);
 		}
 		// check if changed section
-		else if(rntx != ntXCount) {
-			refX = rx;
-			refY = ry;
-			ntXCount = rntx;
-			// ntYCount is already correct due to if
+		else if(newsx != sx) {
+			sx = newsx;
+			// sy is already correct due to if
 			updateHSections();
 		}
-		// just in same section, barely anything to do
-		else {
-			refX = rx;
-			refY = ry;
-		}
+		// otherwise still in same section, so nothing else to do but scroll
 	} else {
 		// vertical
-
+		// check if we jumped row! Completely redo everything in this case.
+		if(newsx != sx) {
+			sx = newsx;
+			sy = newsy;
+			map_SetOrientation(MO_VERTICAL);
+		}
+		// check if changed section
+		else if(newsy != sy) {
+			sy = newsy;
+			// sx is already correct due to if
+			updateVSections();
+		}
+		// otherwise still in same section, so nothing else to do but scroll
 	}
+
+	scroll();
 }
 
 bound_sprite_t* map_BindSprite(sprite_t* s) {
@@ -184,3 +219,5 @@ void map_UpdateSprite(bound_sprite_t* bs) {
 		}
 	}
 }
+
+

@@ -7,7 +7,7 @@ _VIDEO_EXPORT = 1
 
 .importzp _tickcount
 .import _bzero
-.import tosdiva0, ppubuf_put, ppubuf_flush
+.import tosudiva0, ppubuf_put, ppubuf_flush
 
 .export ppuMaskCache
 
@@ -407,7 +407,7 @@ conty:
 	ldx ptr2+1
 	jsr pushax
 	lda #240
-	jsr tosdiva0
+	jsr tosudiva0
 	and #1
 	beq y0
 	lda tmp3
