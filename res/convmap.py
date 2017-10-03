@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import argparse, os, math
+import pdb
 
 parser = argparse.ArgumentParser(description='Convert raw map file to compressed format.')
 parser.add_argument('input', metavar='FILE', type=argparse.FileType('rb'),
@@ -81,7 +82,7 @@ def writeSectionHeader(sectionsX, sectionsY):
 	outputFile.seek(sectionsX * sectionsY * 2, 1)
 
 def getSectionYOffs(sy):
-	soffs = math.floor(sy / 2) * 2 * SectionTotalHeight
+	soffs = math.floor(sy / 2) * SectionTotalHeight
 	if sy % 2 == 1:
 		soffs += SectionEvenHeight
 	return soffs
@@ -115,20 +116,44 @@ def readSection(sx, sy):
 				yield prevVal, False
 
 	# Now, switch over to the attrib data
-	inputFile.seek(InputWidth * InputHeight + (baseX >> 2) + (baseY * InputWidth >> 4))
+	inputFile.seek(InputWidth * InputHeight + (baseX >> 2) + ((baseY & ~3) * InputWidth >> 4))
+	# On an odd NT part, ie starting at y 30, 60, etc so we'll have to do some extra work to align things
+	raggedRow = baseY % 4 == 2
+	finalRow = baseY + sectionHeight >= InputHeight;
+
+	def processRaggedRow(upper, lower):
+		for u, l in zip(upper, lower):
+			yield (u >> 4) | ((l & 0x0F) << 4)
+
 	for y in range(math.ceil(sectionHeight / 4)):
 		# print("ay", y, inputFile.tell())
 
 		if baseY + y * 4 < InputHeight:
 			row = []
 			if baseX + SectionWidth <= InputWidth:
-				row = inputFile.read(SectionWidth >> 2)
+				if raggedRow and not finalRow:
+					upperRow = inputFile.read(SectionWidth >> 2)
+					inputFile.seek((InputWidth - SectionWidth) >> 2, 1)
+					lowerRow = inputFile.read(SectionWidth >> 2)
+					inputFile.seek(-SectionWidth >> 2, 1)
+					row = list(processRaggedRow(upperRow, lowerRow))
+				else:
+					row = inputFile.read(SectionWidth >> 2)
+					inputFile.seek((InputWidth - SectionWidth) >> 2, 1)
 			else:
-				row = inputFile.read((InputWidth - baseX) >> 2)
+				if raggedRow and not finalRow:
+					upperRow = inputFile.read((InputWidth - baseX) >> 2)
+					inputFile.seek((InputWidth - SectionWidth) >> 2, 1)
+					lowerRow = inputFile.read((InputWidth - baseX) >> 2)
+					inputFile.seek((-InputWidth + SectionWidth - (InputWidth - baseX)) >> 2, 1)
+					row = list(processRaggedRow(upperRow, lowerRow))
+				else:
+					row = inputFile.read((InputWidth - baseX) >> 2)
+					inputFile.seek((InputWidth - SectionWidth) >> 2, 1)
 				row += [prevVal] * ((SectionWidth >> 2) - len(row))
 			for x in range(SectionWidth >> 2):
-				yield row[x], True
-			inputFile.seek((InputWidth - SectionWidth) >> 2, 1)
+				prevVal = row[x]
+				yield prevVal, True
 		else:
 			for x in range(SectionWidth >> 2):
 				yield prevVal, True
@@ -220,7 +245,8 @@ def processQRX(t):
 				for i in range(count):
 					outputFile.write(bytes([0x80, b]))
 		elif count <= 128:
-			outputFile.write(bytes([b, 0x80 | count - 1]))
+			writeRLEChunk(b, 1)
+			outputFile.write(bytes([0x80 | count - 1]))
 		else:
 			writeRLEChunk(b, 128)
 			count -= 128
@@ -270,7 +296,8 @@ def processQRX(t):
 
 					oldB = b
 					repCount = 1
-			writeRLEChunk(oldB, repCount)
+			if oldB >= 0:
+				writeRLEChunk(oldB, repCount)
 			# end of RLE
 			if binaryData:
 				outputFile.write(bytes([0x00]))
