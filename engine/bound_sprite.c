@@ -49,5 +49,14 @@ void map_UpdateSprite(bound_sprite_t* bs) {
 			s->x = x - map_lx;
 			s->y = y - map_ly;
 		}
+	} else {
+		if(y < map_ly || y > map_ly + 239) {
+			// offscreen
+			s->y = 0xFF;
+		} else {
+			// place relative to camera
+			s->x = x - map_lx;
+			s->y = y - map_ly;
+		}
 	}
 }
