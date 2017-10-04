@@ -29,7 +29,7 @@ typedef struct {
 } bound_sprite_t;
 
 typedef struct {
-	unsigned char mapValue;
+	unsigned char entityID;
 	entity_ctor_t ctor;
 } mapload_entity_t;
 
@@ -53,5 +53,6 @@ extern void __fastcall__ map_SetTile(int x, int y, maptile_t tile);
 extern bool map_orientation;
 extern int map_refX, map_refY;
 extern int map_lx, map_ly;
+extern int map_width, map_height;
 
 #endif
