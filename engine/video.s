@@ -388,9 +388,8 @@ end:
 ; Set the background scroll, allowing for negative values to scoll things to the right sensibly
 ; void __fastcall__ v_BigScrollBackground(int x, int y)
 .proc _v_BigScrollBackground
-	sta _vc_scrolly
-	sta tmp1
-	stx tmp2
+	sta ptr2
+	stx ptr2+1
 	jsr popax
 	sta _vc_scrollx
 
@@ -404,8 +403,8 @@ x0:
 	lda #$A0
 conty:
 	sta tmp3
-	lda tmp1
-	ldx tmp2
+	lda ptr2
+	ldx ptr2+1
 	jsr pushax
 	lda #240
 	jsr tosdiva0
@@ -418,6 +417,8 @@ y0:
 	lda tmp3
 contout:
 	sta _vc_ctrl
+	lda ptr1 ; the remainder of the tosudiva0
+	sta _vc_scrolly
 
 	rts
 .endproc
