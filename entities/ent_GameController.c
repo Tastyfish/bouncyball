@@ -51,8 +51,6 @@ void UpdateGC(entity_t* this) {
 		}
 	}
 
-	map_MoveTo(0, ++param_y);
-
 	if(param_fadein && v_FadeStep())
 		param_fadein = 0;
 }

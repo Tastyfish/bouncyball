@@ -2,8 +2,10 @@
 #include <stdlib.h>
 
 #include "math.h"
-#include "entity.h"
 #include "video.h"
+#include "input.h"
+#include "map.h"
+#include "entity.h"
 #include "sound.h"
 #include "collision.h"
 
@@ -12,8 +14,8 @@
 
 #include "entities.h"
 
-#define param_lsprite	(this->paramp[0])
-#define param_rsprite	(this->paramp[1])
+#define param_lsprite	((bound_sprite_t*)this->paramp[0])
+#define param_rsprite	((bound_sprite_t*)this->paramp[1])
 // accel as 1/8 of a pixel
 #define param_accelx	((signed char)this->paramc[4])
 #define param_accely	((signed char)this->paramc[5])
@@ -33,18 +35,18 @@ sfx_channel_t const channels[4] = {SFX_CH0, SFX_CH1, SFX_CH2, SFX_CH3};
 
 void ent_Ball(entity_t* this, va_list args) {
 	collision_box_t* col;
-	sprite_t* ls, * rs;
+	bound_sprite_t* ls, * rs;
 
 	this->onDestroy = DestroyBall;
 
-	ls = v_AllocSprite();
+	ls = map_AllocBoundSprite();
 	if(!ls) {
 		e_Destroy(this);
 		return;
 	}
 	param_lsprite = ls;
 
-	rs = v_AllocSprite();
+	rs = map_AllocBoundSprite();
 	if(!rs) {
 		e_Destroy(this);
 		return;
@@ -58,17 +60,17 @@ void ent_Ball(entity_t* this, va_list args) {
 	}
 	param_col = col;
 
-	param_accelx = crand(-32, 32); // random direction
-	param_accely = crand(-32, 32); // random direction
+	param_accelx = 0;
+	param_accely = 0;
 
 	ls->x = va_arg(args, int);
 	ls->y = va_arg(args, int);
-	ls->tile = SPR_BALL_L; // ball
-	ls->attrib = crand(0, 3); // random color
-	rs->x = ls->x;
+	ls->sprite->tile = SPR_BALL_L; // ball
+	ls->sprite->attrib = crand(0, 3); // random color
+	rs->x = ls->x + 8;
 	rs->y = ls->y;
-	rs->tile = SPR_BALL_R; // ball
-	rs->attrib = ls->attrib; // same color
+	rs->sprite->tile = SPR_BALL_R; // ball
+	rs->sprite->attrib = ls->sprite->attrib; // same color
 
 	col->onCollide = CollideBall;
 
@@ -76,42 +78,61 @@ void ent_Ball(entity_t* this, va_list args) {
 }
 
 void DestroyBall(entity_t* this) {
-	sprite_t* ls = param_lsprite;
-	sprite_t* rs = param_rsprite;
+	bound_sprite_t* ls = param_lsprite;
+	bound_sprite_t* rs = param_rsprite;
 
-	if(ls) {
-		ls->y = 0xFF;
-		v_FreeSprite(ls);
-	}
-	if(rs) {
-		rs->y = 0xFF;
-		v_FreeSprite(rs);
-	}
+	if(ls)
+		map_FreeBoundSprite(ls);
+	if(rs)
+		map_FreeBoundSprite(rs);
 	if(param_col)
 		col_FreeBox(param_col);
 }
 
 void UpdateBall(entity_t* this) {
-	sprite_t* ls = param_lsprite;
-	sprite_t* rs = param_rsprite;
+	bound_sprite_t* ls = param_lsprite;
+	bound_sprite_t* rs = param_rsprite;
 	collision_box_t* col = param_col;
 
+	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
+
+	if(i & INPUT_LEFT) {
+		param_accelx--;
+	}
+	if(i & INPUT_RIGHT) {
+		param_accelx++;
+	}
+	if(i & INPUT_UP) {
+		param_accely--;
+	}
+	if(i & INPUT_DOWN) {
+		param_accely++;
+	}
+
 	// gravity
-	param_accely += 3;
+	//param_accely += 3;
 
 	// Contact acceleration will be updated in collision code
-	col->x = ls->x;
+	/*col->x = ls->x;
 	col->y = ls->y;
 	col->right = ls->x + 16;
 	col->bottom = ls->y + 16;
 	currentColEntity = this;
-	col_Test(param_col);
+	col_Test(param_col);*/
 
 	// dV
 	ls->x += param_accelx / 8;
 	ls->y += param_accely / 8;
 	rs->x = ls->x + 8;
 	rs->y = ls->y;
+
+	if(ls->y < map_refY - 40) {
+		map_MoveTo(ls->x, MAX(120, ls->y + 40));
+	} else if(ls->y >= map_refY + 40) {
+		map_MoveTo(ls->x, MIN(map_height * 8 - 120, ls->y - 40));
+	}
+	map_UpdateSprite(ls);
+	map_UpdateSprite(rs);
 }
 
 void CollideBall(collision_box_t*, unsigned int nx, unsigned int ny) {
