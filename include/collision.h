@@ -1,5 +1,8 @@
 #include "video.h"
 
+#ifndef _COLLISION_H
+#define _COLLISION_H
+
 typedef void (*collide_cb_t)(struct collision_s* box, unsigned int ox, unsigned int oy);
 
 typedef struct collision_s {
@@ -12,3 +15,5 @@ extern collision_box_t* col_AllocBox(bool checked, int x, int y, int width, int 
 extern void col_FreeBox(collision_box_t* cb);
 
 extern void col_Test(collision_box_t* ref);
+
+#endif

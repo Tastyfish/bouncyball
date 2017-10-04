@@ -13,19 +13,15 @@ typedef struct qrx_header_s {
 } qrx_header_t;
 
 const map_header_t* header;
-bool orientation;
-int refX, refY; // pixel pos we're in
-int lx, ly; // actual viewport TL reference for sprites anc scrolling
+bool map_orientation;
+int map_refX, map_refY; // pixel pos we're in
+int map_lx, map_ly; // actual viewport TL reference for sprites anc scrolling
 int sx, sy; // section we're in
 int sectionXCount, sectionYCount;
 
 // what section is loaded in the given quarter
 // 1st index is NT 0 or 1, 2nd is LTR quarter
-extern int sectionLoaded[2][4] = {};
-
-#define NUM_BOUND_SPRITES 64
-bound_sprite_t boundSprites[NUM_BOUND_SPRITES];
-#define BOUNDSPRITES_END (boundSprites + NUM_BOUND_SPRITES)
+int sectionLoaded[2][4] = {};
 
 void assignSection(char nt, char q, int sectionID);
 void updateVSections(void);
@@ -33,7 +29,7 @@ void updateHSections(void);
 void scroll(void);
 
 /***********************************************
-** Load up the map around the position (refX,refY)
+** Load up the map around the position (map_refX,map_refY)
 ***********************************************/
 void map_Load(const map_header_t* map) {
 	memset(sectionLoaded, 0xFF, sizeof(sectionLoaded));
@@ -43,16 +39,16 @@ void map_Load(const map_header_t* map) {
 	sectionYCount = header->qrv->height;
 
 	// wrap it to be valid
-	refX = header->startx % (sectionXCount << 7);
+	map_refX = header->startx % (sectionXCount << 7);
 
-	refY = (sectionYCount >> 1) * 240;
+	map_refY = (sectionYCount >> 1) * 240;
 	if(sectionYCount % 2)
-		refY += 128;
-	refY = header->starty % refY;
+		map_refY += 128;
+	map_refY = header->starty % map_refY;
 
-	sx = refX / 128;
-	sy = refY / 240;
-	if(refY % 240 > 128) {
+	sx = map_refX / 128;
+	sy = map_refY / 240;
+	if(map_refY % 240 > 128) {
 		sy = sy * 2 + 1;
 	} else {
 		sy = sy * 2;
@@ -60,9 +56,9 @@ void map_Load(const map_header_t* map) {
 }
 
 void map_SetOrientation(MapOrientation o) {
-	orientation = o;
+	map_orientation = o;
 
-	if(orientation) {
+	if(map_orientation) {
 		// horizontal
 		updateHSections();
 	} else {
@@ -112,34 +108,34 @@ void assignSection(char nt, char q, int sectionID) {
 
 // Do actual raw scrolling for internal use only
 void scroll(void) {
-	if(orientation) {
-		lx = refX - 127;
-		ly = (sy & ~1) * 240;
+	if(map_orientation) {
+		map_lx = map_refX - 127;
+		map_ly = (sy & ~1) * 240;
 	} else {
-		lx = (sx & ~1) * 256;
-		ly = refY - 119;
+		map_lx = (sx & ~1) * 256;
+		map_ly = map_refY - 119;
 	}
-	v_BigScrollBackground(lx, ly);
+	v_BigScrollBackground(512 + map_lx % 512, 480 + map_ly % 480);
 }
 
 void map_MoveTo(int rx, int ry) {
 	int newsx, newsy;
 
-	if(refX == rx && refY == ry)
+	if(map_refX == rx && map_refY == ry)
 		return;
 
-	refX = rx;
-	refY = ry;
+	map_refX = rx;
+	map_refY = ry;
 
-	newsx = refX / 128;
-	newsy = refY / 240;
-	if(refY % 240 >= 128) {
+	newsx = map_refX / 128;
+	newsy = map_refY / 240;
+	if(map_refY % 240 >= 128) {
 		newsy = newsy * 2 + 1;
 	} else {
 		newsy *= 2;
 	}
 
-	if(orientation) {
+	if(map_orientation) {
 		// horizontal
 		// check if we jumped row! Completely redo everything in this case.
 		if(newsy != sy) {
@@ -173,51 +169,3 @@ void map_MoveTo(int rx, int ry) {
 
 	scroll();
 }
-
-bound_sprite_t* map_BindSprite(sprite_t* s) {
-	// find an empty slot
-	bound_sprite_t* bs = boundSprites;
-
-	for(; bs < BOUNDSPRITES_END; ++bs) {
-		if(bs->sprite == 0) {
-			bs->sprite = s;
-			return bs;
-		}
-	}
-
-	return NULL;
-}
-
-void map_UnbindSprite(bound_sprite_t* bs) {
-	bs->sprite = NULL;
-}
-
-bound_sprite_t* map_AllocBoundSprite() {
-	return map_BindSprite(v_AllocSprite());
-}
-
-void map_FreeBoundSprite(bound_sprite_t* bs) {
-	bs->sprite->y = 0xFF;
-	v_FreeSprite(bs->sprite);
-	map_UnbindSprite(bs);
-}
-
-void map_UpdateSprite(bound_sprite_t* bs) {
-	// Currently gross, should be fixed in future
-	int x = bs->x;
-	int y = bs->y;
-	sprite_t* s = bs->sprite;
-
-	if(orientation) {
-		if(x < lx || x > lx + 255) {
-			// offscreen
-			s->y = 0xFF;
-		} else {
-			// place relative to camera
-			s->x = x - lx;
-			s->y = y - ly;
-		}
-	}
-}
-
-

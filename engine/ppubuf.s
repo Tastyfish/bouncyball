@@ -71,7 +71,7 @@
 
 doloop:
 	ldx ringread
-	lda #$0C
+	lda #$0A
 	sta temp
 
 loop:
