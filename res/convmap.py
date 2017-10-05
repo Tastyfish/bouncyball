@@ -296,7 +296,9 @@ def processQRX(t):
 
 					oldB = b
 					repCount = 1
-			if oldB >= 0:
+			if oldB >= 0 and binaryData:
+				writeBinaryRLEChunk(oldB, repCount)
+			elif oldB >= 0:
 				writeRLEChunk(oldB, repCount)
 			# end of RLE
 			if binaryData:

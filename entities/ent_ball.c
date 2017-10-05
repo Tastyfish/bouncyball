@@ -113,12 +113,13 @@ void UpdateBall(entity_t* this) {
 	//param_accely += 3;
 
 	// Contact acceleration will be updated in collision code
-	/*col->x = ls->x;
+	col->x = ls->x;
 	col->y = ls->y;
 	col->right = ls->x + 16;
 	col->bottom = ls->y + 16;
 	currentColEntity = this;
-	col_Test(param_col);*/
+	col_Test(col);
+	map_TestColBox(col);
 
 	// dV
 	ls->x += param_accelx / 8;

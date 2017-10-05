@@ -12,10 +12,10 @@
 #include "gent.h"
 
 extern const palset_t* const PAL_WATERSHIP;
+extern entity_t* game_controller_instance;
 
 #define param_score			(this->paramu[0])
 #define param_fadein		(this->paramc[2])
-#define param_y				(this->parami[2])
 
 void UpdateGC(entity_t* this);
 
@@ -24,13 +24,6 @@ void ent_GameController(entity_t* this, va_list) {
 
 	param_score = 0;
 	param_fadein = 1; // 1 means fading in
-	param_y = 0;
-
-	// These will leak, but also the game never leaves here without reseting
-	col_AllocBox(true, -16, -16, 32, 272);
-	col_AllocBox(true, -16, -16, 288, 32);
-	col_AllocBox(true, 240, -16, 32, 272);
-	col_AllocBox(true, -16, 224, 288, 32);
 
 	v_FadeIn(5, PAL_WATERSHIP);
 }

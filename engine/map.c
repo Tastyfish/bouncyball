@@ -33,6 +33,7 @@ int sectionLoaded[2][4] = {};
 qre_entry_t qreQueue[32];
 extern mapload_entity_t mapload_entities[];
 extern size_t mapload_entity_count;
+extern char sectionCols[2][4][16*16/8];
 
 void assignSection(char nt, char q, int sectionID);
 void updateVSections(void);
@@ -142,6 +143,10 @@ void assignSection(char nt, char q, int sectionID) {
 			}
 			++currentEntity;
 		}
+
+		// col
+		v_DecompressQRCChunk(&sectionCols[nt][q][0],
+			((char*)header->qrc) + header->qrc->sectionOffsets[sectionID]);
 
 		// mark loaded
 		*pLoaded = sectionID;

@@ -60,7 +60,7 @@ extern void __fastcall__ v_FreeSprite(sprite_t* sprite);
 extern void __fastcall__ vb_DecompressNT(int ppuAddr, const void* src);
 extern void __fastcall__ v_DecompressQLEChunk(int ppuAddr, char quarter, const void* src);
 extern void __fastcall__ v_DecompressQRVChunk(int ppuAddr, char quarter, const void* src);
-extern void __fastcall__ v_DecompressQRCChunk(void* dest, char quarter, const void* src);
+extern void __fastcall__ v_DecompressQRCChunk(void* dest, const void* src);
 extern void __fastcall__ v_DecompressQREChunk(void* dest, char quarter, const void* src);
 extern void __fastcall__ v_DecompressToRAM(void* dest, const void* src);
 
