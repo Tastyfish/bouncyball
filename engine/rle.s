@@ -8,6 +8,8 @@
 .export _v_DecompressToRAM
 .export rle_byte
 
+.segment "LOWCODE"
+
 ; Adapted from RLE decompressor by Shiru (NESASM version)
 ; void __fastcall__ vb_DecompressNT(int ppuAddr, void* src)
 .proc _vb_DecompressNT

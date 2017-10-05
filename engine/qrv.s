@@ -4,6 +4,8 @@
 .export _v_DecompressQRVChunk
 .import ppubuf_put, rle_byte
 
+.segment "LOWCODE"
+
 ; Load a QRV chunk into a quarter of a nametable
 ; Quarters are in LTR reading order
 ; src is a chunk, not a pointer to the header

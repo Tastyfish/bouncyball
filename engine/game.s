@@ -63,7 +63,7 @@ vwait2:
 	rts
 .endproc
 
-.code
+.segment "LOWCODE"
 
 ; Run the main game loop---never returns
 ; void g_Run()

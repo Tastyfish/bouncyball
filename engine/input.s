@@ -2,6 +2,8 @@
 
 .export _i_GetStandardInput
 
+.segment "LOWCODE"
+
 ; Get input from player 0 or 1
 ; byte __fastcall__ i_GetStandardInput(byte player)
 .proc _i_GetStandardInput

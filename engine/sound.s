@@ -5,7 +5,6 @@
 .export FamiToneUpdate
 
 .include "zeropage.inc"
-.include "./ext/famitone2.s"
 .import popax, popa
 
 
@@ -16,7 +15,8 @@
 	jmp FamiToneUpdate
 .endproc
 
-.code
+.segment "LOWCODE"
+.include "./ext/famitone2.s"
 
 ; void __fastcall__ s_Setup(void* music, void* sfx);
 .proc _s_Setup

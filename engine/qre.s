@@ -4,6 +4,8 @@
 .export _v_DecompressQREChunk
 .import rle_byte
 
+.segment "LOWCODE"
+
 ; Writes out list of mapload structs to dest. Will blindly overflow it
 ; void __fastcall__ v_DecompressQREChunk(void* dest, char quarter, const void* src)
 .proc _v_DecompressQREChunk

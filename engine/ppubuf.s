@@ -10,7 +10,7 @@
 .export     ppubuf_flush
 .include    "nes.inc"
 
-.segment "INIT"
+.segment "LOWCODE"
 
 ; ------------------------------------------------------------------------
 ; ppubuf_waitempty

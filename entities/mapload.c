@@ -2,7 +2,7 @@
 #include "map.h"
 #include "entities.h"
 
-extern mapload_entity_t mapload_entities[] = {
+extern const mapload_entity_t mapload_entities[] = {
 	{0x01, ent_Ball},
 	//{0x02, ent_Coin},
 	//{0x04, ent_LeftBumper},
@@ -14,4 +14,4 @@ extern mapload_entity_t mapload_entities[] = {
 	{0xC6, ent_Smasher}
 };
 
-extern size_t mapload_entity_count = sizeof mapload_entities / sizeof(mapload_entity_t);
+extern const size_t mapload_entity_count = sizeof mapload_entities / sizeof(mapload_entity_t);

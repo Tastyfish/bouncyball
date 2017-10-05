@@ -14,7 +14,7 @@ step:		.res 2
 destStep:	.res 2
 dir:		.res 1
 
-.code
+.segment "LOWCODE"
 
 ; Fade the palette in
 ; void v_FadeIn(int delay, const palset_t* to)

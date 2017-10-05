@@ -4,6 +4,8 @@
 .import rle_byte
 .export _v_DecompressQRCChunk
 
+.segment "LOWCODE"
+
 ; Read QRC data into a bit array for col testing
 ; void __fastcall__ v_DecompressQRCChunk(void* dest, const void* src);
 .proc _v_DecompressQRCChunk

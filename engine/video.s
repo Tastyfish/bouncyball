@@ -55,7 +55,7 @@ NUM_SPRITES = 64
 	rts
 .endproc
 
-.code
+.segment "LOWCODE"
 
 ; Clear the entire OAM cache and data
 ; void vb_ClearOAM()

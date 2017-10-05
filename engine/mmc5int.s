@@ -97,7 +97,7 @@ done:
 	rts
 .endproc
 
-.code
+.segment "LOWCODE"
 
 ; void __fastcall__ vm_SetNametableMirroring(char code)
 .proc _vm_SetNametableMirroring
