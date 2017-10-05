@@ -15,7 +15,7 @@
 	sta ptr2 ; dest
 	stx ptr2+1
 
-	lda #0
+	lda #1
 	sta tmp3 ; current bit
 
 	; continue as normal, until we've found that we passed X or Y barriers
@@ -42,6 +42,7 @@ done: ; 0x80 0x00 means end of stream
 
 ; write out a bit at a time
 wbyte:
+	pha
 	cmp #0
 	beq @nowrite
 	lda (ptr2),y
@@ -52,11 +53,14 @@ wbyte:
 	bcc @done
 
 	; onto next byte
+	lda #1
+	sta tmp3
 	inc ptr2
 	bne @done
 	inc ptr2+1
 
 @done:
+	pla
 	rts
 
 .endproc
