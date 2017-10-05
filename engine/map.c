@@ -22,8 +22,8 @@ const map_header_t* header;
 bool map_orientation;
 int map_refX, map_refY; // pixel pos we're in
 int map_lx, map_ly; // actual viewport TL reference for sprites anc scrolling
-int sx, sy; // section we're in
-int sectionXCount, sectionYCount;
+char sx, sy; // section we're in
+char sectionXCount, sectionYCount;
 int map_width, map_height;
 
 // what section is loaded in the given quarter
@@ -35,7 +35,7 @@ extern mapload_entity_t mapload_entities[];
 extern size_t mapload_entity_count;
 extern char sectionCols[2][4][16*16/8];
 
-void assignSection(char nt, char q, int sectionID);
+void assignSection(char nt, char q, int sectionID, char x, char y);
 void updateVSections(void);
 void updateHSections(void);
 void scroll(void);
@@ -49,11 +49,11 @@ void map_Load(const map_header_t* map) {
 	header = map;
 	sectionXCount = header->qrv->width;
 	sectionYCount = header->qrv->height;
-	map_width = sectionXCount * 16;
-	map_height = sectionYCount % 2 ? sectionYCount * 15 + 1 : sectionYCount * 15;
+	map_width = (int)sectionXCount * 16;
+	map_height = sectionYCount % 2 ? (int)sectionYCount * 15 + 1 : (int)sectionYCount * 15;
 
 	// wrap it to be valid
-	map_refX = header->startx % (sectionXCount << 7);
+	map_refX = header->startx % ((int)sectionXCount << 7);
 
 	map_refY = (sectionYCount >> 1) * 240;
 	if(sectionYCount % 2)
@@ -84,27 +84,29 @@ void map_SetOrientation(MapOrientation o) {
 }
 
 void updateHSections(void) {
-	int xmax = MIN(sx + 1, sectionXCount - 1);
-	int ymax = MIN(sy | 1, sectionYCount - 1);
-	int x, y, yoffs;
+	char xmax = MIN(sx + 1, sectionXCount - 1);
+	char ymax = MIN(sy | 1, sectionYCount - 1);
+	char x, y;
+	int yoffs;
 
-	for(y = MAX(sy & ~1, 0); y <= ymax; ++y) {
+	for(y = sy & ~1; y <= ymax; ++y) {
 		yoffs = y * sectionXCount;
-		for(x = MAX(sx - 1, 0); x <= xmax; ++x) {
-			assignSection((x & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs);
+		for(x = (sx > 1 ? sx - 1 : 0); x <= xmax; ++x) {
+			assignSection((x & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs, x, y);
 		}
 	}
 }
 
 void updateVSections(void) {
-	int xmax = MIN(sx | 1, sectionXCount - 1);
-	int ymax = MIN(sy + 1, sectionYCount - 1);
-	int x, y, yoffs;
+	char xmax = MIN(sx | 1, sectionXCount - 1);
+	char ymax = MIN(sy + 1, sectionYCount - 1);
+	char x, y;
+	int yoffs;
 
-	for(y = MAX(sy - 1, 0); y <= ymax; ++y) {
+	for(y = (sy > 1 ? sy - 1 : 0); y <= ymax; ++y) {
 		yoffs = y * sectionXCount;
-		for(x = MAX(sx & ~1, 0); x <= xmax; ++x) {
-			assignSection((y & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs);
+		for(x = sx & ~1; x <= xmax; ++x) {
+			assignSection((y & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs, x, y);
 		}
 	}
 }
@@ -115,12 +117,12 @@ int compareMapload(const void* a, const void* b) {
 
 mapload_entity_t mapload_key;
 
-void assignSection(char nt, char q, int sectionID) {
+void assignSection(char nt, char q, int sectionID, char x, char y) {
 	int* pLoaded = &sectionLoaded[nt][q];
 
 	qre_entry_t* currentEntity = qreQueue;
-	int eox = sx * 128;
-	int eoy = sy % 2 ? sy * 120 + 8 : sy * 120;
+	int eox = x * 128;
+	int eoy = y % 2 ? y * 120 + 8 : y * 120;
 	mapload_entity_t* mapload;
 
 	if(*pLoaded != sectionID) {
@@ -157,16 +159,16 @@ void assignSection(char nt, char q, int sectionID) {
 void scroll(void) {
 	if(map_orientation) {
 		map_lx = map_refX - 127;
-		map_ly = (sy & ~1) * 240;
+		map_ly = (int)(sy & ~1) * 240;
 	} else {
-		map_lx = (sx & ~1) * 256;
+		map_lx = (int)(sx & ~1) * 256;
 		map_ly = map_refY - 119;
 	}
 	v_BigScrollBackground(512 + map_lx % 512, 480 + map_ly % 480);
 }
 
 void map_MoveTo(int rx, int ry) {
-	int newsx, newsy;
+	char newsx, newsy;
 
 	if(map_refX == rx && map_refY == ry)
 		return;
