@@ -4,7 +4,7 @@ int sqrti(int x) {
 	// digit-by-digit method
 
 	int result = 0;
-	int mask = 0x40;
+	int mask = 0x4000;
 
 	while(mask > x)
 		mask >>= 2;

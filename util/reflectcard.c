@@ -7,7 +7,7 @@ bool reflectcard(int *vx, int *vy, int nx, int ny) {
 	if(!nx && !ny)
 		return false;
 
-	if(abs(nx) > abs(ny)) {
+	if(abs(nx) >= abs(ny)) {
 		*vx = nx < 0 ? abs(*vx) : -abs(*vx);
 		return true;
 	} else {
