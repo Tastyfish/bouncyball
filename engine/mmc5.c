@@ -30,7 +30,7 @@ void resort(void) {
 	qsort(scanline_callbacks, scanlineCount, sizeof(ScanlineCB_Entry), sorterFn);
 }
 
-HScanlineCB vm_AddScanlineCallback(line_t line, ScanlineCallback callback) {
+scanlinecb_t vm_AddScanlineCallback(line_t line, ScanlineCallback callback) {
 	ScanlineCB_Entry* entry;
 
 	if(scanlineCount == NUM_CALLBACKS)
@@ -53,7 +53,7 @@ HScanlineCB vm_AddScanlineCallback(line_t line, ScanlineCallback callback) {
 	}
 }
 
-void vm_RemoveScanlineCallback(HScanlineCB cb) {
+void vm_RemoveScanlineCallback(scanlinecb_t cb) {
 	ScanlineCB_Entry* entry = (ScanlineCB_Entry*)cb;
 
 	if(scanlineCount == 1) {

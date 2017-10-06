@@ -16,7 +16,7 @@ extern const map_header_t* const MAP_PINBALL1;
 // --0 means input enabled
 // --1 means waiting for fade in
 // --2 means waiting for fade out
-#define param_scanline_callback	(this->paramp[0])
+#define param_scanline_callback	((scanlinecb_t)this->paramp[0])
 #define param_x					(this->paramu[1])
 #define param_state				(this->paramc[4])
 
@@ -27,7 +27,7 @@ void onSplitscreen(unsigned char y);
 void ent_StartScreen(entity_t* this, va_list) {
 	this->onDestroy = Destroy;
 	this->onUpdate = UpdateStart;
-	param_scanline_callback = (void*)vm_AddScanlineCallback(21 * 8, onSplitscreen);
+	param_scanline_callback = vm_AddScanlineCallback(21 * 8, onSplitscreen);
 	param_x = 128;
 
 	v_FadeIn(5, PAL_WATERSHIP);
@@ -35,7 +35,7 @@ void ent_StartScreen(entity_t* this, va_list) {
 }
 
 void Destroy(entity_t* this) {
-	vm_RemoveScanlineCallback((HScanlineCB)param_scanline_callback);
+	vm_RemoveScanlineCallback(param_scanline_callback);
 }
 
 extern char mmc5_nt_mapping;
