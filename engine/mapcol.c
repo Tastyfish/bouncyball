@@ -13,47 +13,56 @@ void map_TestColBox(collision_box_t* box) {
 	int y = box->y;
 	int r = box->right - 1;
 	int b = box->bottom - 1;
-	int ox = 0, oy = 0;
 	collide_cb_t collide = box->onCollide;
+	char oflags = 0;
+	int ox, oy;
 
 	if(map_TestCol(x, y)) {
-		ox = x % 8 - 8;
-		oy = y % 8 - 8;
+		oflags |= 0x05; // left up
+		map_SetTile(x/8, y/8, 0x08);
 	}
 	if(map_TestCol(r, y)) {
-		ox += r % 8;
-		oy += y % 8 - 8;
+		oflags |= 0x06; // right up
+		map_SetTile(r/8, y/8, 0x08);
 	}
 	if(map_TestCol(x, b)) {
-		ox += x % 8 - 8;
-		oy += b % 8;
+		oflags |= 0x09; // left down
+		map_SetTile(x/8, b/8, 0x08);
 	}
 	if(map_TestCol(r, b)) {
-		ox += r % 8;
-		oy += b % 8;
+		oflags |= 0x0A; // right down
+		map_SetTile(r/8, b/8, 0x08);
 	}
 
-	if((ox || oy) && collide)
+	if((oflags & 0x03) == 0x01) {
+		// left
+		ox = 8 - x % 8;
+	} else if((oflags & 0x03) == 0x02) {
+		// right
+		ox = r - x - r % 8;
+	} else {
+		ox = (r + 1 - x) / 2;
+	}
+
+	if((oflags & 0x0C) == 0x04) {
+		// up
+		oy = 8 - y % 8;
+	} else if((oflags & 0x0C) == 0x08) {
+		// down
+		oy = b - y - b % 8;
+	} else {
+		oy = (b + 1 - y) / 2;
+	}
+
+	if(oflags && collide)
 		collide(box, ox, oy);
 }
 
 bool map_TestCol(int x, int y) {
-	char q = (x / 16 % 2) | (y % 30 < 16) * 2;
-	char ix = x % 16 / 8;
-	char iy = q >= 2 ? y % 30 - 16 : y % 30;
-	char* addr;
+	char q = (x / 128 % 2) | (y % 240 < 128 ? 0 : 2);
+	char ix = x % 128 / 8;
+	char iy = q >= 2 ? (y % 240 - 128) / 8 : (y % 240) / 8;
+	char nt = map_orientation ? x / 256 % 2 : y / 240 % 2;
 
-	if(map_orientation) {
-		// horizontal
-		x %= 64;
-		y %= 30;
-		addr = &sectionCols[x / 32 % 2][q][ix + iy * ROW_SPAN];
-	} else {
-		// vertical
-		x %= 32;
-		y %= 60;
-		addr = &sectionCols[y / 30 % 2][q][ix + iy * ROW_SPAN];
-	}
-
-	return *addr & (1 << (x % 8));
+	return sectionCols[nt][q][ix / 8 + iy * ROW_SPAN] & (1 << (ix % 8));
 }
