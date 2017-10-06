@@ -41,7 +41,7 @@ extern void map_MoveTo(int rx, int ry);
 
 extern bound_sprite_t* map_BindSprite(sprite_t* s);
 extern void map_UnbindSprite(bound_sprite_t* bs);
-extern bound_sprite_t* map_AllocBoundSprite();
+extern bound_sprite_t* map_AllocBoundSprite(void);
 extern void map_FreeBoundSprite(bound_sprite_t* bs);
 extern void map_UpdateSprite(bound_sprite_t* bs);
 
