@@ -1,5 +1,6 @@
-#include <collision.h>
-#include <map.h>
+#include <stddef.h>
+#include "collision.h"
+#include "map.h"
 
 // width of row in bytes
 #define ROW_SPAN (16/8)
@@ -55,7 +56,7 @@ void map_TestColBox(collision_box_t* box) {
 	}
 
 	if(oflags && collide)
-		collide(box, ox, oy);
+		collide(box, NULL, ox, oy);
 }
 
 bool map_TestCol(int x, int y) {

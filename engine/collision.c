@@ -2,7 +2,7 @@
 #include "math.h"
 #include "collision.h"
 
-#define NUM_CB (32)
+#define NUM_CB (64)
 collision_box_t checkedCollisionBoxes[NUM_CB];
 #define CHECKED_COLBOX_END (checkedCollisionBoxes + NUM_CB)
 
@@ -56,9 +56,9 @@ void col_Test(collision_box_t* ref) {
 
 			collide = currentBox->onCollide;
 			if(collide)
-				collide(currentBox, centerx - currentBox->x, centery - currentBox->y);
+				collide(currentBox, ref, centerx - currentBox->x, centery - currentBox->y);
 			if(refCollide)
-				refCollide(ref, centerx - refX, centery - refY);
+				refCollide(ref, currentBox, centerx - refX, centery - refY);
 		}
 	}
 }
