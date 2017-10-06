@@ -24,7 +24,7 @@ void map_UnbindSprite(bound_sprite_t* bs) {
 	bs->sprite = NULL;
 }
 
-bound_sprite_t* map_AllocBoundSprite() {
+bound_sprite_t* map_AllocBoundSprite(void) {
 	return map_BindSprite(v_AllocSprite());
 }
 
@@ -37,7 +37,7 @@ void map_FreeBoundSprite(bound_sprite_t* bs) {
 void map_UpdateSprite(bound_sprite_t* bs) {
 	// Currently gross, should be fixed in future
 	int x = bs->x;
-	int y = bs->y;
+	int y = bs->y - 1;
 	sprite_t* s = bs->sprite;
 
 	if(map_orientation) {
