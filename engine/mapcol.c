@@ -19,19 +19,19 @@ void map_TestColBox(collision_box_t* box) {
 
 	if(map_TestCol(x, y)) {
 		oflags |= 0x05; // left up
-		map_SetTile(x/8, y/8, 0x08);
+		//map_SetTile(x/8, y/8, 0x08);
 	}
 	if(map_TestCol(r, y)) {
 		oflags |= 0x06; // right up
-		map_SetTile(r/8, y/8, 0x08);
+		//map_SetTile(r/8, y/8, 0x08);
 	}
 	if(map_TestCol(x, b)) {
 		oflags |= 0x09; // left down
-		map_SetTile(x/8, b/8, 0x08);
+		//map_SetTile(x/8, b/8, 0x08);
 	}
 	if(map_TestCol(r, b)) {
 		oflags |= 0x0A; // right down
-		map_SetTile(r/8, b/8, 0x08);
+		//map_SetTile(r/8, b/8, 0x08);
 	}
 
 	if((oflags & 0x03) == 0x01) {
