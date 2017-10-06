@@ -3,7 +3,7 @@
 #ifndef _COLLISION_H
 #define _COLLISION_H
 
-typedef void (*collide_cb_t)(struct collision_s* box, unsigned int ox, unsigned int oy);
+typedef void (*collide_cb_t)(struct collision_s* box, int ox, int oy);
 
 typedef struct collision_s {
 	int x, y;
