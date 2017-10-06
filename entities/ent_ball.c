@@ -14,7 +14,7 @@
 
 #include "entities.h"
 
-#define ACCEL_LIMIT		(64)
+#define ACCEL_LIMIT		(48)
 
 #define param_lsprite	((bound_sprite_t*)this->paramp[0])
 #define param_rsprite	((bound_sprite_t*)this->paramp[1])
@@ -25,11 +25,10 @@
 
 #define colparam_accelx	((signed char)currentColEntity->paramc[4])
 #define colparam_accely	((signed char)currentColEntity->paramc[5])
-#define colparam_col	((collision_box_t*)currentColEntity->paramp[3])
 
 void UpdateBall(entity_t* this);
 void DestroyBall(entity_t* this);
-void CollideBall(collision_box_t* this, int x, int y);
+void CollideBall(collision_box_t* this, collision_box_t* other, int x, int y);
 
 // Variables for the collision test
 entity_t* currentColEntity;
@@ -57,7 +56,7 @@ void ent_Ball(entity_t* this, va_list args) {
 	}
 	param_rsprite = rs;
 
-	col = col_AllocBox(false, va_arg(args, int), va_arg(args, int), 8, 8);
+	col = col_AllocBox(false, va_arg(args, int), va_arg(args, int), 16, 16);
 	if(!col) {
 		e_Destroy(this);
 		return;
@@ -101,20 +100,20 @@ void UpdateBall(entity_t* this) {
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 
 	if((i & INPUT_LEFT) && param_accelx > -ACCEL_LIMIT) {
-		param_accelx--;
+		param_accelx -= 4;
 	}
 	if((i & INPUT_RIGHT) && param_accelx < ACCEL_LIMIT) {
-		param_accelx++;
+		param_accelx += 4;
 	}
 	if((i & INPUT_UP) && param_accely > -ACCEL_LIMIT) {
-		param_accely--;
+		param_accely -= 4;
 	}
 	if((i & INPUT_DOWN) && param_accely < ACCEL_LIMIT) {
-		param_accely++;
+		param_accely += 4;
 	}
 
 	// gravity
-	//param_accely += 3;
+	param_accely += 3;
 
 	// Contact acceleration will be updated in collision code
 	currentColEntity = this;
@@ -140,14 +139,23 @@ void UpdateBall(entity_t* this) {
 	map_UpdateSprite(rs);
 }
 
-void CollideBall(collision_box_t*, int nx, int ny) {
-	decimal_t accelx = INT2DEC(colparam_accelx);
-	decimal_t accely = INT2DEC(colparam_accely);
-	collision_box_t* col = colparam_col;
+void CollideBall(collision_box_t*, collision_box_t* other, int nx, int ny) {
+	decimal_t accelx = ((decimal_t)colparam_accelx) * 2;
+	decimal_t accely = ((decimal_t)colparam_accely) * 2;
 	decimal_t dnx, dny;
+
+	// hitting another box that has a param does not cause a reaction
+	// or escape if other was deleted
+	if(other && (other->param || !other->right)) {
+		return;
+	}
 
 	nx -= 8;
 	ny -= 8;
+
+	// are we actually in the cirle??
+	if(vleni(nx, ny) >= 8)
+		return;
 
 	// did we completely fall inside? hard reverse then
 	/*if(!(nx || ny)) {
@@ -169,10 +177,10 @@ void CollideBall(collision_box_t*, int nx, int ny) {
 	// The actual vector math to reflect things
 	normalized(&dnx, &dny);
 	reflectd(&accelx, &accely, dnx, dny);
-	colparam_accelx = DEC2INT(accelx) + 4;
-	colparam_accely = DEC2INT(accely);
+	colparam_accelx = (signed char)(accelx / 8);
+	colparam_accely = (signed char)(accely / 8);
 
-	s_PlaySFX(SFX_BOUNCEH, channels[useCH]);
+	//s_PlaySFX(SFX_BOUNCEH, channels[useCH]);
 	if(++useCH == 4)
 		useCH = 0;
 }
