@@ -44,11 +44,17 @@ done: ; 0x80 0x00 means end of stream
 wbyte:
 	pha
 	cmp #0
-	beq @nowrite
+	beq @clear
 	lda (ptr2),y
 	ora tmp3
 	sta (ptr2),y
-@nowrite:
+	bne @adv
+@clear:
+	lda tmp3
+	eor #$FF
+	and (ptr2),y
+	sta (ptr2),y
+@adv:
 	asl tmp3 ; move mask to next bit
 	bcc @done
 
