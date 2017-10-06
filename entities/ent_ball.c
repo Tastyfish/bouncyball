@@ -14,6 +14,8 @@
 
 #include "entities.h"
 
+#define ACCEL_LIMIT		(64)
+
 #define param_lsprite	((bound_sprite_t*)this->paramp[0])
 #define param_rsprite	((bound_sprite_t*)this->paramp[1])
 // accel as 1/8 of a pixel
@@ -98,16 +100,16 @@ void UpdateBall(entity_t* this) {
 
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 
-	if(i & INPUT_LEFT) {
+	if((i & INPUT_LEFT) && param_accelx > -ACCEL_LIMIT) {
 		param_accelx--;
 	}
-	if(i & INPUT_RIGHT) {
+	if((i & INPUT_RIGHT) && param_accelx < ACCEL_LIMIT) {
 		param_accelx++;
 	}
-	if(i & INPUT_UP) {
+	if((i & INPUT_UP) && param_accely > -ACCEL_LIMIT) {
 		param_accely--;
 	}
-	if(i & INPUT_DOWN) {
+	if((i & INPUT_DOWN) && param_accely < ACCEL_LIMIT) {
 		param_accely++;
 	}
 
@@ -164,17 +166,11 @@ void CollideBall(collision_box_t*, int nx, int ny) {
 	dnx = INT2DEC(nx);
 	dny = INT2DEC(ny);
 
-	// Everything is bounding boxes, so it has to be a cardinal contact (except corner cases)
-	// normal is adjusted to be center-aligned
+	// The actual vector math to reflect things
 	normalized(&dnx, &dny);
 	reflectd(&accelx, &accely, dnx, dny);
-	if(abs(nx) >= abs(ny)) {
-		colparam_accelx = DEC2INT(accelx * 2 / 3) + 4;
-		//colparam_accely = accely * 2 / 3;// + crand(-8, 8);
-	} else {
-		colparam_accelx = crand(-8, 8) + 4;
-		colparam_accely = DEC2INT(accely * 2 / 3);
-	}
+	colparam_accelx = DEC2INT(accelx) + 4;
+	colparam_accely = DEC2INT(accely);
 
 	s_PlaySFX(SFX_BOUNCEH, channels[useCH]);
 	if(++useCH == 4)
