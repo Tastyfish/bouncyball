@@ -9,6 +9,7 @@ extern void setup_ingame(const void* map);
 extern void setup_testgame();
 
 extern const palset_t* const PAL_WATERSHIP;
+extern const palset_t* const PAL_BALLS;
 extern const map_header_t* const MAP_PINBALL1;
 
 // paramc_x contains camera x coord
@@ -30,7 +31,7 @@ void ent_StartScreen(entity_t* this, va_list) {
 	param_scanline_callback = vm_AddScanlineCallback(21 * 8, onSplitscreen);
 	param_x = 128;
 
-	v_FadeIn(5, PAL_WATERSHIP);
+	v_FadeIn(5, PAL_WATERSHIP, PAL_BALLS);
 	param_state = 1;
 }
 

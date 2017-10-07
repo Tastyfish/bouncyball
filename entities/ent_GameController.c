@@ -12,6 +12,7 @@
 #include "gent.h"
 
 extern const palset_t* const PAL_WATERSHIP;
+extern const palset_t* const PAL_BALLS;
 extern entity_t* game_controller_instance;
 
 #define param_score			(this->paramu[0])
@@ -25,7 +26,7 @@ void ent_GameController(entity_t* this, va_list) {
 	param_score = 0;
 	param_fadein = 1; // 1 means fading in
 
-	v_FadeIn(5, PAL_WATERSHIP);
+	v_FadeIn(5, PAL_WATERSHIP, PAL_BALLS);
 }
 
 void UpdateGC(entity_t* this) {

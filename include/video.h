@@ -64,7 +64,7 @@ extern void __fastcall__ v_DecompressQRCChunk(void* dest, const void* src);
 extern void __fastcall__ v_DecompressQREChunk(void* dest, char quarter, const void* src);
 extern void __fastcall__ v_DecompressToRAM(void* dest, const void* src);
 
-extern void __fastcall__ v_FadeIn(int delay, const palset_t* to);
+extern void __fastcall__ v_FadeIn(int delay, const palset_t* bg, const palset_t* spr);
 extern void v_FadeOut(int delay);
 extern bool v_FadeStep(void);
 
