@@ -18,6 +18,9 @@ void map_TestColBox(collision_box_t* box) {
 	char oflags = 0;
 	int ox, oy;
 
+	if(!collide)
+		return;
+
 	if(map_TestCol(x, y)) {
 		oflags |= 0x05; // left up
 		//map_SetTile(x/8, y/8, 0x08);
@@ -55,7 +58,7 @@ void map_TestColBox(collision_box_t* box) {
 		oy = (b + 1 - y) / 2;
 	}
 
-	if(oflags && collide)
+	if(oflags)
 		collide(box, NULL, ox, oy);
 }
 
