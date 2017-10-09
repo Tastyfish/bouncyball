@@ -8,15 +8,14 @@
 .import popax, popa
 
 
-.segment "INIT"
+.segment "LOWCODE"
 
 .interruptor update_sound, 1
 .proc update_sound
 	jmp FamiToneUpdate
 .endproc
 
-.segment "LOWCODE"
-.include "./ext/famitone2.s"
+.include "../ext/famitone2.s"
 
 ; void __fastcall__ s_Setup(void* music, void* sfx);
 .proc _s_Setup

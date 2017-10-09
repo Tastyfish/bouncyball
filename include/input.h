@@ -16,4 +16,4 @@ enum {
 	INPUT_RIGHT		= (input_t)0x01
 };
 
-input_t __fastcall__ i_GetStandardInput(i_player_t player);
+input_t i_GetStandardInput(i_player_t player);

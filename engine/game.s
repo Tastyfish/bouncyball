@@ -7,11 +7,11 @@ _GAME_EXPORT = 1
 .include "mmc5zp.inc"
 
 .import _vbm_SetNametableMirroring
-.export _g_Run
+.export _g_Run, _g_Yield
 
 .exportzp _tickcount	:= $6B
 
-.segment "INIT"
+.segment "ONCE"
 .constructor _g_Init, 20
 ; void g_Init()
 .proc _g_Init
@@ -75,4 +75,15 @@ vwait2:
 	bne _g_Run
 	jsr _v_WaitVBlank
 	jmp _g_Run
+.endproc
+
+; Let IRQ's fire
+; void g_Sleep(void)
+.proc _g_Yield
+	cli
+	.repeat 3
+		nop
+	.endrep
+	sei
+	rts
 .endproc

@@ -13,7 +13,7 @@ LD := ld65
 GFLAGS = -tnes-mmc5
 AFLAGS = -Iasminc
 CFLAGS = -Iinclude -Iinclude/stuff -Osir
-LFLAGS = -mnes.map --lib nesmmc5.lib
+LFLAGS = -mnes.map --lib nes-mmc5.lib
 
 .PHONY: all clean
 

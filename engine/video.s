@@ -32,7 +32,7 @@ NUM_SPRITES = 64
 	ppuMaskCache:	.res 1
 	sprite_atable:	.res NUM_SPRITES
 
-.segment "INIT"
+.segment "LOWCODE"
 
 .interruptor flush_vblank, 20
 .proc flush_vblank
@@ -54,8 +54,6 @@ NUM_SPRITES = 64
 	sta PPU_SCROLL
 	rts
 .endproc
-
-.segment "LOWCODE"
 
 ; Clear the entire OAM cache and data
 ; void vb_ClearOAM()
@@ -146,6 +144,7 @@ loop:
 .proc _vb_CopyPPU
 length	= 1
 start	= 3
+	jsr pushax
 	; start -> ptr1
 	ldy #start
 	lda (sp),y

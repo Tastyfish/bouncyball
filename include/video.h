@@ -35,36 +35,36 @@ typedef color_t palset_t;
 
 extern void vb_ClearOAM(void);
 extern void vb_FullCopyOAM(void);
-extern void __fastcall__ vb_CopySprite(spriteID_t id);
-extern void __fastcall__ vb_CopyOAM(unsigned char start, unsigned char length);
+extern void vb_CopySprite(spriteID_t id);
+extern void vb_CopyOAM(unsigned char start, unsigned char length);
 extern void vb_CopyPPU(const void* start, int length);
 
-extern void __fastcall__ v_SetBGColor(color_t color);
-extern void __fastcall__ v_SetPalette(palid_t pal_id, color_t col_1, color_t col_2, color_t col_3);
-extern void __fastcall__ v_CopyPalette(palid_t pal_id, const pal_t* source);
-extern void __fastcall__ v_CopyBackgroundPalset(const palset_t* source);
-extern void __fastcall__ v_CopySpritePalset(const palset_t* source);
+extern void v_SetBGColor(color_t color);
+extern void v_SetPalette(palid_t pal_id, color_t col_1, color_t col_2, color_t col_3);
+extern void v_CopyPalette(palid_t pal_id, const pal_t* source);
+extern void v_CopyBackgroundPalset(const palset_t* source);
+extern void v_CopySpritePalset(const palset_t* source);
 
 extern void v_WaitVBlank(void);
 extern void vb_DisableAll(void);
 
-extern void __fastcall__ vb_EnableSprites(bool enable);
-extern void __fastcall__ vb_EnableBackgrounds(bool enable);
+extern void vb_EnableSprites(bool enable);
+extern void vb_EnableBackgrounds(bool enable);
 
-extern void __fastcall__ v_ScrollBackground(unsigned char x, unsigned char y);
-extern void __fastcall__ v_BigScrollBackground(int x, int y);
+extern void v_ScrollBackground(unsigned char x, unsigned char y);
+extern void v_BigScrollBackground(int x, int y);
 
 extern sprite_t* v_AllocSprite(void);
-extern void __fastcall__ v_FreeSprite(sprite_t* sprite);
+extern void v_FreeSprite(sprite_t* sprite);
 
-extern void __fastcall__ vb_DecompressNT(int ppuAddr, const void* src);
-extern void __fastcall__ v_DecompressQLEChunk(int ppuAddr, char quarter, const void* src);
-extern void __fastcall__ v_DecompressQRVChunk(int ppuAddr, char quarter, const void* src);
-extern void __fastcall__ v_DecompressQRCChunk(void* dest, const void* src);
-extern void __fastcall__ v_DecompressQREChunk(void* dest, char quarter, const void* src);
-extern void __fastcall__ v_DecompressToRAM(void* dest, const void* src);
+extern void vb_DecompressNT(int ppuAddr, const void* src);
+extern void v_DecompressQLEChunk(int ppuAddr, char quarter, const void* src);
+extern void v_DecompressQRVChunk(int ppuAddr, char quarter, const void* src);
+extern void v_DecompressQRCChunk(void* dest, const void* src);
+extern void v_DecompressQREChunk(void* dest, char quarter, const void* src);
+extern void v_DecompressToRAM(void* dest, const void* src);
 
-extern void __fastcall__ v_FadeIn(int delay, const palset_t* bg, const palset_t* spr);
+extern void v_FadeIn(int delay, const palset_t* bg, const palset_t* spr);
 extern void v_FadeOut(int delay);
 extern bool v_FadeStep(void);
 

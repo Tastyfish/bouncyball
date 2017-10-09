@@ -12,5 +12,5 @@ extern char vc_bg_bank;
 scanlinecb_t vm_AddScanlineCallback(line_t line, ScanlineCallback callback);
 void vm_RemoveScanlineCallback(scanlinecb_t cb);
 
-void __fastcall__ vm_SetNametableMirroring(char code);
-void __fastcall__ vbm_SetNametableMirroring(char code);
+void vm_SetNametableMirroring(char code);
+void vbm_SetNametableMirroring(char code);

@@ -8,10 +8,10 @@ enum {
 
 typedef unsigned char songid_t;
 
-void __fastcall__ s_Setup(const void* music, const void* sfx);
+void s_Setup(const void* music, const void* sfx);
 
-void __fastcall__ s_PlayMusic(songid_t songid);
+void s_PlayMusic(songid_t songid);
 void s_StopMusic();
-void __fastcall__ s_PauseMusic(bool pause);
+void s_PauseMusic(bool pause);
 
-void __fastcall__ s_PlaySFX(songid_t sfxid, sfx_channel_t channel);
+void s_PlaySFX(songid_t sfxid, sfx_channel_t channel);

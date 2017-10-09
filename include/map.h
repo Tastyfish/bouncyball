@@ -49,7 +49,7 @@ extern void map_UpdateSprite(bound_sprite_t* bs);
 extern bool map_TestCol(int x, int y);
 extern void map_TestColBox(collision_box_t* box);
 
-extern void __fastcall__ map_SetTile(int x, int y, maptile_t tile);
+extern void map_SetTile(int x, int y, maptile_t tile);
 
 extern bool map_orientation;
 extern int map_refX, map_refY;

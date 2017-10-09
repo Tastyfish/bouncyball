@@ -41,11 +41,6 @@ void e_Destroy(entity_t* entity) {
 	bzero(entity, sizeof(entity_t));
 }
 
-// A seperate fn so the compiler knows that things will be called
-void TickIRQs(void) {
-	__asm__("cli\nnop\nsei");
-}
-
 // Update as much as we can this round
 // True if was interrupted by VBlank, false if just ran out of work
 bool e_UpdateTick(void) {
@@ -72,7 +67,7 @@ bool e_UpdateTick(void) {
 			return false;
 
 		// let IRQ's tick
-		TickIRQs();
+		g_Yield();
 	}
 
 	return true;

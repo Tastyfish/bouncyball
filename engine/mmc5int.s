@@ -22,7 +22,7 @@
 .export _mmc5_sl_counter    := $5203
 .export _mmc5_irq_ctrl      := $5204
 
-.segment	"INIT"
+.segment	"LOWCODE"
 
 .interruptor preset_nmi, 30
 .proc preset_nmi
@@ -64,10 +64,7 @@
 	sta		ptr1
 	dey
 	lda     (_vc_sl_ptr),y
-	jsr     pusha
-	lda     ptr1
-	ldx     ptr1+1
-	jsr     callax
+	jmp     (ptr1) ; call callbank fn with param lineno
 	lda     _vc_sl_ptr
 	inc     _vc_sl_i
 	clc
@@ -96,8 +93,6 @@ L0042:
 done:
 	rts
 .endproc
-
-.segment "LOWCODE"
 
 ; void __fastcall__ vm_SetNametableMirroring(char code)
 .proc _vm_SetNametableMirroring

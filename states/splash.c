@@ -22,7 +22,6 @@ extern void setup_splash(void) {
 	e_Create(&ent_MapSmoke, 49*8, 9*8-1);
 	e_Create(&ent_MapSmoke, 51*8, 9*8-1);
 
-	v_CopySpritePalset(PAL_BALLS);
 	vc_bg_bank = 2;
 
 	v_DecompressToRAM((void*)0x5C00, NAM_DIRECTIONS);

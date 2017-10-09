@@ -59,6 +59,7 @@ sprloop:
 ; Fade the palette out
 ; void v_FadeOut(int delay)
 .proc _v_FadeOut
+	jsr pushax
 	lda #1
 	bne FadeX
 .endproc
