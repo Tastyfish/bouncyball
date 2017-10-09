@@ -11,6 +11,7 @@
 #include "gent.h"
 
 extern const palset_t* const PAL_WATERSHIP;
+extern const palset_t* const PAL_BALLS;
 
 // param has base time for joke timer
 // graphic_a indicates fading in
@@ -39,7 +40,7 @@ void ent_Shaker(entity_t* this, va_list) {
 	col_AllocBox(true, 240, -16, 32, 272);
 	col_AllocBox(true, -16, 224, 288, 32);
 
-	v_FadeIn(5, PAL_WATERSHIP);
+	v_FadeIn(5, PAL_WATERSHIP, PAL_BALLS);
 }
 
 void UpdateShaker(entity_t* this) {
