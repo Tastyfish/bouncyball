@@ -69,7 +69,7 @@ void map_Load(const map_header_t* map) {
 	}
 }
 
-void map_SetOrientation(MapOrientation o) {
+void map_SetOrientation(map_orientation_t o) {
 	map_orientation = o;
 
 	if(map_orientation) {

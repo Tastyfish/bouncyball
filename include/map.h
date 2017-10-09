@@ -9,10 +9,11 @@
 typedef char maptile_t;
 typedef char mapattrib_t;
 
-typedef enum {
-	MO_VERTICAL = 0,
-	MO_HORIZONTAL = 1
-} MapOrientation;
+typedef char map_orientation_t;
+enum {
+	MO_VERTICAL = (map_orientation_t)0,
+	MO_HORIZONTAL = (map_orientation_t)1
+};
 
 typedef struct {
 	int startx;
@@ -36,7 +37,7 @@ typedef struct {
 #define MAP_OLDTILE ((mapattrib_t)0xFF);
 
 extern void map_Load(const map_header_t* map);
-extern void map_SetOrientation(MapOrientation orientation);
+extern void map_SetOrientation(map_orientation_t orientation);
 extern void map_MoveTo(int rx, int ry);
 
 extern bound_sprite_t* map_BindSprite(sprite_t* s);
