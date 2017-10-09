@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 #include "math.h"
@@ -68,7 +69,15 @@ void updateSmasher(entity_t* this) {
 			}
 			break;
 		case S_DOWNWARD:
-			map_UpdateSprite(param_sprite);
+			if(tickcount % (60 * 4) < 60) {
+				bs = param_sprite;
+				map_FreeBoundSprite(bs);
+				bs = NULL;
+				map_SetTile(param_x / 8, param_y / 8, SPR_SMASHER0);
+				param_state = S_UP;
+			} else {
+				map_UpdateSprite(param_sprite);
+			}
 			break;
 	}
 }
