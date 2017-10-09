@@ -41,7 +41,7 @@ void map_UpdateSprite(bound_sprite_t* bs) {
 	sprite_t* s = bs->sprite;
 
 	if(map_orientation) {
-		if(x < map_lx || x > map_lx + 255) {
+		if(x < map_lx || x >= map_lx + 256) {
 			// offscreen
 			s->y = 0xFF;
 		} else {
@@ -50,7 +50,7 @@ void map_UpdateSprite(bound_sprite_t* bs) {
 			s->y = y - map_ly;
 		}
 	} else {
-		if(y < map_ly || y > map_ly + 239) {
+		if(y < map_ly || y >= map_ly + 240) {
 			// offscreen
 			s->y = 0xFF;
 		} else {
