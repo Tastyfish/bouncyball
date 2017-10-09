@@ -1,9 +1,10 @@
-typedef enum {
-	SFX_CH0 = 0*15,
-	SFX_CH1 = 1*15,
-	SFX_CH2 = 2*15,
-	SFX_CH3 = 3*15
-} sfx_channel_t;
+typedef unsigned char sfx_channel_t;
+enum {
+	SFX_CH0 = (sfx_channel_t)(0*15),
+	SFX_CH1 = (sfx_channel_t)(1*15),
+	SFX_CH2 = (sfx_channel_t)(2*15),
+	SFX_CH3 = (sfx_channel_t)(3*15)
+};
 
 typedef unsigned char songid_t;
 
