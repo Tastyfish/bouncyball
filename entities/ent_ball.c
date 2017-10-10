@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "math.h"
+#include "game.h"
 #include "video.h"
 #include "input.h"
 #include "map.h"
@@ -33,8 +34,8 @@ void CollideBall(collision_box_t* this, collision_box_t* other, int x, int y);
 // Variables for the collision test
 entity_t* currentColEntity;
 int ofsX, ofsY;
-char useCH = 0;
-sfx_channel_t const channels[4] = {SFX_CH0, SFX_CH1, SFX_CH2, SFX_CH3};
+//char useCH = 0;
+//sfx_channel_t const channels[4] = {SFX_CH0, SFX_CH1, SFX_CH2, SFX_CH3};
 
 void ent_Ball(entity_t* this, va_list args) {
 	collision_box_t* col;
@@ -99,13 +100,13 @@ void UpdateBall(entity_t* this) {
 
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 
-	if((i & INPUT_LEFT) && param_accelx > -ACCEL_LIMIT) {
+	if((i & INPUT_LEFT) && param_accelx >= -ACCEL_LIMIT - 1) {
 		param_accelx -= 4;
 	}
 	if((i & INPUT_RIGHT) && param_accelx < ACCEL_LIMIT) {
 		param_accelx += 4;
 	}
-	if((i & INPUT_UP) && param_accely > -ACCEL_LIMIT) {
+	if((i & INPUT_UP) && param_accely >= -ACCEL_LIMIT - 1) {
 		param_accely -= 4;
 	}
 	if((i & INPUT_DOWN) && param_accely < ACCEL_LIMIT) {
@@ -119,7 +120,9 @@ void UpdateBall(entity_t* this) {
 	currentColEntity = this;
 	ofsX = ofsY = 0;
 	col_Test(col);
+	g_Yield();
 	map_TestColBox(col);
+	g_Yield();
 
 	// camera
 	if(ls->y < map_refY - 40) {
@@ -158,11 +161,11 @@ void CollideBall(collision_box_t*, collision_box_t* other, int nx, int ny) {
 		return;
 
 	// did we completely fall inside? hard reverse then
-	/*if(!(nx || ny)) {
-		colparam_accelx = -2 * accelx;
-		colparam_accely = -2 * accely;
+	if(!(nx || ny)) {
+		colparam_accelx = accelx / -2;
+		colparam_accely = accely / -2;
 		return;
-	}*/
+	}
 
 	// knock outside of object
 	if(nx)
@@ -177,10 +180,10 @@ void CollideBall(collision_box_t*, collision_box_t* other, int nx, int ny) {
 	// The actual vector math to reflect things
 	normalized(&dnx, &dny);
 	reflectd(&accelx, &accely, dnx, dny);
-	colparam_accelx = (signed char)(accelx / 8);
-	colparam_accely = (signed char)(accely / 8);
+	colparam_accelx = (signed char)(accelx / (dnx / 2 + 2));
+	colparam_accely = (signed char)(accely / (dny / 2 + 2));
 
 	//s_PlaySFX(SFX_BOUNCEH, channels[useCH]);
-	if(++useCH == 4)
-		useCH = 0;
+	//if(++useCH == 4)
+	//	useCH = 0;
 }
