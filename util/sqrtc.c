@@ -1,5 +1,7 @@
 #include "math.h"
 
+#pragma code-name ("LOWCODE")
+
 extern char const sqrtTable[256] = {
 	0,	1,	1,	1,	2,	2,	2,	2,	2,	3,
 	3,	3,	3,	3,	3,	3,	4,	4,	4,	4,

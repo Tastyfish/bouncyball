@@ -1,5 +1,7 @@
 #include "math.h"
 
+#pragma code-name ("LOWCODE")
+
 int sqrti(int x) {
 	// digit-by-digit method
 

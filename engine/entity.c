@@ -11,6 +11,8 @@ entity_t entity_table[NUM_ENTITIES];
 
 #define ENTITY_TABLE_END (entity_table + NUM_ENTITIES)
 
+#pragma code-name ("LOWCODE")
+
 // Create an entity with given ctor
 // Returns the new entity, or null if no slots left
 entity_t* e_Create(entity_ctor_t ctor, ...) {

@@ -6,8 +6,6 @@
 .import _map_refX, _map_refY, _map_orientation
 .import ppubuf_put
 
-.segment "LOWCODE"
-
 .export _map_SetTile
 
 ; If we ever add bounds checking (a bit expensive for each tile)

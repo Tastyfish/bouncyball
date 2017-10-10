@@ -1,5 +1,7 @@
 #include "math.h"
 
+#pragma code-name ("LOWCODE")
+
 // Vxy is the velocity vector. Both input and output.
 // Nxy is the normal of the face being hit. Assumed normalized
 void reflecti(int *vx, int *vy, int nx, int ny) {

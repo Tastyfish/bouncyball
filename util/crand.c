@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "math.h"
 
+#pragma code-name ("LOWCODE")
+
 // Pick random number from lo to hi
 unsigned int crand(unsigned int lo, unsigned int hi) {
 	// Conceptually, returns lo + (rand() * (hi-lo) / MAX)
