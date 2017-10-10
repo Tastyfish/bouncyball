@@ -52,18 +52,21 @@ void ent_Coin(entity_t* this, va_list args) {
 }
 
 void DestroyCoin(entity_t* this) {
-	if(param_sprite)
-		map_FreeBoundSprite(param_sprite);
-	if(param_col)
-		col_FreeBox(param_col);
+	bound_sprite_t* s = param_sprite;
+	collision_box_t* c = param_col;
+
+	if(s)
+		map_FreeBoundSprite(s);
+	if(c)
+		col_FreeBox(c);
 }
 
 void UpdateCoin(entity_t* this) {
 	// just rotate graphic
 	bound_sprite_t* s = param_sprite;
-	char anistep = tickcount / 8 % 7;
+	char anistep = tickcount / 8 % 6;
 
-	s->sprite->tile = SPR_COIN0 + 0x10 * (anistep < 4 ? anistep : 6 - anistep);
+	s->sprite->tile = SPR_COIN0 + (anistep < 4 ? anistep : 6 - anistep) * 0x10;
 	map_UpdateSprite(s);
 }
 
