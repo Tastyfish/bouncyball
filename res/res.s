@@ -29,6 +29,9 @@ symbol:
 .include "neschar.inc"
 .incbin "title.chr"
 
+; Complete the char bank
+.res $1800, $CC
+
 .segment "RODATA"
 
 incres _PAL_BALLS, "balls.pal"
