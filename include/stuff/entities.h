@@ -11,7 +11,7 @@ ENTITY(ent_GameController);
 ENTITY(ent_PushUp);
 ENTITY(ent_Smasher);
 ENTITY(ent_Coin);
-ENTITY(ent_LeftBumper);
+ENTITY(ent_Bumper);
 ENTITY(ent_UpBumper);
 ENTITY(ent_Info);
 ENTITY(ent_Slope);

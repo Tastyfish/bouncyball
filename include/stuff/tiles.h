@@ -5,6 +5,9 @@
 
 #define SPR_COIN0		((tile_t)0x82)
 
+#define SPR_BUMPER0		((tile_t)0x84)
+#define SPR_BUMPER0R	((tile_t)0xC4)
+
 #define SPR_SMASHER0	((tile_t)0xC6)
 
 #define SPR_SMOKE0		((tile_t)0x88)
