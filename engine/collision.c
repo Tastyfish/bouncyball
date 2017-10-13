@@ -57,7 +57,7 @@ void col_Test(collision_box_t* ref) {
 			collide = currentBox->onCollide;
 			if(collide)
 				collide(currentBox, ref, centerx - currentBox->x, centery - currentBox->y);
-			if(refCollide)
+			else if(refCollide)
 				refCollide(ref, currentBox, centerx - refX, centery - refY);
 		}
 	}

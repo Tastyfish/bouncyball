@@ -142,16 +142,10 @@ void UpdateBall(entity_t* this) {
 	map_UpdateSprite(rs);
 }
 
-void CollideBall(collision_box_t*, collision_box_t* other, int nx, int ny) {
+void CollideBall(collision_box_t*, collision_box_t*, int nx, int ny) {
 	decimal_t accelx = ((decimal_t)colparam_accelx) * 2;
 	decimal_t accely = ((decimal_t)colparam_accely) * 2;
 	decimal_t dnx, dny;
-
-	// hitting another box that has a param does not cause a reaction
-	// or escape if other was deleted
-	if(other && (other->param || !other->right)) {
-		return;
-	}
 
 	nx -= 8;
 	ny -= 8;
