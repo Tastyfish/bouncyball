@@ -8,9 +8,11 @@
 #define SPR_BUMPER0		((tile_t)0x84)
 #define SPR_BUMPER0R	((tile_t)0xC4)
 
-#define SPR_SMASHER0	((tile_t)0xC6)
-
-#define SPR_SMOKE0		((tile_t)0x88)
-#define SPR_SMOKE1		((tile_t)0x98)
+#define SPR_BUMPERUP	((tile_t)0x88)
 
 #define TILE_SLOPEL		((tile_t)0x8E)
+
+#define SPR_SMASHER0	((tile_t)0xC8)
+
+#define SPR_SMOKE0		((tile_t)0xCA)
+#define SPR_SMOKE1		((tile_t)0xDA)
