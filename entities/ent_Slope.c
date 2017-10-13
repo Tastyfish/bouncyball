@@ -23,12 +23,8 @@ void ent_Slope(entity_t* this, va_list args) {
 
 	this->onDestroy = DestroySlope;
 
-	col = col_AllocBox(true, va_arg(args, int), va_arg(args, int) + 3, 5, 5);
-	if(!col) {
-		e_Destroy(this);
-		return;
-	}
-	param_col = col;
+	EREQUIRE(param_col = col =
+		col_AllocBox(true, va_arg(args, int), va_arg(args, int) + 3, 5, 5));
 
 	tile = 0x80 + va_arg(args, tile_t);
 	map_SetTile(col->x / 8, col->y / 8, tile);

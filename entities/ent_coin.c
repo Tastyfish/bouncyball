@@ -26,19 +26,10 @@ void ent_Coin(entity_t* this, va_list args) {
 
 	this->onDestroy = DestroyCoin;
 
-	s = map_AllocBoundSprite();
-	if(!s) {
-		e_Destroy(this);
-		return;
-	}
-	param_sprite = s;
-
-	col = col_AllocBox(true, va_arg(args, int), va_arg(args, int), 8, 8);
-	if(!col) {
-		e_Destroy(this);
-		return;
-	}
-	param_col = col;
+	EREQUIRE(param_sprite = s =
+		map_AllocBoundSprite());
+	EREQUIRE(param_col = col =
+		col_AllocBox(true, va_arg(args, int), va_arg(args, int), 8, 8));
 
 	s->x = col->x;
 	s->y = col->y;

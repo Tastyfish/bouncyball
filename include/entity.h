@@ -29,4 +29,11 @@ extern bool e_UpdateTick(void);
 extern entity_t* e_Iterate(void);
 extern void e_IterateNext(entity_t** e);
 
+// Convenience macro for required resource allocation in ctors
+#define EREQUIRE(assignment) \
+	if(!(assignment)) { \
+		e_Destroy(this); \
+		return; \
+	}
+
 #endif

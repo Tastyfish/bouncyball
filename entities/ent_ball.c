@@ -43,26 +43,12 @@ void ent_Ball(entity_t* this, va_list args) {
 
 	this->onDestroy = DestroyBall;
 
-	ls = map_AllocBoundSprite();
-	if(!ls) {
-		e_Destroy(this);
-		return;
-	}
-	param_lsprite = ls;
-
-	rs = map_AllocBoundSprite();
-	if(!rs) {
-		e_Destroy(this);
-		return;
-	}
-	param_rsprite = rs;
-
-	col = col_AllocBox(false, va_arg(args, int), va_arg(args, int), 16, 16);
-	if(!col) {
-		e_Destroy(this);
-		return;
-	}
-	param_col = col;
+	EREQUIRE(param_lsprite = ls =
+		map_AllocBoundSprite());
+	EREQUIRE(param_rsprite = rs =
+		map_AllocBoundSprite());
+	EREQUIRE(param_col = col =
+		col_AllocBox(false, va_arg(args, int), va_arg(args, int), 16, 16));
 
 	param_accelx = 0;
 	param_accely = 0;
@@ -119,9 +105,9 @@ void UpdateBall(entity_t* this) {
 	// Contact acceleration will be updated in collision code
 	currentColEntity = this;
 	ofsX = ofsY = 0;
-	col_Test(col);
-	g_Yield();
 	map_TestColBox(col);
+	g_Yield();
+	col_Test(col);
 	g_Yield();
 
 	// camera
@@ -162,9 +148,9 @@ void CollideBall(collision_box_t*, collision_box_t*, int nx, int ny) {
 	}
 
 	// knock outside of object
-	if(nx)
+	if(nx && (!ny || abs(nx) >= abs(ny)))
 		ofsX += nx < 0 ? nx + 8 : nx - 8;
-	if(ny)
+	if(ny && (!nx || abs(ny) >= abs(nx)))
 		ofsY += ny < 0 ? ny + 8 : ny - 8;
 
 	// make precise enough to do real math on

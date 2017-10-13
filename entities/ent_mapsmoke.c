@@ -19,12 +19,8 @@ void ent_MapSmoke(entity_t* this, va_list args) {
 
 	this->onDestroy = destroySmoke;
 
-	bs = map_AllocBoundSprite();
-	if(!bs) {
-		e_Destroy(this);
-		return;
-	}
-	param_sprite = bs;
+	EREQUIRE(param_sprite = bs =
+		map_AllocBoundSprite());
 
 	bs->x = x;
 	bs->y = y;

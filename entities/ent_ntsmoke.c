@@ -21,12 +21,8 @@ void ent_NTSmoke(entity_t* this, va_list args) {
 
 	this->onDestroy = destroyNTSmoke;
 
-	s = v_AllocSprite();
-	if(!s) {
-		e_Destroy(this);
-		return;
-	}
-	param_sprite = s;
+	EREQUIRE(param_sprite = s =
+		v_AllocSprite());
 
 	s->x = x;
 	s->y = y;
