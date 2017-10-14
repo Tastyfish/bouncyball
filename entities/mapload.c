@@ -10,8 +10,8 @@ extern const mapload_entity_t mapload_entities[] = {
 	//{0x0A, ent_PushUp},
 	{0x0E, ent_Slope},
 	{0x1E, ent_Slope},
+	{0x2A, ent_Info},
 	{0x2E, ent_Slope},
-	//{0x2A, ent_Info},
 	{0x44, ent_Bumper},
 	{0x48, ent_Smasher},
 	{0x4A, ent_MapSmoke}
