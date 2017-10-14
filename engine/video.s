@@ -39,6 +39,8 @@ NUM_SPRITES = 64
 	jsr ppubuf_flush
 	jsr _vb_FullCopyOAM
 
+	bit PPU_STATUS
+
 	; reset the video counter
 	lda #$20
 	sta PPU_ADDR
