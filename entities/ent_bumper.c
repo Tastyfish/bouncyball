@@ -13,19 +13,16 @@
 
 #include "entities.h"
 
-typedef enum {
-	S_SMALL,
-	S_EXPANDING,
-	S_BIG,
-	S_CONTRACTING
-} bumper_state_t;
+#define BUMPER_STATE_MASK	(0x30)
+#define BUMPER_STATE_SHIFT	(4)
+#define BUMPER_DIR_MASK		(0x40)
 
 // sprite only exists on movements
-#define param_sprite	((bound_sprite_t*)this->paramp[0])
+#define param_col		((collision_box_t*)this->paramp[0])
 #define param_x			(this->parami[1])
 #define param_y			(this->parami[2])
-#define param_state		(this->paramc[6])
-#define param_leftdir	((bool)this->paramc[7])
+#define param_timebase	(this->paramc[6])
+#define param_tile		(this->paramc[7])
 
 void destroyBumper(entity_t* this);
 void updateBumper(entity_t* this);
@@ -33,54 +30,72 @@ void updateBumper(entity_t* this);
 void ent_Bumper(entity_t* this, va_list args) {
 	int x = va_arg(args, int);
 	int y = va_arg(args, int);
+	char tile = va_arg(args, char) | 0x80;
+
+	collision_box_t* col;
 
 	this->onDestroy = destroyBumper;
+
+	EREQUIRE(param_col = col =
+		col_AllocBox(true, x, y, 8, 16));
+
 	//this->onUpdate = updateSmasher;
 	param_x = x;
 	param_y = y;
-	param_leftdir = va_arg(args, char) == 0x04;
+	param_timebase = tickcount / 32;
+	param_tile = tile;
 
-	map_SetTile(x / 8, y / 8, param_leftdir ? SPR_BUMPER0 : SPR_BUMPER0R);
-	map_SetTile(x / 8, y / 8 + 1, (param_leftdir ? SPR_BUMPER0 : SPR_BUMPER0R) + 1);
+	map_SetTile(x / 8, y / 8, tile);
+	map_SetTile(x / 8, y / 8 + 1, tile + 1);
+
+	this->onUpdate = updateBumper;
 }
 
 void destroyBumper(entity_t* this) {
-	if(param_sprite)
-		map_FreeBoundSprite(param_sprite);
+	collision_box_t* col = param_col;
+
+	if(col)
+		col_FreeBox(col);
 }
 
 void updateBumper(entity_t* this) {
-	bound_sprite_t* bs;
+	char state = (param_tile & BUMPER_STATE_MASK) >> BUMPER_STATE_SHIFT;
+	char newState = ((char)(tickcount / 16) - param_timebase) % 6;
 
-	switch (param_state) {
-		case S_SMALL:
-			if(tickcount % (60 * 4) > 60 * 3) {
-				map_SetTile(param_x / 8, param_y / 8, TILE_BLANK);
+	int x, y;
+	collision_box_t* col;
 
-				bs = map_AllocBoundSprite();
-				if(!bs) {
-					e_Destroy(this);
-					return;
-				}
-				param_sprite = bs;
-				bs->sprite->tile = SPR_SMASHER0+0x10;
-				bs->sprite->attrib = 0;
-				bs->x = param_x;
-				bs->y = param_y;
-				map_UpdateSprite(bs);
-				param_state = S_EXPANDING;
-			}
-			break;
-		case S_EXPANDING:
-			if(tickcount % (60 * 4) < 60) {
-				bs = param_sprite;
-				map_FreeBoundSprite(bs);
-				bs = NULL;
-				map_SetTile(param_x / 8, param_y / 8, SPR_SMASHER0);
-				param_state = S_SMALL;
-			} else {
-				map_UpdateSprite(param_sprite);
-			}
-			break;
+	if(newState >= 4)
+		newState = 6 - newState;
+
+	if(state == newState)
+		return;
+
+	if(!newState)
+		param_timebase = tickcount / 16;
+
+	state = (param_tile & ~BUMPER_STATE_MASK) | (newState << BUMPER_STATE_SHIFT);
+	param_tile = state;
+	x = param_x;
+	y = param_y;
+
+	// back half always same except into state 0 and state 1
+	if(newState < 2) {
+		map_SetTile(x / 8, y / 8, state);
+		map_SetTile(x / 8, y / 8 + 1, state + 1);
+	}
+
+	if(state & BUMPER_DIR_MASK) {
+		// right
+		col->right = x + newState * 2 + 8;
+
+		map_SetTile(x / 8 + 1, y / 8, state + 2);
+		map_SetTile(x / 8 + 1, y / 8 + 1, state + 3);
+	} else  {
+		// left
+		col->x = x - newState * 2;
+
+		map_SetTile(x / 8 - 1, y / 8, state + 2);
+		map_SetTile(x / 8 - 1, y / 8 + 1, state + 3);
 	}
 }
