@@ -2,7 +2,7 @@
 .include "mem.inc"
 .include "video.inc"
 
-.import aslax1, aslax4, tosmoda0, tosicmp0
+.import aslax1, aslax4, tosumoda0
 .import _map_refX, _map_refY, _map_orientation
 .import ppubuf_put
 
@@ -71,7 +71,7 @@ vertical:
 	lda (sp),y
 	jsr pushax
 	lda #60
-	jsr tosmoda0
+	jsr tosumoda0
 	cmp #30
 	bpl @rightnt
 	lda #$20
@@ -86,7 +86,7 @@ vertical:
 done:
 	; continue the + x % 32 + y % 30 * 32
 	lda #30
-	jsr tosmoda0
+	jsr tosumoda0
 	jsr aslax4
 	jsr aslax1
 	clc
@@ -109,6 +109,4 @@ done:
 	ldx ptr2
 	lda tmp4
 	jmp ppubuf_put
-abort:
-	jmp incsp4
 .endproc
