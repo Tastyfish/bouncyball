@@ -13,10 +13,10 @@ typedef struct entity_s {
 	entity_cb_t onDestroy; // called by e_Destroy()
 	entity_cb_t onUpdate; // called at most once a frame, less if there's too much work
 	union param {
-		char paramc[8];
-		int parami[4];
-		int paramu[4];
-		void* paramp[4];
+		char paramc[12];
+		int parami[6];
+		int paramu[6];
+		void* paramp[6];
 	};
 } entity_t;
 
