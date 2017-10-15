@@ -21,7 +21,7 @@
 #define param_col		((collision_box_t*)this->paramp[0])
 #define param_x			(this->parami[1])
 #define param_y			(this->parami[2])
-#define param_timebase	(this->paramc[6])
+#define param_tick		(this->paramc[6])
 #define param_tile		(this->paramc[7])
 
 void destroyBumper(entity_t* this);
@@ -32,18 +32,15 @@ void ent_Bumper(entity_t* this, va_list args) {
 	int y = va_arg(args, int);
 	char tile = va_arg(args, char) | 0x80;
 
-	collision_box_t* col;
-
 	this->onDestroy = destroyBumper;
 
-	EREQUIRE(param_col = col =
+	EREQUIRE(param_col =
 		col_AllocBox(true, x, y, 8, 16));
 
 	//this->onUpdate = updateSmasher;
 	param_x = x;
 	param_y = y;
-	param_timebase = tickcount / 32;
-	param_tile = tile;
+	param_tile = tile & ~BUMPER_STATE_MASK;
 
 	map_SetTile(x / 8, y / 8, tile);
 	map_SetTile(x / 8, y / 8 + 1, tile + 1);
@@ -59,43 +56,43 @@ void destroyBumper(entity_t* this) {
 }
 
 void updateBumper(entity_t* this) {
-	char state = (param_tile & BUMPER_STATE_MASK) >> BUMPER_STATE_SHIFT;
-	char newState = ((char)(tickcount / 16) - param_timebase) % 6;
-
 	int x, y;
 	collision_box_t* col;
+	char state, tile;
+	char tick = param_tick;
 
-	if(newState >= 4)
-		newState = 6 - newState;
+	param_tick = tick + 1;
 
-	if(state == newState)
+	if(tick % 8)
 		return;
 
-	if(!newState)
-		param_timebase = tickcount / 16;
+	state = tick / 8 % 6;
 
-	state = (param_tile & ~BUMPER_STATE_MASK) | (newState << BUMPER_STATE_SHIFT);
-	param_tile = state;
+	if(state >= 4)
+		state = 6 - state;
+
+	tile = param_tile | (state << BUMPER_STATE_SHIFT);
 	x = param_x;
 	y = param_y;
+	col = param_col;
 
 	// back half always same except into state 0 and state 1
-	if(newState < 2) {
-		map_SetTile(x / 8, y / 8, state);
-		map_SetTile(x / 8, y / 8 + 1, state + 1);
+	if(state < 2) {
+		map_SetTile(x / 8, y / 8, tile);
+		map_SetTile(x / 8, y / 8 + 1, tile + 1);
 	}
 
-	if(state & BUMPER_DIR_MASK) {
+	if(tile & BUMPER_DIR_MASK) {
 		// right
-		col->right = x + newState * 2 + 8;
+		col->right = x + state * 2 + 8;
 
-		map_SetTile(x / 8 + 1, y / 8, state + 2);
-		map_SetTile(x / 8 + 1, y / 8 + 1, state + 3);
+		map_SetTile(x / 8 + 1, y / 8, tile + 2);
+		map_SetTile(x / 8 + 1, y / 8 + 1, tile + 3);
 	} else  {
 		// left
-		col->x = x - newState * 2;
+		col->x = x - state * 2;
 
-		map_SetTile(x / 8 - 1, y / 8, state + 2);
-		map_SetTile(x / 8 - 1, y / 8 + 1, state + 3);
+		map_SetTile(x / 8 - 1, y / 8, tile + 2);
+		map_SetTile(x / 8 - 1, y / 8 + 1, tile + 3);
 	}
 }
