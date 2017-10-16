@@ -181,6 +181,7 @@ void CollideBall(collision_box_t*, collision_box_t*, int nx, int ny) {
 	//	useCH = 0;
 }
 
-void GravBall(collision_box_t*, collision_box_t*, int, int) {
-	doGravity = false;
+void GravBall(collision_box_t*, collision_box_t*, int nx, int) {
+	if(nx == 8)
+		doGravity = false;
 }
