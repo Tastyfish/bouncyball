@@ -54,7 +54,7 @@ void ent_Ball(entity_t* this, va_list args) {
 	EREQUIRE(param_col = col =
 		col_AllocBox(false, x, y, 16, 16));
 	EREQUIRE(param_gravcol = gcol =
-		col_AllocBox(false, x, y + 16, 16, 1));
+		col_AllocBox(false, x + 4, y + 16, 8, 1));
 
 	ls->x = x;
 	ls->y = y;
@@ -131,9 +131,9 @@ void UpdateBall(entity_t* this) {
 	}
 
 	// update sprites -- map_UpdateSprite must be called after camera update
-	gcol->x = col->x += ofsX + DEC2INT(param_accelx);
+	gcol->x = (col->x += ofsX + DEC2INT(param_accelx)) + 4;
 	col->y += ofsY + DEC2INT(param_accely);
-	gcol->right = col->right = col->x + 16;
+	gcol->right = (col->right = col->x + 16) - 4;
 	gcol->bottom = (gcol->y = (col->bottom = col->y + 16)) + 1;
 	rs->x = (ls->x = col->x) + 8;
 	rs->y = ls->y = col->y;
@@ -182,6 +182,6 @@ void CollideBall(collision_box_t*, collision_box_t*, int nx, int ny) {
 }
 
 void GravBall(collision_box_t*, collision_box_t*, int nx, int) {
-	if(nx == 8)
+	if(nx == 4)
 		doGravity = false;
 }
