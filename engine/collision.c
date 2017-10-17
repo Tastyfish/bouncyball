@@ -14,7 +14,7 @@ collision_box_t* col_AllocBox(bool checked, int x, int y, int width, int height)
 	collision_box_t* const end = checked ? CHECKED_COLBOX_END : UNCHECKED_COLBOX_END;
 
 	for(; box < end; ++box) {
-		if(box->right == 0 && box->bottom == 0) {
+		if(!box->right && !box->bottom) {
 			box->x = x;
 			box->y = y;
 			box->right = x + width;
@@ -27,7 +27,7 @@ collision_box_t* col_AllocBox(bool checked, int x, int y, int width, int height)
 }
 
 void col_FreeBox(collision_box_t* cb) {
-	bzero(cb, sizeof(collision_box_t));
+	memset(cb, 0, sizeof(collision_box_t));
 }
 
 void col_Test(collision_box_t* ref) {
