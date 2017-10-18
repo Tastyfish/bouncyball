@@ -1,6 +1,6 @@
 NSTssTXT
 
-BtnTiles=1
+BtnTiles=0
 BtnChecker=0
 BtnSelTiles=0
 BtnChrBank1=1
