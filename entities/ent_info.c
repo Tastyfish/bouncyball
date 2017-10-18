@@ -6,16 +6,25 @@
 #include "video.h"
 #include "entity.h"
 #include "collision.h"
+#include "xdata.h"
 
 #include "entities.h"
 
 #define param_col		((collision_box_t*)this->paramp[0])
-#define param_step		(this->paramc[2])
+#define param_msg		((const char*)this->paramp[1])
+#define param_step		(this->paramc[4])
 
-#define cparam_step		(((entity_t*)this->param)->paramc[2])
+#define cparam_step		(((entity_t*)this->param)->paramc[4])
+
+#define xparam_msg		((const char*)lastInfo->paramp[1])
 
 void destroyInfo(entity_t* this);
 void collideInfo(collision_box_t* this, collision_box_t*, int, int);
+void receiveXData(const void* data);
+
+// for receiving xdata---should be the IMMEDIATELY next entity loaded or the map
+// was made incorrectly
+entity_t* lastInfo;
 
 void ent_Info(entity_t* this, va_list args) {
 	int x = va_arg(args, int);
@@ -27,6 +36,9 @@ void ent_Info(entity_t* this, va_list args) {
 
 	EREQUIRE(param_col = col =
 		col_AllocBox(true, x, y, 8, 8));
+
+	lastInfo = this;
+	xdata_SetHandler(&receiveXData);
 
 	col->onCollide = collideInfo;
 	col->param = this;
@@ -47,4 +59,8 @@ void collideInfo(collision_box_t* this, collision_box_t*, int, int) {
 		v_SetBGColor(0x01);
 		e_Destroy(this->param);
 	}
+}
+
+void receiveXData(const void* data) {
+	xparam_msg = data;
 }

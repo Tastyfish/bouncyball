@@ -21,6 +21,7 @@ typedef struct {
 	struct qrx_header_s* qrv;
 	struct qrx_header_s* qrc;
 	struct qrx_header_s* qre;
+	struct xdata_s* xdata; 
 } map_header_t;
 
 typedef struct {
