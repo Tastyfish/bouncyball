@@ -40,25 +40,93 @@ void col_Test(collision_box_t* ref) {
 	collide_cb_t refCollide = ref->onCollide;
 
 	collide_cb_t collide;
-	int centerx, centery;
+	int ix, iy, ir, ib;
+	signed char ox, oy;
 
 	for(; currentBox < CHECKED_COLBOX_END; ++currentBox) {
 		if(currentBox->right >= refX && currentBox->bottom >= refY
 			&& currentBox->x < refRight && currentBox->y < refBottom) {
 
-			// solve the middle of the overlap
-			centerx = MAX(currentBox->x, refX);
-			centerx += MIN(currentBox->right, refRight);
-			centerx /= 2;
-			centery = MAX(currentBox->y, refY);
-			centery += MIN(currentBox->bottom, refBottom);
-			centery /= 2;
+			// solve overlap points
+			ix = MAX(currentBox->x, refX);
+			iy = MAX(currentBox->y, refY);
+			ir = MIN(currentBox->right, refRight);
+			ib = MIN(currentBox->bottom, refBottom);
 
 			collide = currentBox->onCollide;
-			if(collide)
-				collide(currentBox, ref, centerx - currentBox->x, centery - currentBox->y);
-			else if(refCollide)
-				refCollide(ref, currentBox, centerx - refX, centery - refY);
+			if(collide) {
+				if(ix == refX) {
+					// currentBox is more left
+					if(ir == refRight) {
+						// currentBox is also more right (outside)
+						ox = (char)(currentBox->right - currentBox->x) / 2;
+					} else {
+						// overall on the left
+						ox = ix - currentBox->x;
+					}
+				} else if(ir == refRight) {
+					// overall on the right
+					ox = ir - currentBox->x;
+				} else {
+					// currentBox is inside
+					ox = (char)(ir - ix) / 2;
+				}
+
+				if(iy == refY) {
+					// currentBox is more left
+					if(ib == refBottom) {
+						// currentBox is also more right (outside)
+						oy = (char)(currentBox->bottom - currentBox->y) / 2;
+					} else {
+						// overall on the left
+						oy = iy - currentBox->y;
+					}
+				} else if(ib == refBottom) {
+					// overall on the right
+					oy = ib - currentBox->y;
+				} else {
+					// currentBox is inside
+					oy = (char)(ib - iy) / 2;
+				}
+
+				collide(currentBox, ref, ox, oy);
+			} else if(refCollide) {
+				if(ix == refX) {
+					// ref is more right
+					if(ir == refRight) {
+						// ref is also more left (inside)
+						ox = (char)(ir - ix) / 2;
+					} else {
+						// overall on the right
+						ox = ir - refX;
+					}
+				} else if(ir == refRight) {
+					// overall on the left
+					ox = ix - refX;
+				} else {
+					// currentBox is outside
+					ox = (char)(currentBox->right - currentBox->x) / 2;
+				}
+
+				if(iy == refY) {
+					// ref is more right
+					if(ib == refBottom) {
+						// ref is also more left (inside)
+						oy = (char)(ib - iy) / 2;
+					} else {
+						// overall on the right
+						oy = ib - refY;
+					}
+				} else if(ib == refBottom) {
+					// overall on the left
+					oy = iy - refY;
+				} else {
+					// currentBox is outside
+					oy = (char)(currentBox->bottom - currentBox->y) / 2;
+				}
+
+				refCollide(ref, currentBox, ox, oy);
+			}
 		}
 	}
 }
