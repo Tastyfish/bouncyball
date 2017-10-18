@@ -18,7 +18,7 @@ typedef struct {
 	char iy;
 } qre_entry_t;
 
-const map_header_t* header;
+const map_header_t* map_header;
 bool map_orientation;
 int map_refX, map_refY; // pixel pos we're in
 int map_lx, map_ly; // actual viewport TL reference for sprites anc scrolling
@@ -34,6 +34,7 @@ qre_entry_t qreQueue[32];
 extern mapload_entity_t mapload_entities[];
 extern size_t mapload_entity_count;
 extern char sectionCols[2][4][16*16/8];
+extern const map_header_t* map_header;
 
 void assignSection(char nt, char q, int sectionID, char x, char y);
 void updateVSections(void);
@@ -46,19 +47,19 @@ void scroll(void);
 void map_Load(const map_header_t* map) {
 	memset(sectionLoaded, 0xFF, sizeof(sectionLoaded));
 
-	header = map;
-	sectionXCount = header->qrv->width;
-	sectionYCount = header->qrv->height;
+	map_header = map;
+	sectionXCount = map_header->qrv->width;
+	sectionYCount = map_header->qrv->height;
 	map_width = (int)sectionXCount * 16;
 	map_height = sectionYCount % 2 ? (int)sectionYCount * 15 + 1 : (int)sectionYCount * 15;
 
 	// wrap it to be valid
-	map_refX = header->startx % ((int)sectionXCount << 7);
+	map_refX = map_header->startx % ((int)sectionXCount << 7);
 
 	map_refY = (sectionYCount >> 1) * 240;
 	if(sectionYCount % 2)
 		map_refY += 128;
-	map_refY = header->starty % map_refY;
+	map_refY = map_header->starty % map_refY;
 
 	sx = map_refX / 128;
 	sy = map_refY / 240;
@@ -128,12 +129,12 @@ void assignSection(char nt, char q, int sectionID, char x, char y) {
 	if(*pLoaded != sectionID) {
 		// visual
 		v_DecompressQRVChunk(nt ? 0x2400 : 0x2000, q,
-			((char*)header->qrv) + header->qrv->sectionOffsets[sectionID]);
+			((char*)map_header->qrv) + map_header->qrv->sectionOffsets[sectionID]);
 
 		// entity
 		bzero(qreQueue, sizeof(qreQueue));
 		v_DecompressQREChunk(qreQueue, q,
-			((char*)header->qre) + header->qre->sectionOffsets[sectionID]);
+			((char*)map_header->qre) + map_header->qre->sectionOffsets[sectionID]);
 
 		while(currentEntity->entityID != 0) {
 			mapload_key.entityID = currentEntity->entityID;
@@ -148,7 +149,7 @@ void assignSection(char nt, char q, int sectionID, char x, char y) {
 
 		// col
 		v_DecompressQRCChunk(&sectionCols[nt][q][0],
-			((char*)header->qrc) + header->qrc->sectionOffsets[sectionID]);
+			((char*)map_header->qrc) + map_header->qrc->sectionOffsets[sectionID]);
 
 		// mark loaded
 		*pLoaded = sectionID;
