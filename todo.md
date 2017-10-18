@@ -7,3 +7,5 @@
 * Entities deleted on old sections as map streams
 * bumpers
 * smashers
+* info
+	* also some way to render text in this video setup
