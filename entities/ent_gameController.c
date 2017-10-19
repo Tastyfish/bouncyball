@@ -15,6 +15,9 @@ extern const palset_t* const PAL_WATERSHIP;
 extern const palset_t* const PAL_BALLS;
 extern entity_t* game_controller_instance;
 
+extern const map_header_t* const MAP_PINBALL1;
+extern void setup_ingame(const map_header_t* map);
+
 #define param_score			(this->paramu[0])
 #define param_fadein		(this->paramc[2])
 
@@ -32,17 +35,13 @@ void ent_GameController(entity_t* this, va_list) {
 void UpdateGC(entity_t* this) {
 	input_t i = i_GetStandardInput(INPUT_PLAYER_0);
 
-	if(i & INPUT_A) {
-		e_Create(&ent_Ball, crand(8, 240), crand(8, 224));
-	}
-
 	if(i & INPUT_SELECT) {
-		// clear the balls
+		// clear everything and reload
 		entity_t* ent;
 		for(ent = e_Iterate(); ent; e_IterateNext(&ent)) {
-			if(ent->type == &ent_Ball)
-				e_Destroy(ent);
+			e_Destroy(ent);
 		}
+		setup_ingame(MAP_PINBALL1);
 	}
 
 	if(param_fadein && v_FadeStep())
