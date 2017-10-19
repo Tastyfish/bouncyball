@@ -61,7 +61,10 @@ void updateBumper(entity_t* this) {
 	char state, tile;
 	char tick = param_tick;
 
-	param_tick = tick + 1;
+	if(tick >= 48)
+		param_tick = tick = 0;
+	else
+		param_tick = tick + 1;
 
 	if(tick % 8)
 		return;
