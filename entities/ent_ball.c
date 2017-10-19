@@ -15,7 +15,8 @@
 
 #include "entities.h"
 
-#define ACCEL_LIMIT		(96)
+#define ACCEL_LIMIT		INT2DEC(6)
+#define GRAV_LIMIT		INT2DEC(8)
 
 #define param_lsprite	((bound_sprite_t*)this->paramp[0])
 #define param_rsprite	((bound_sprite_t*)this->paramp[1])
@@ -109,11 +110,13 @@ void UpdateBall(entity_t* this) {
 	}
 
 	// gravity
-	doGravity = true;
-	map_TestColBox(gcol);
-	//g_Yield();
-	if(doGravity)
-		param_accely += 6;
+	if(param_accely < GRAV_LIMIT) {
+		doGravity = true;
+		map_TestColBox(gcol);
+		//g_Yield();
+		if(doGravity)
+			param_accely += 6;
+	}
 
 	// Contact acceleration will be updated in collision code
 	currentColEntity = this;
