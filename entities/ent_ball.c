@@ -176,7 +176,7 @@ void CollideBall(collision_box_t*, collision_box_t*, int nx, int ny) {
 	// The actual vector math to reflect things
 	normalized(&dnx, &dny);
 	reflectd(&accelx, &accely, dnx, dny);
-	colparam_accelx = (accelx / (dnx + 2));
+	colparam_accelx = (accelx / (dnx + 1));
 	colparam_accely = (accely / (dny + 2));
 
 	//s_PlaySFX(SFX_BOUNCEH, channels[useCH]);
