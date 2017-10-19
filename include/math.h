@@ -12,6 +12,10 @@ extern unsigned int crand(unsigned int lo, unsigned int hi);
 extern unsigned char sqrtc(unsigned char x);
 extern int sqrti(int x);
 
+extern unsigned char umod15(unsigned int x);
+extern unsigned char umod30(unsigned int x);
+extern unsigned char umod60(unsigned int x);
+
 extern char vlenc(char x, char y);
 extern signed char dotc(signed char x1, signed char y1, signed char x2, signed char y2);
 extern void reflectc(signed char *vx, signed char *vy, signed char nx, signed char ny);
