@@ -1,4 +1,6 @@
 #include <stddef.h>
+
+#include "math.h"
 #include "collision.h"
 #include "map.h"
 
@@ -63,7 +65,7 @@ void map_TestColBox(collision_box_t* box) {
 }
 
 bool map_TestCol(int x, int y) {
-	char iy = y % 240;
+	char iy = umod240(y);
 	char q = ((char)(x / 128) % 2) | (iy < 128 ? 0 : 2);
 	char ix = (char)(x % 128) / 8;
 	char nt = map_orientation ? (char)(x / 256) % 2 : (char)(y / 240) % 2;

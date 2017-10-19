@@ -15,6 +15,7 @@ extern int sqrti(int x);
 extern unsigned char umod15(unsigned int x);
 extern unsigned char umod30(unsigned int x);
 extern unsigned char umod60(unsigned int x);
+extern unsigned char umod240(unsigned int x);
 
 extern char vlenc(char x, char y);
 extern signed char dotc(signed char x1, signed char y1, signed char x2, signed char y2);

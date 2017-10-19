@@ -63,7 +63,7 @@ void map_Load(const map_header_t* map) {
 
 	sx = map_refX / 128;
 	sy = map_refY / 240;
-	if(map_refY % 240 > 128) {
+	if(umod240(map_refY) >= 128) {
 		sy = sy * 2 + 1;
 	} else {
 		sy = sy * 2;
@@ -92,7 +92,7 @@ void updateHSections(void) {
 
 	for(y = sy & ~1; y <= ymax; ++y) {
 		yoffs = y * sectionXCount;
-		for(x = (sx > 1 ? sx - 1 : 0); x <= xmax; ++x) {
+		for(x = (sx >= 2 ? sx - 1 : 0); x <= xmax; ++x) {
 			assignSection((x & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs, x, y);
 		}
 	}
@@ -104,7 +104,7 @@ void updateVSections(void) {
 	char x, y;
 	int yoffs;
 
-	for(y = (sy > 1 ? sy - 1 : 0); y <= ymax; ++y) {
+	for(y = (sy >= 2 ? sy - 1 : 0); y <= ymax; ++y) {
 		yoffs = y * sectionXCount;
 		for(x = sx & ~1; x <= xmax; ++x) {
 			assignSection((y & 2) == 2, (x & 1) | ((y & 1) << 1), x + yoffs, x, y);
@@ -179,7 +179,7 @@ void map_MoveTo(int rx, int ry) {
 
 	newsx = map_refX / 128;
 	newsy = map_refY / 240;
-	if(map_refY % 240 >= 128) {
+	if(umod240(map_refY) >= 128) {
 		newsy = newsy * 2 + 1;
 	} else {
 		newsy *= 2;

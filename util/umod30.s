@@ -3,9 +3,10 @@
 
 .import asrax4
 
-.export		_umod15
-.export		_umod30
-.export		_umod60
+.export _umod15
+.export _umod30
+.export _umod60
+.export _umod240
 
 .segment	"LOWCODE"
 
@@ -136,5 +137,38 @@ check4:
 	lda tmp1
 	clc
 	adc #45
+	rts
+.endproc
+
+.proc _umod240
+	sta tmp3
+	jsr _umod15
+	sta tmp1 ; m15
+	and #15
+	sta tmp2 ; m15_15
+	lda tmp3
+	and #15
+	sta tmp3 ; m16
+
+	; if(m16 == m15_15) return m15;
+	lda tmp3
+	cmp tmp2
+	bne check2
+	lda tmp1
+	rts
+
+check2:
+	; if((m4 = m4 + 1 & 15) == m15_3) return m15 + 15;
+	lda tmp1
+	clc
+	adc #15
+	sta tmp1
+	inc tmp3
+	lda tmp3
+	and #15
+	sta tmp3
+	cmp tmp2
+	bne check2
+	lda tmp1
 	rts
 .endproc

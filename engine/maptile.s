@@ -4,7 +4,7 @@
 
 .import aslax1, aslax4, tosumoda0
 .import _map_refX, _map_refY, _map_orientation
-.import ppubuf_put
+.import ppubuf_put, _umod30, _umod60
 
 .export _map_SetTile
 
@@ -69,9 +69,7 @@ vertical:
 	tax
 	dey
 	lda (sp),y
-	jsr pushax
-	lda #60
-	jsr tosumoda0
+	jsr _umod60
 	cmp #30
 	bpl @rightnt
 	lda #$20
@@ -85,8 +83,8 @@ vertical:
 
 done:
 	; continue the + x % 32 + y % 30 * 32
-	lda #30
-	jsr tosumoda0
+	jsr popax
+	jsr _umod30
 	jsr aslax4
 	jsr aslax1
 	clc
