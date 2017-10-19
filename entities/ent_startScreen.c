@@ -39,9 +39,6 @@ void Destroy(entity_t* this) {
 	vm_RemoveScanlineCallback(param_scanline_callback);
 }
 
-extern char mmc5_nt_mapping;
-extern char mmc5_bg_bank;
-
 void onSplitscreen(unsigned char) {
 	// Directly talking to hardware to allow things to reset to normal on next frames
 	// move HUD onto screen
