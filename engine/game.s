@@ -81,7 +81,7 @@ vwait2:
 ; void g_Sleep(void)
 .proc _g_Yield
 	cli
-	.repeat 3
+	.repeat 2
 		nop
 	.endrep
 	sei
