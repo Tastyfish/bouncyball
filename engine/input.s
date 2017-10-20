@@ -17,7 +17,7 @@
 	ldy #0
 	lda #1
 	sta (ptr1),y
-	lda #0
+	tya
 	sta (ptr1),y
 
 	; X is bit #, tmp1 is returned flags
@@ -25,12 +25,11 @@
 	ldx #8
 loop:
 	lda (ptr1),y
-	asl tmp1
-	and #1
-	ora tmp1
-	sta tmp1
+	ror
+	rol tmp1
 	dex
 	bne loop
 
+	lda tmp1
 	rts
 .endproc
